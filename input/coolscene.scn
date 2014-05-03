@@ -1,0 +1,112 @@
+# my art submission
+
+# please note that some parts of the scene setup is taken from cannonball.scn
+
+############################################################
+# scene setup
+############################################################
+
+# lighting
+
+ambient 0.5 0.5 1.0
+
+camera -0 2 4   
+       0.0 -0.4 -1
+       0 1 -0.25
+       0.25  0.01 100
+
+
+# materials
+
+# ground plane
+
+material
+    0.5 0.5 0.5
+    0.5 0.5 0.5 
+    0 0 0
+    0 0 0
+    0 0 0
+    1 1 0
+
+# cannon ball
+
+material
+	0 0 0
+	1 0 0
+	0 0 0
+	0 0 0
+	0 0 0
+	1 1 0
+
+# bottom of box
+box 0
+    -0.55 -0.05 -1
+    0.75  0  1
+
+# top of box
+box 0
+    -0.55  1.3 -1
+    0.75  1.35  1
+
+# right of box
+box 0
+    0.7  0  -1 
+    0.75  1.3   1
+
+# left of box
+box 0
+    -0.55  0  -1 
+    -0.5  1.3   1
+
+# obstacles on bottom of the box
+sphere 0
+  -0.4 0 0   0.1
+
+sphere 0
+  -0.2 0 0   0.1
+
+sphere 0
+  0 0 0   0.1
+
+sphere 0
+  0.2 0 0   0.1
+
+sphere 0
+  0.4 0 0   0.1
+
+sphere 0
+  0.6 0 0   0.1
+
+
+
+############################################################
+# particle simulation specifics
+############################################################
+
+particle_gravity 0 -9.80665 0
+
+particle 
+  -0.5 0 0
+  2 10 0
+  1 0 0 1 10 1
+
+particle 
+  0.3 0 0
+  -2 16 0
+  1 0 0 1 10 1
+
+particle 
+  0.1 0 0
+  4 9 0
+  1 0 0 1 10 1
+
+particle
+  0.2 0.2 0
+  -1.1 9.3 0
+  1 0 0 1 10 1
+
+particle 
+  -0.45 0.1 0
+  0.1 13 0
+  1 0 0 1 10 1
+

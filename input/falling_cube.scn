@@ -1,0 +1,176 @@
+#taken from examples page
+
+particle 0.000000 0.000000 0.000000 0 0 0 1 0 0.1 1 10 -1
+particle 0.000000 0.000000 1.000000 0 0 0 1 0 0.1 1 10 -1
+particle 0.000000 0.000000 2.000000 0 0 0 1 0 0.1 1 10 -1
+particle 0.000000 1.000000 0.000000 0 0 0 1 0 0.1 1 10 -1
+particle 0.000000 1.000000 1.000000 0 0 0 1 0 0.1 1 10 -1
+particle 0.000000 1.000000 2.000000 0 0 0 1 0 0.1 1 10 -1
+particle 0.000000 2.000000 0.000000 0 0 0 1 0 0.1 1 10 -1
+particle 0.000000 2.000000 1.000000 0 0 0 1 0 0.1 1 10 -1
+particle 0.000000 2.000000 2.000000 0 0 0 1 0 0.1 1 10 -1
+particle 1.000000 0.000000 0.000000 0 0 0 1 0 0.1 1 10 -1
+particle 1.000000 0.000000 1.000000 0 0 0 1 0 0.1 1 10 -1
+particle 1.000000 0.000000 2.000000 0 0 0 1 0 0.1 1 10 -1
+particle 1.000000 1.000000 0.000000 0 0 0 1 0 0.1 1 10 -1
+particle 1.000000 1.000000 1.000000 0 0 0 1 0 0.1 1 10 -1
+particle 1.000000 1.000000 2.000000 0 0 0 1 0 0.1 1 10 -1
+particle 1.000000 2.000000 0.000000 0 0 0 1 0 0.1 1 10 -1
+particle 1.000000 2.000000 1.000000 0 0 0 1 0 0.1 1 10 -1
+particle 1.000000 2.000000 2.000000 0 0 0 1 0 0.1 1 10 -1
+particle 2.000000 0.000000 0.000000 0 0 0 1 0 0.1 1 10 -1
+particle 2.000000 0.000000 1.000000 0 0 0 1 0 0.1 1 10 -1
+particle 2.000000 0.000000 2.000000 0 0 0 1 0 0.1 1 10 -1
+particle 2.000000 1.000000 0.000000 0 0 0 1 0 0.1 1 10 -1
+particle 2.000000 1.000000 1.000000 0 0 0 1 0 0.1 1 10 -1
+particle 2.000000 1.000000 2.000000 0 0 0 1 0 0.1 1 10 -1
+particle 2.000000 2.000000 0.000000 0 0 0 1 0 0.1 1 10 -1
+particle 2.000000 2.000000 1.000000 0 0 0 1 0 0.1 1 10 -1
+particle 2.000000 2.000000 2.000000 0 0 0 1 0 0.1 1 10 -1
+
+# springs
+particle_spring 0 1 1.000000 600 10
+particle_spring 1 2 1.000000 600 10
+particle_spring 0 3 1.000000 600 10
+particle_spring 1 4 1.000000 600 10
+particle_spring 3 4 1.000000 600 10
+particle_spring 0 4 1.414214 600 10
+particle_spring 1 3 1.414214 600 10
+particle_spring 2 5 1.000000 600 10
+particle_spring 4 5 1.000000 600 10
+particle_spring 1 5 1.414214 600 10
+particle_spring 2 4 1.414214 600 10
+particle_spring 3 6 1.000000 600 10
+particle_spring 4 7 1.000000 600 10
+particle_spring 6 7 1.000000 600 10
+particle_spring 3 7 1.414214 600 10
+particle_spring 4 6 1.414214 600 10
+particle_spring 5 8 1.000000 600 10
+particle_spring 7 8 1.000000 600 10
+particle_spring 4 8 1.414214 600 10
+particle_spring 5 7 1.414214 600 10
+particle_spring 0 9 1.000000 600 10
+particle_spring 1 10 1.000000 600 10
+particle_spring 9 10 1.000000 600 10
+particle_spring 0 10 1.414214 600 10
+particle_spring 1 9 1.414214 600 10
+particle_spring 2 11 1.000000 600 10
+particle_spring 10 11 1.000000 600 10
+particle_spring 1 11 1.414214 600 10
+particle_spring 2 10 1.414214 600 10
+particle_spring 3 12 1.000000 600 10
+particle_spring 9 12 1.000000 600 10
+particle_spring 0 12 1.414214 600 10
+particle_spring 3 9 1.414214 600 10
+particle_spring 4 13 1.000000 600 10
+particle_spring 10 13 1.000000 600 10
+particle_spring 12 13 1.000000 600 10
+particle_spring 1 13 1.414214 600 10
+particle_spring 4 10 1.414214 600 10
+particle_spring 3 13 1.414214 600 10
+particle_spring 4 12 1.414214 600 10
+particle_spring 9 13 1.414214 600 10
+particle_spring 10 12 1.414214 600 10
+particle_spring 5 14 1.000000 600 10
+particle_spring 11 14 1.000000 600 10
+particle_spring 13 14 1.000000 600 10
+particle_spring 2 14 1.414214 600 10
+particle_spring 5 11 1.414214 600 10
+particle_spring 4 14 1.414214 600 10
+particle_spring 5 13 1.414214 600 10
+particle_spring 10 14 1.414214 600 10
+particle_spring 11 13 1.414214 600 10
+particle_spring 6 15 1.000000 600 10
+particle_spring 12 15 1.000000 600 10
+particle_spring 3 15 1.414214 600 10
+particle_spring 6 12 1.414214 600 10
+particle_spring 7 16 1.000000 600 10
+particle_spring 13 16 1.000000 600 10
+particle_spring 15 16 1.000000 600 10
+particle_spring 4 16 1.414214 600 10
+particle_spring 7 13 1.414214 600 10
+particle_spring 6 16 1.414214 600 10
+particle_spring 7 15 1.414214 600 10
+particle_spring 12 16 1.414214 600 10
+particle_spring 13 15 1.414214 600 10
+particle_spring 8 17 1.000000 600 10
+particle_spring 14 17 1.000000 600 10
+particle_spring 16 17 1.000000 600 10
+particle_spring 5 17 1.414214 600 10
+particle_spring 8 14 1.414214 600 10
+particle_spring 7 17 1.414214 600 10
+particle_spring 8 16 1.414214 600 10
+particle_spring 13 17 1.414214 600 10
+particle_spring 14 16 1.414214 600 10
+particle_spring 9 18 1.000000 600 10
+particle_spring 10 19 1.000000 600 10
+particle_spring 18 19 1.000000 600 10
+particle_spring 9 19 1.414214 600 10
+particle_spring 10 18 1.414214 600 10
+particle_spring 11 20 1.000000 600 10
+particle_spring 19 20 1.000000 600 10
+particle_spring 10 20 1.414214 600 10
+particle_spring 11 19 1.414214 600 10
+particle_spring 12 21 1.000000 600 10
+particle_spring 18 21 1.000000 600 10
+particle_spring 9 21 1.414214 600 10
+particle_spring 12 18 1.414214 600 10
+particle_spring 13 22 1.000000 600 10
+particle_spring 19 22 1.000000 600 10
+particle_spring 21 22 1.000000 600 10
+particle_spring 10 22 1.414214 600 10
+particle_spring 13 19 1.414214 600 10
+particle_spring 12 22 1.414214 600 10
+particle_spring 13 21 1.414214 600 10
+particle_spring 18 22 1.414214 600 10
+particle_spring 19 21 1.414214 600 10
+particle_spring 14 23 1.000000 600 10
+particle_spring 20 23 1.000000 600 10
+particle_spring 22 23 1.000000 600 10
+particle_spring 11 23 1.414214 600 10
+particle_spring 14 20 1.414214 600 10
+particle_spring 13 23 1.414214 600 10
+particle_spring 14 22 1.414214 600 10
+particle_spring 19 23 1.414214 600 10
+particle_spring 20 22 1.414214 600 10
+particle_spring 15 24 1.000000 600 10
+particle_spring 21 24 1.000000 600 10
+particle_spring 12 24 1.414214 600 10
+particle_spring 15 21 1.414214 600 10
+particle_spring 16 25 1.000000 600 10
+particle_spring 22 25 1.000000 600 10
+particle_spring 24 25 1.000000 600 10
+particle_spring 13 25 1.414214 600 10
+particle_spring 16 22 1.414214 600 10
+particle_spring 15 25 1.414214 600 10
+particle_spring 16 24 1.414214 600 10
+particle_spring 21 25 1.414214 600 10
+particle_spring 22 24 1.414214 600 10
+particle_spring 17 26 1.000000 600 10
+particle_spring 23 26 1.000000 600 10
+particle_spring 25 26 1.000000 600 10
+particle_spring 14 26 1.414214 600 10
+particle_spring 17 23 1.414214 600 10
+particle_spring 16 26 1.414214 600 10
+particle_spring 17 25 1.414214 600 10
+particle_spring 22 26 1.414214 600 10
+particle_spring 23 25 1.414214 600 10
+
+camera 21.3606 12.4815 38.6944  -0.313227 -0.444198 -0.839391  -0.104492 0.894622 -0.434433  0.25  0.0173205 173.205
+
+particle_gravity 0 -9 0
+
+# stairs
+box -1
+ -2 -7 -1 1 -5 3
+ box -1
+  1 -9 -1 4 -7 3
+  box -1
+   4 -11 -1 7 -9 3
+   box -1
+    7 -13 -1 10 -11 3
+    box -1
+     10 -15 -1 13 -13 3
+     
+     sphere -1
+      11.5 -12 1 1
