@@ -1,7 +1,8 @@
+
 #include "R3Aircraft.h"
+#include "particleview.h"
 #include "R3Scene.h"
 #include <math.h>
-
 
 
 // TODO: actually pitch and roll. Note, right now implementation just moves left right up and down
@@ -62,35 +63,39 @@ AssertValid(void)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
 {
-  // Draw every particle
-    glDisable(GL_LIGHTING);
-    glPointSize(5);
-    glBegin(GL_POINTS);
-    for (int i = 0; i < scene->NAircrafts(); i++) {
-      R3Aircraft *aircraft = scene->Aircraft(i);
-      glColor3d(1, 1, 1);
-      const R3Point& position = aircraft->T * R3Point(0, 0, 0);
-      glVertex3d(position[0], position[1], position[2]);
-    }
+  // Draw meshes under transformation
+  glEnable(GL_LIGHTING);
+  for (int i = 0; i < scene->NAircrafts(); i++) {
+    R3Aircraft *aircraft = scene->Aircraft(i);
+
+    glPushMatrix();
+    LoadMatrix(&aircraft->T);
+
+    // Load material
+    if (aircraft->material) LoadMaterial(aircraft->material);
+
+    // Draw shape
+    if (aircraft->mesh) aircraft->mesh->Draw();
+    else { fprintf(stderr, "problem drawing mesh!"); exit(1); }
+
+    glPopMatrix();
+  }
+
+  glEnd();
+
+
+//  WORKING! Draw every particle
+//  glDisable(GL_LIGHTING);
+//  glPointSize(5);
+//  glBegin(GL_POINTS);
+//  for (int i = 0; i < scene->NAircrafts(); i++) {
+//    R3Aircraft *aircraft = scene->Aircraft(i);
+//    glColor3d(1, 1, 1);
+//    const R3Point& position = aircraft->T * R3Point(0, 0, 0);
+//    glVertex3d(position[0], position[1], position[2]);
+//  }
 
 
 //    // Trails (implemented for one point)
@@ -133,6 +138,6 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
 //        glVertex3d(vec_before[i].X(), vec_before[i].Y(), vec_before[i].Z());
 //      }
 //    }
-
-    glEnd();
+//
+//    glEnd();
 }

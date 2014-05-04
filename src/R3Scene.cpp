@@ -754,6 +754,7 @@ Read(const char *filename, R3Node *node)
                              0, 0, 0, 1); // TODO: needs to be dependent on input position!!!!!!
       aircraft->mesh = mesh;
       aircraft->velocity = velocity;
+      aircraft->material = material;
 
       // Add particle to scene
       aircrafts.push_back(aircraft);

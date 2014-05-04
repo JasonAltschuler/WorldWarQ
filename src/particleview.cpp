@@ -6,6 +6,7 @@
 // INCLUDE FILES
 ////////////////////////////////////////////////////////////
 
+#include "particleview.h"
 #include "R3Aircraft.h"
 #include "R3/R3.h"
 #include "R3Scene.h"
@@ -542,7 +543,7 @@ void DrawScene(R3Scene *scene)
 }
 
 
-void DrawParticles(R3Scene *scene)
+void DrawParticlesAndAircrafts(R3Scene *scene)
 {
   // Get current time (in seconds) since start of execution
   double current_time = GetTime();
@@ -813,7 +814,7 @@ void GLUTRedraw(void)
   DrawLights(scene);
 
   // Draw particles
-  DrawParticles(scene);
+  DrawParticlesAndAircrafts(scene);
 
   // Draw particle sources 
   DrawParticleSources(scene);
