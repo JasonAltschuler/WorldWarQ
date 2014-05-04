@@ -6,6 +6,7 @@
 // INCLUDE FILES
 ////////////////////////////////////////////////////////////
 
+#include "R3Aircraft.h"
 #include "R3/R3.h"
 #include "R3Scene.h"
 #include "particle.h"
@@ -579,6 +580,9 @@ void DrawParticles(R3Scene *scene)
 
   // Render particles
   if (show_particles) RenderParticles(scene, current_time - time_lost_taking_videos, delta_time);
+  // TODO:
+  RenderAircrafts(scene, current_time - time_lost_taking_videos, delta_time);
+
 
   // Remember previous time
   previous_time = current_time;

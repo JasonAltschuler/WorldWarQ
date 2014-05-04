@@ -1,0 +1,9 @@
+Draw a point
+  Draw a mesh
+
+User input
+  View pitch/yaw
+  Vectors visible
+    Pitch/yaw correct
+
+Use position to create original transform

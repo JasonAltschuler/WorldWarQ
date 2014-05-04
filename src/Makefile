@@ -43,7 +43,7 @@ endif
 # on its corresponding .cpp), as are many of the compilation rules.
 #
 
-OBJS=particleview.o particle.o R3Scene.o
+OBJS=particleview.o particle.o R3Scene.o R3Aircraft.o
 LIBS=R3/libR3.a R2/libR2.a jpeg/libjpeg.a fglut/libfglut.a
 
 all: particleview

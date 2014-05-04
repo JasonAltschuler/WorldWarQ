@@ -5,7 +5,9 @@
 
 #define R3Rgb R2Pixel
 
+#include "R3Aircraft.h"
 #include <iostream>
+#include <vector>
 
 
 // Constant definitions
@@ -189,7 +191,6 @@ OtherParticle(const R3Particle * particle1)
    return particles[0];
 }
 
-
 // Scene graph definition
 
 struct R3Scene {
@@ -213,12 +214,15 @@ struct R3Scene {
   R3ParticleSink *ParticleSink(int k) const;
   int NParticleSprings(void) const;
   R3ParticleSpring *ParticleSpring(int k) const;
+  int NAircrafts(void) const;
+  R3Aircraft *Aircraft(int k) const;
 
   // I/O functions
   int Read(const char *filename, R3Node *root = NULL);
 
  public:
   R3Node *root;
+  vector<R3Aircraft *> aircrafts;
   vector<R3Particle *> particles;
   vector<R3ParticleSource *> particle_sources;
   vector<R3ParticleSink *> particle_sinks;
@@ -349,6 +353,23 @@ ParticleSpring(int k) const
   // Return kth particle spring
   return particle_springs[k];
 }
+
+inline int R3Scene::
+NAircrafts(void) const
+{
+  // Return number of particle springs
+  return aircrafts.size();
+}
+
+
+
+inline R3Aircraft *R3Scene::
+Aircraft(int k) const
+{
+  // Return kth particle spring
+  return aircrafts[k];
+}
+
 
 
 

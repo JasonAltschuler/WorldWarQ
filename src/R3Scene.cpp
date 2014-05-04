@@ -691,6 +691,105 @@ Read(const char *filename, R3Node *node)
       group_nodes[depth]->children.push_back(node);
       node->parent = group_nodes[depth];
     }
+
+    // TODO: add to writeup. Changed.
+    /* aircraft
+     *    mat_id
+     *    meshname
+     *    pos_x, pos_y, pos_z
+     *    vel_x, vel_, vel_z
+     */
+    else if (!strcmp(cmd, "aircraft")) {
+      // Read data
+
+      R3Vector position;
+      R3Vector velocity;
+
+      int m;
+      char meshname[256];
+      if (fscanf(fp, "%d%s%lf%lf%lf%lf%lf%lf", &m, meshname,
+          &position[0], &position[1], &position[2],
+          &velocity[0], &velocity[1], &velocity[2]) != 8) {
+        fprintf(stderr, "Unable to parse mesh command %d in file %s\n", command_number, filename);
+        return 0;
+      }
+
+      // Get material
+      R3Material *material = group_materials[depth];
+      if (m >= 0) {
+        if (m < (int) materials.size()) {
+          material = materials[m];
+        }
+        else {
+          fprintf(stderr, "Invalid material id at cone command %d in file %s\n", command_number, filename);
+          return 0;
+        }
+      }
+
+      // Get mesh filename
+      char buffer[2048];
+      strcpy(buffer, filename);
+      char *bufferp = strrchr(buffer, '/');
+      if (bufferp) *(bufferp+1) = '\0';
+      else buffer[0] = '\0';
+      strcat(buffer, meshname);
+
+      // Create mesh
+      R3Mesh *mesh = new R3Mesh();
+      if (!mesh) {
+        fprintf(stderr, "Unable to allocate mesh\n");
+        return 0;
+      }
+
+      // Read mesh file
+      if (!mesh->Read(buffer)) {
+        fprintf(stderr, "Unable to read mesh: %s\n", buffer);
+        return 0;
+      }
+
+      R3Aircraft *aircraft = new R3Aircraft();
+      aircraft->T = R3Matrix(1, 0, 0, position.X(),
+                             0, 1, 0, position.Y(),
+                             0, 0, 1, position.Z(),
+                             0, 0, 0, 1); // TODO: needs to be dependent on input position!!!!!!
+      aircraft->mesh = mesh;
+      aircraft->velocity = velocity;
+
+      // Add particle to scene
+      aircrafts.push_back(aircraft);
+
+      // Update scene bounding box
+      bbox.Union(mesh->bbox);
+
+
+
+
+      //
+//
+//      // Create shape
+//      R3Shape *shape = new R3Shape();
+//      shape->type = R3_MESH_SHAPE;
+//      shape->box = NULL;
+//      shape->sphere = NULL;
+//      shape->cylinder = NULL;
+//      shape->cone = NULL;
+//      shape->mesh = mesh;
+//      shape->segment = NULL;
+//
+//      // Create shape node
+//      R3Node *node = new R3Node();
+//      node->transformation = R3identity_matrix;
+//      node->material = material;
+//      node->shape = shape;
+//      node->bbox = mesh->bbox;
+//
+//      // Insert node
+//      group_nodes[depth]->bbox.Union(node->bbox);
+//      group_nodes[depth]->children.push_back(node);
+//      node->parent = group_nodes[depth];
+    }
+
+
     else if (!strcmp(cmd, "cone")) {
       // Read data
       int m;
