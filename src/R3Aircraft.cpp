@@ -7,7 +7,9 @@
 
 // TODO: make this a command-line input?
 // TODO: have different thetas for rolling left/right or up/down
-static const double THETA = 0.0174532925; // 1 degree in radians
+//static const double THETA = 0.0174532925; // 1 degree in radians
+static const double THETA = 0.000174532925; // 1 degree in radians
+
 static const double cos_theta = cos(THETA);
 static const double sin_theta = sin(THETA);
 
@@ -87,25 +89,25 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     {
       if (pitch_up)
       {
-        pitch_up = 0;
+//        pitch_up = 0;
         aircraft->PitchUp();
       }
 
       if (pitch_down)
       {
-        pitch_down = 0;
+//        pitch_down = 0;
         aircraft->PitchDown();
       }
 
       if (roll_left)
       {
-        roll_left = 0;
+//        roll_left = 0;
         aircraft->RollLeft();
       }
 
       if (roll_right)
       {
-        roll_right = 0;
+//        roll_right = 0;
         aircraft->RollRight();
       }
     }

@@ -1011,7 +1011,35 @@ void GLUTSpecial(int key, int x, int y)
 }
 
 
+// Added by Kyle on 5/4/14: this is how OpenGL handles keyboard "up", when a user releases a key.
+// Video games use this to have smooth controls when a user is holding a key.
+void GLUTKeyboardUp(unsigned char key, int x, int y)
+{
+    switch (key) {
+    case 'W':
+    case 'w':
+        pitch_down = 0;
+        break;
 
+    case 'S':
+    case 's':
+        pitch_up = 0;
+        break;
+
+    case 'A':
+    case 'a':
+        roll_left = 0;
+        break;
+
+    case 'D':
+    case 'd':
+        roll_right = 0;
+        break;
+    }
+}
+
+
+// Modified by Kyle on 5/4/14: I set W to be pitch_down and S to be pitch_up, because this is how flight simulators are typically controlled.
 void GLUTKeyboard(unsigned char key, int x, int y)
 {
   // Invert y coordinate
@@ -1062,12 +1090,12 @@ void GLUTKeyboard(unsigned char key, int x, int y)
     // TODO: add rest of pitch down, roll left, etc. Also add documentation
   case 'W':
   case 'w':
-    pitch_up = 1;
+    pitch_down = 1;
     break;
 
   case 'S':
   case 's':
-    pitch_down = 1;
+    pitch_up = 1;
     break;
 
   case 'A':
@@ -1172,6 +1200,7 @@ void GLUTInit(int *argc, char **argv)
   glutReshapeFunc(GLUTResize);
   glutDisplayFunc(GLUTRedraw);
   glutKeyboardFunc(GLUTKeyboard);
+  glutKeyboardUpFunc(GLUTKeyboardUp);
   glutSpecialFunc(GLUTSpecial);
   glutMouseFunc(GLUTMouse);
   glutMotionFunc(GLUTMotion);
