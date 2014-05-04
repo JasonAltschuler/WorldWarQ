@@ -54,6 +54,11 @@ static int save_video = 0;
 static int num_frames_to_record = -1; 
 static int quit = 0;
 
+// controls for the aircraft
+int pitch_up = 0;
+int pitch_down = 0;
+int roll_left = 0;
+int roll_right = 0;
 
 // GLUT variables 
 
@@ -575,13 +580,13 @@ void DrawParticlesAndAircrafts(R3Scene *scene)
 
   // Update particles
   UpdateParticles(scene, current_time - time_lost_taking_videos, delta_time, integration_type);
+  UpdateAircrafts(scene, current_time - time_lost_taking_videos, delta_time, integration_type);
 
-  // Generate new particles
-  GenerateParticles(scene, current_time - time_lost_taking_videos, delta_time);
+//  // Generate new particles
+//  GenerateParticles(scene, current_time - time_lost_taking_videos, delta_time);
 
   // Render particles
   if (show_particles) RenderParticles(scene, current_time - time_lost_taking_videos, delta_time);
-  // TODO:
   RenderAircrafts(scene, current_time - time_lost_taking_videos, delta_time);
 
 
@@ -1049,10 +1054,32 @@ void GLUTKeyboard(unsigned char key, int x, int y)
     show_particle_springs = !show_particle_springs;
     break;
 
-  case 'S':
-  case 's':
+  case 'O':
+  case 'o':
     show_particle_sources_and_sinks = !show_particle_sources_and_sinks;
     break;
+
+    // TODO: add rest of pitch down, roll left, etc. Also add documentation
+  case 'W':
+  case 'w':
+    pitch_up = 1;
+    break;
+
+  case 'S':
+  case 's':
+    pitch_down = 1;
+    break;
+
+  case 'A':
+  case 'a':
+    roll_left = 1;
+    break;
+
+  case 'D':
+  case 'd':
+    roll_right = 1;
+    break;
+
 
   case 'Q':
   case 'q':

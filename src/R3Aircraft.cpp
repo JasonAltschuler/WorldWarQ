@@ -5,39 +5,54 @@
 #include <math.h>
 
 
+// TODO: make this a command-line input?
+// TODO: have different thetas for rolling left/right or up/down
+static const double THETA = 0.0174532925; // 1 degree in radians
+static const double cos_theta = cos(THETA);
+static const double sin_theta = sin(THETA);
+
 // TODO: actually pitch and roll. Note, right now implementation just moves left right up and down
 void R3Aircraft::
 PitchUp(void)
 {
-  double THETA = 0.0174532925; // 1 degree in radians // TODO; modularize
-  double cos_theta = cos(THETA);
-  double sin_theta = sin(THETA);
   R3Matrix mat(cos_theta, 0, -sin_theta, 0,
                0, 1, 0, 0,
                sin_theta, 0, cos_theta, 0,
                0, 0, 0, 1);
-
-  // TODO; check if T *= mat or mat *= T;
-  T*=mat;
-
+  T *= mat;
   AssertValid();
 }
 
 void R3Aircraft::
 PitchDown(void)
 {
+  R3Matrix mat(cos_theta, 0, sin_theta, 0,
+               0, 1, 0, 0,
+               -sin_theta, 0, cos_theta, 0,
+               0, 0, 0, 1);
+  T *= mat;
   AssertValid();
 }
 
 void R3Aircraft::
 RollLeft(void)
 {
+  R3Matrix mat(1, 0, 0, 0,
+               0, cos_theta, sin_theta, 0,
+               0, -sin_theta, cos_theta, 0,
+               0, 0, 0, 1);
+  T *= mat;
   AssertValid();
 }
 
 void R3Aircraft::
 RollRight(void)
 {
+  R3Matrix mat(1, 0, 0, 0,
+               0, cos_theta, -sin_theta, 0,
+               0, sin_theta, cos_theta, 0,
+               0, 0, 0, 1);
+  T *= mat;
   AssertValid();
 }
 
@@ -58,7 +73,46 @@ AssertValid(void)
 }
 
 
+void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int integration_type)
+{
+  // TODO: actually take into account velocity
+  // TODO: actually take into account drag, gravity, etc.
+  // TODO: add collisions, as in UpdateParticles() in particle.cpp (already implemented there) -- if collision, just blow up!!
 
+  for (int i = 0; i < scene->NAircrafts(); i++)
+  {
+    R3Aircraft *aircraft = scene->Aircraft(i);
+    // The first aircraft is by convention the player-controlled aircraft
+    if (i == 0)
+    {
+      if (pitch_up)
+      {
+        pitch_up = 0;
+        aircraft->PitchUp();
+      }
+
+      if (pitch_down)
+      {
+        pitch_down = 0;
+        aircraft->PitchDown();
+      }
+
+      if (roll_left)
+      {
+        roll_left = 0;
+        aircraft->RollLeft();
+      }
+
+      if (roll_right)
+      {
+        roll_right = 0;
+        aircraft->RollRight();
+      }
+    }
+
+
+  }
+}
 
 
 
@@ -82,6 +136,39 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
 
     glPopMatrix();
   }
+
+
+
+  // TODO: delete later (only for visualization)
+  // Draw x, y, z for each aircraft
+  // Draw meshes under transformation
+  glDisable(GL_LIGHTING);
+  glLineWidth(3);
+  glBegin(GL_LINES);
+
+  R3Aircraft *player_aircraft = scene->Aircraft(0);
+  glPushMatrix();
+  LoadMatrix(&player_aircraft->T);
+
+  // draw x in RED
+  glColor3d(1, 0, 0);
+  glVertex3f(0, 0, 0);
+  glVertex3f(2, 0, 0);
+
+  // draw y in GREEN
+  glColor3d(0, 1, 0);
+  glVertex3f(0, 0, 0);
+  glVertex3f(0, 2, 0);
+
+  // draw z in BLUE
+  glColor3d(0, 0, 1);
+  glVertex3f(0, 0, 0);
+  glVertex3f(0, 0, 2);
+
+  glPopMatrix();
+
+
+
 
   glEnd();
 
