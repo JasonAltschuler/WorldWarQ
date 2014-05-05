@@ -59,6 +59,8 @@ int pitch_up = 0;
 int pitch_down = 0;
 int roll_left = 0;
 int roll_right = 0;
+int thrust_forward = 0;
+int brake_backward = 0;
 
 // GLUT variables 
 
@@ -1035,6 +1037,16 @@ void GLUTKeyboardUp(unsigned char key, int x, int y)
     case 'd':
         roll_right = 0;
         break;
+
+    case 'J':
+    case 'j':
+      thrust_forward = 0;
+      break;
+
+    case 'K':
+    case 'k':
+      brake_backward = 0;
+      break;
     }
 }
 
@@ -1106,6 +1118,16 @@ void GLUTKeyboard(unsigned char key, int x, int y)
   case 'D':
   case 'd':
     roll_right = 1;
+    break;
+
+  case 'J':
+  case 'j':
+    thrust_forward = 1;
+    break;
+
+  case 'K':
+  case 'k':
+    brake_backward = 1;
     break;
 
 

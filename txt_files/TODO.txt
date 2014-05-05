@@ -3,9 +3,15 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 /// =================== TODO ================ ///
 
-Add controls for thrust and brake (-thrust)
 
-Make camera
+
+Make camera on top of plane
+Make a thing to toggle whether camera from top or from normal camera viewpoint (1, 2, 3, 4 to toggle)
+
+
+Add trails (hide particle source, then put out particles with lifetime 1 second or something and no velocity) with trails
+
+Add projectiles (bullets)
 
 
 
@@ -14,9 +20,10 @@ Make camera
 /// =================== completed tasks below ================ ///
 
 // Done on Sunday, the 4th
-Create mesh (use raw meshview --> rotate and scale (1.75) and center it to 0, 0, 0). 
+Add controls for thrust and brake (-thrust)
+Update aircraft's velocity with drag and thrust (and added to scene file specification) (and terminal velocity)
 Figure out why the vectors are still at 0, 0, 0 (relevant for visualization)
-Update aircraft's velocity with drag and thrust (and added to scene file specification)
+Create mesh (use raw meshview --> rotate and scale (1.75) and center it to 0, 0, 0). 
 
 
 // Done on Saturday, the 3rd

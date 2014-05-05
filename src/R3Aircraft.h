@@ -18,6 +18,7 @@ struct R3Aircraft {
   double mass;
   double drag;
   double thrust_magnitude;
+  double max_thrust;
 
   // TODO: do we need these?
 //  double mass;
@@ -32,6 +33,8 @@ struct R3Aircraft {
   void PitchDown(void);
   void RollLeft(void);
   void RollRight(void);
+  void ThrustForward(double delta_time);
+  void BrakeBackward(double delta_time);
 
   void AssertValid(void);
 };
@@ -44,7 +47,8 @@ R3Aircraft(void) :
   material(NULL),
   mass(-1),
   drag(-1),
-  thrust_magnitude(-1)
+  thrust_magnitude(-1),
+  max_thrust(-1)
 {
 }
 

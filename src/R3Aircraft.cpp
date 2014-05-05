@@ -5,22 +5,40 @@
 #include <math.h>
 
 
-// TODO: make this a command-line input?
+// TODO: make THETA and SEC_TO_MAX_THRUST a command-line input?
 // TODO: have different thetas for rolling left/right or up/down
 //static const double THETA = 0.00174532925; // .1 degree in radians
-static const double THETA = 0.0174532925; // .1 degree in radians
+static const double THETA = 0.0174532925; // 1 degree in radians
+static const double COS_THETA = cos(THETA);
+static const double SIN_THETA = sin(THETA);
+
+static const double SECONDS_TO_MAX_THRUST = 2.0; // TODO: play around with this
 
 
-static const double cos_theta = cos(THETA);
-static const double sin_theta = sin(THETA);
 
-// TODO: actually pitch and roll. Note, right now implementation just moves left right up and down
+void R3Aircraft::
+ThrustForward(double delta_time)
+{
+  double delta_thrust = max_thrust * delta_time / SECONDS_TO_MAX_THRUST;
+  thrust_magnitude = min(thrust_magnitude + delta_thrust, max_thrust); // always <= max_thrust
+  AssertValid();
+}
+
+void R3Aircraft::
+BrakeBackward(double delta_time)
+{
+  double delta_thrust = max_thrust * delta_time / SECONDS_TO_MAX_THRUST;
+  thrust_magnitude = max(thrust_magnitude - delta_thrust, 0.0); // always non-negative
+  AssertValid();
+}
+
+
 void R3Aircraft::
 PitchUp(void)
 {
-  R3Matrix mat(cos_theta, 0, -sin_theta, 0,
+  R3Matrix mat(COS_THETA, 0, -SIN_THETA, 0,
                0, 1, 0, 0,
-               sin_theta, 0, cos_theta, 0,
+               SIN_THETA, 0, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
   AssertValid();
@@ -29,9 +47,9 @@ PitchUp(void)
 void R3Aircraft::
 PitchDown(void)
 {
-  R3Matrix mat(cos_theta, 0, sin_theta, 0,
+  R3Matrix mat(COS_THETA, 0, SIN_THETA, 0,
                0, 1, 0, 0,
-               -sin_theta, 0, cos_theta, 0,
+               -SIN_THETA, 0, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
   AssertValid();
@@ -41,19 +59,21 @@ void R3Aircraft::
 RollLeft(void)
 {
   R3Matrix mat(1, 0, 0, 0,
-               0, cos_theta, sin_theta, 0,
-               0, -sin_theta, cos_theta, 0,
+               0, COS_THETA, SIN_THETA, 0,
+               0, -SIN_THETA, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
   AssertValid();
 }
 
+
+
 void R3Aircraft::
 RollRight(void)
 {
   R3Matrix mat(1, 0, 0, 0,
-               0, cos_theta, -sin_theta, 0,
-               0, sin_theta, cos_theta, 0,
+               0, COS_THETA, -SIN_THETA, 0,
+               0, SIN_THETA, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
   AssertValid();
@@ -67,6 +87,7 @@ AssertValid(void)
   assert(mass >= 0);
   assert(drag >= 0);
   assert(thrust_magnitude >= 0);
+  assert(max_thrust >= 0);
 //  assert(right.IsNormalized());
 //  assert(up.IsNormalized());
 //  assert(forward.IsNormalized());
@@ -100,6 +121,10 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
         aircraft->RollLeft();
       if (roll_right)
         aircraft->RollRight();
+      if (thrust_forward)
+        aircraft->ThrustForward(delta_time);
+      if (brake_backward)
+        aircraft->BrakeBackward(delta_time);
     }
 
     // UPDATE POSITION with velocity (simple Euler integration)
