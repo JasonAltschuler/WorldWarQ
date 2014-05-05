@@ -3,6 +3,9 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 /// =================== TODO ================ ///
 
+Add controls for thrust and brake (-thrust)
+
+Make camera
 
 
 
@@ -13,6 +16,8 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 // Done on Sunday, the 4th
 Create mesh (use raw meshview --> rotate and scale (1.75) and center it to 0, 0, 0). 
 Figure out why the vectors are still at 0, 0, 0 (relevant for visualization)
+Update aircraft's velocity with drag and thrust (and added to scene file specification)
+
 
 // Done on Saturday, the 3rd
 Draw a point

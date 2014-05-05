@@ -7,7 +7,9 @@
 
 // TODO: make this a command-line input?
 // TODO: have different thetas for rolling left/right or up/down
-static const double THETA = 0.00174532925; // .1 degree in radians
+//static const double THETA = 0.00174532925; // .1 degree in radians
+static const double THETA = 0.0174532925; // .1 degree in radians
+
 
 static const double cos_theta = cos(THETA);
 static const double sin_theta = sin(THETA);
@@ -61,6 +63,10 @@ void R3Aircraft::
 AssertValid(void)
 {
   assert(mesh != NULL);
+  assert(velocity.X() >= 0);
+  assert(mass >= 0);
+  assert(drag >= 0);
+  assert(thrust_magnitude >= 0);
 //  assert(right.IsNormalized());
 //  assert(up.IsNormalized());
 //  assert(forward.IsNormalized());
@@ -76,43 +82,55 @@ AssertValid(void)
 
 void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int integration_type)
 {
-  // TODO: actually take into account velocity
   // TODO: actually take into account drag, gravity, etc.
   // TODO: add collisions, as in UpdateParticles() in particle.cpp (already implemented there) -- if collision, just blow up!!
 
   for (int i = 0; i < scene->NAircrafts(); i++)
   {
     R3Aircraft *aircraft = scene->Aircraft(i);
-    // The first aircraft is by convention the player-controlled aircraft
+
+    // PLAYER CONTROLS for the first aircraft
     if (i == 0)
     {
       if (pitch_up)
-      {
-//        pitch_up = 0;
         aircraft->PitchUp();
-      }
-
       if (pitch_down)
-      {
-//        pitch_down = 0;
         aircraft->PitchDown();
-      }
-
       if (roll_left)
-      {
-//        roll_left = 0;
         aircraft->RollLeft();
-      }
-
       if (roll_right)
-      {
-//        roll_right = 0;
         aircraft->RollRight();
-      }
     }
 
+    // UPDATE POSITION with velocity (simple Euler integration)
+    R3Vector change_position = aircraft->velocity * delta_time;
+    aircraft->T.Translate(change_position);
 
+    // UPDATE VELOCITY with acceleration (simple Euler integration) // TODO: combine into 1 line
+    R3Vector net_force(0, 0, 0);
+
+    // account for thrust
+    R3Vector thrust(aircraft->thrust_magnitude, 0, 0);
+    net_force += thrust;
+
+    // account for drag
+    R3Vector drag = -aircraft->velocity * aircraft->drag;
+    net_force += drag;
+
+    R3Vector acceleration = net_force / aircraft->mass;
+    aircraft->velocity += acceleration * delta_time;
+
+    // TODO: delete later
+    cout << "velocity: " << aircraft->velocity.X() << endl;
+    if ((acceleration.X() / delta_time) < 0.01)
+      cout << "TERMINAL!" << endl;
+
+
+    // quick assert to make sure we didn't make any no-no's
+    aircraft->AssertValid();
   }
+
+
 }
 
 

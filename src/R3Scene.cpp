@@ -698,18 +698,23 @@ Read(const char *filename, R3Node *node)
      *    meshname
      *    pos_x, pos_y, pos_z
      *    vel_x, vel_, vel_z
+     *    mass, drag, thrust_magnitude
      */
     else if (!strcmp(cmd, "aircraft")) {
       // Read data
 
       R3Vector position;
       R3Vector velocity;
+      double mass = -1;
+      double drag = -1;
+      double thrust_magnitude = -1;
 
       int m;
       char meshname[256];
-      if (fscanf(fp, "%d%s%lf%lf%lf%lf%lf%lf", &m, meshname,
+      if (fscanf(fp, "%d%s%lf%lf%lf%lf%lf%lf%lf%lf%lf", &m, meshname,
           &position[0], &position[1], &position[2],
-          &velocity[0], &velocity[1], &velocity[2]) != 8) {
+          &velocity[0], &velocity[1], &velocity[2],
+          &mass, &drag, &thrust_magnitude)!= 11) {
         fprintf(stderr, "Unable to parse mesh command %d in file %s\n", command_number, filename);
         return 0;
       }
@@ -755,6 +760,9 @@ Read(const char *filename, R3Node *node)
       aircraft->mesh = mesh;
       aircraft->velocity = velocity;
       aircraft->material = material;
+      aircraft->mass = mass;
+      aircraft->drag = drag;
+      aircraft->thrust_magnitude = thrust_magnitude;
 
       // Add particle to scene
       aircrafts.push_back(aircraft);

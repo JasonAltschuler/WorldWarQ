@@ -15,6 +15,9 @@ struct R3Aircraft {
   R3Mesh *mesh;
   R3Material *material;
 
+  double mass;
+  double drag;
+  double thrust_magnitude;
 
   // TODO: do we need these?
 //  double mass;
@@ -38,7 +41,10 @@ R3Aircraft(void) :
   velocity(R3zero_vector),
   T(R3identity_matrix),
   mesh(NULL),
-  material(NULL)
+  material(NULL),
+  mass(-1),
+  drag(-1),
+  thrust_magnitude(-1)
 {
 }
 
