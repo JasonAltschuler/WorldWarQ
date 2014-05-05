@@ -7,8 +7,7 @@
 
 // TODO: make this a command-line input?
 // TODO: have different thetas for rolling left/right or up/down
-//static const double THETA = 0.0174532925; // 1 degree in radians
-static const double THETA = 0.000174532925; // 1 degree in radians
+static const double THETA = 0.00174532925; // .1 degree in radians
 
 static const double cos_theta = cos(THETA);
 static const double sin_theta = sin(THETA);
@@ -149,26 +148,47 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
   glBegin(GL_LINES);
 
   R3Aircraft *player_aircraft = scene->Aircraft(0);
-  glPushMatrix();
-  LoadMatrix(&player_aircraft->T);
+
+  R3Vector origin(0, 0, 0);
+  R3Vector x_vec(1, 0, 0);
+  R3Vector y_vec(0, 1, 0);
+  R3Vector z_vec(0, 0, 01);
+  origin.Transform(player_aircraft->T);
+  x_vec.Transform(player_aircraft->T);
+  y_vec.Transform(player_aircraft->T);
+  z_vec.Transform(player_aircraft->T);
+
+  origin = R3Vector(origin.X() + player_aircraft->T[0][3],
+                    origin.Y() + player_aircraft->T[1][3],
+                    origin.Z() + player_aircraft->T[2][3]);
+
+  x_vec = R3Vector(x_vec.X() + player_aircraft->T[0][3],
+                   x_vec.Y() + player_aircraft->T[1][3],
+                   x_vec.Z() + player_aircraft->T[2][3]);
+
+  y_vec = R3Vector(y_vec.X() + player_aircraft->T[0][3],
+                   y_vec.Y() + player_aircraft->T[1][3],
+                   y_vec.Z() + player_aircraft->T[2][3]);
+
+  z_vec = R3Vector(z_vec.X() + player_aircraft->T[0][3],
+                   z_vec.Y() + player_aircraft->T[1][3],
+                   z_vec.Z() + player_aircraft->T[2][3]);
+
 
   // draw x in RED
   glColor3d(1, 0, 0);
-  glVertex3f(0, 0, 0);
-  glVertex3f(2, 0, 0);
+  glVertex3f(origin.X(), origin.Y(), origin.Z());
+  glVertex3f(x_vec.X(), x_vec.Y(), x_vec.Z());
 
   // draw y in GREEN
   glColor3d(0, 1, 0);
-  glVertex3f(0, 0, 0);
-  glVertex3f(0, 2, 0);
+  glVertex3f(origin.X(), origin.Y(), origin.Z());
+  glVertex3f(y_vec.X(), y_vec.Y(), y_vec.Z());
 
   // draw z in BLUE
   glColor3d(0, 0, 1);
-  glVertex3f(0, 0, 0);
-  glVertex3f(0, 0, 2);
-
-  glPopMatrix();
-
+  glVertex3f(origin.X(), origin.Y(), origin.Z());
+  glVertex3f(z_vec.X(), z_vec.Y(), z_vec.Z());
 
 
 

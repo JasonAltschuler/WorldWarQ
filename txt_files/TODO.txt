@@ -1,3 +1,20 @@
+NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SECOND CATEGORY!
+
+
+/// =================== TODO ================ ///
+
+
+
+
+
+
+/// =================== completed tasks below ================ ///
+
+// Done on Sunday, the 4th
+Create mesh (use raw meshview --> rotate and scale (1.75) and center it to 0, 0, 0). 
+Figure out why the vectors are still at 0, 0, 0 (relevant for visualization)
+
+// Done on Saturday, the 3rd
 Draw a point
   Draw a mesh
 

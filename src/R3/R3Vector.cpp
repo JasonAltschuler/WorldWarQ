@@ -390,6 +390,13 @@ Print(FILE *fp) const
   fprintf(fp, "%g %g %g", v[0], v[1], v[2]);
 }
 
+void R3Vector::
+PrintStdout() const
+{
+  // Print vector coordinates
+  cout << v[0] << " " << v[1] << " " << v[2] << endl;
+}
+
 
 
 

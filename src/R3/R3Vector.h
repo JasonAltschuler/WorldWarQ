@@ -1,5 +1,5 @@
 // Include file for the R3 vector class 
-
+#include <iostream>
 
 
 // Class definition 
@@ -72,6 +72,8 @@ class R3Vector {
 
   // Output functions
   void Print(FILE *fp = stdout) const;
+  void PrintStdout() const;
+
 
  private:
   double v[3];
