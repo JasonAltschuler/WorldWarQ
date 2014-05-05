@@ -29,10 +29,10 @@ struct R3Aircraft {
 
 
   // methods
-  void PitchUp(void);
-  void PitchDown(void);
-  void RollLeft(void);
-  void RollRight(void);
+  void PitchUp(double delta_time);
+  void PitchDown(double delta_time);
+  void RollLeft(double delta_time);
+  void RollRight(double delta_time);
   void ThrustForward(double delta_time);
   void BrakeBackward(double delta_time);
 

@@ -284,6 +284,8 @@ void LoadCamera(R3Camera *camera)
   glLoadIdentity();
   gluPerspective(2*180.0*camera->yfov/M_PI, (GLdouble) GLUTwindow_width /(GLdouble) GLUTwindow_height, 0.01, 10000);
 
+
+  // TODO: come back to here
   // Set camera transformation
   R3Vector t = -(camera->towards);
   R3Vector& u = camera->up;
@@ -293,6 +295,8 @@ void LoadCamera(R3Camera *camera)
   glLoadIdentity();
   glMultMatrixd(camera_matrix);
   glTranslated(-(camera->eye[0]), -(camera->eye[1]), -(camera->eye[2]));
+//  glTranslated((camera->eye[0]), (camera->eye[1]), (camera->eye[2]));
+
 }
 
 

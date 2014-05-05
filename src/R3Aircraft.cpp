@@ -8,9 +8,7 @@
 // TODO: make THETA and SEC_TO_MAX_THRUST a command-line input?
 // TODO: have different thetas for rolling left/right or up/down
 //static const double THETA = 0.00174532925; // .1 degree in radians
-static const double THETA = 0.0174532925; // 1 degree in radians
-static const double COS_THETA = cos(THETA);
-static const double SIN_THETA = sin(THETA);
+static const double THETA = 0.872664625; // 1 degree in radians
 
 static const double SECONDS_TO_MAX_THRUST = 2.0; // TODO: play around with this
 
@@ -34,8 +32,11 @@ BrakeBackward(double delta_time)
 
 
 void R3Aircraft::
-PitchUp(void)
+PitchUp(double delta_time)
 {
+  const double COS_THETA = cos(THETA * delta_time);
+  const double SIN_THETA = sin(THETA * delta_time);
+
   R3Matrix mat(COS_THETA, 0, -SIN_THETA, 0,
                0, 1, 0, 0,
                SIN_THETA, 0, COS_THETA, 0,
@@ -45,8 +46,11 @@ PitchUp(void)
 }
 
 void R3Aircraft::
-PitchDown(void)
+PitchDown(double delta_time)
 {
+  const double COS_THETA = cos(THETA * delta_time);
+  const double SIN_THETA = sin(THETA * delta_time);
+
   R3Matrix mat(COS_THETA, 0, SIN_THETA, 0,
                0, 1, 0, 0,
                -SIN_THETA, 0, COS_THETA, 0,
@@ -56,8 +60,11 @@ PitchDown(void)
 }
 
 void R3Aircraft::
-RollLeft(void)
+RollLeft(double delta_time)
 {
+  const double COS_THETA = cos(THETA * delta_time);
+  const double SIN_THETA = sin(THETA * delta_time);
+
   R3Matrix mat(1, 0, 0, 0,
                0, COS_THETA, SIN_THETA, 0,
                0, -SIN_THETA, COS_THETA, 0,
@@ -69,8 +76,11 @@ RollLeft(void)
 
 
 void R3Aircraft::
-RollRight(void)
+RollRight(double delta_time)
 {
+  const double COS_THETA = cos(THETA * delta_time);
+  const double SIN_THETA = sin(THETA * delta_time);
+
   R3Matrix mat(1, 0, 0, 0,
                0, COS_THETA, -SIN_THETA, 0,
                0, SIN_THETA, COS_THETA, 0,
@@ -114,13 +124,13 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     if (i == 0)
     {
       if (pitch_up)
-        aircraft->PitchUp();
+        aircraft->PitchUp(delta_time);
       if (pitch_down)
-        aircraft->PitchDown();
+        aircraft->PitchDown(delta_time);
       if (roll_left)
-        aircraft->RollLeft();
+        aircraft->RollLeft(delta_time);
       if (roll_right)
-        aircraft->RollRight();
+        aircraft->RollRight(delta_time);
       if (thrust_forward)
         aircraft->ThrustForward(delta_time);
       if (brake_backward)

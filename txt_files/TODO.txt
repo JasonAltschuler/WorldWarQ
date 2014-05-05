@@ -9,9 +9,16 @@ Make camera on top of plane
 Make a thing to toggle whether camera from top or from normal camera viewpoint (1, 2, 3, 4 to toggle)
 
 
-Add trails (hide particle source, then put out particles with lifetime 1 second or something and no velocity) with trails
+Add trails (hide particle source, then put out particles with lifetime 1 second or something
+    and no velocity) with trails
 
 Add projectiles (bullets)
+
+
+
+-------
+
+Landscape auto-creation and texture mapping
 
 
 
