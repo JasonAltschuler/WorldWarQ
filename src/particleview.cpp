@@ -53,6 +53,7 @@ static int save_image = 0;
 static int save_video = 0;
 static int num_frames_to_record = -1; 
 static int quit = 0;
+static int camera_view = 1; // defaulted to free view
 
 // controls for the aircraft
 int pitch_up = 0;
@@ -61,6 +62,8 @@ int roll_left = 0;
 int roll_right = 0;
 int thrust_forward = 0;
 int brake_backward = 0;
+
+int hard_mode = 0; // default to easy
 
 // GLUT variables 
 
@@ -285,8 +288,7 @@ void LoadCamera(R3Camera *camera)
   gluPerspective(2*180.0*camera->yfov/M_PI, (GLdouble) GLUTwindow_width /(GLdouble) GLUTwindow_height, 0.01, 10000);
 
 
-  // TODO: come back to here
-  // Set camera transformation
+
   R3Vector t = -(camera->towards);
   R3Vector& u = camera->up;
   R3Vector& r = camera->right;
@@ -295,8 +297,42 @@ void LoadCamera(R3Camera *camera)
   glLoadIdentity();
   glMultMatrixd(camera_matrix);
   glTranslated(-(camera->eye[0]), -(camera->eye[1]), -(camera->eye[2]));
-//  glTranslated((camera->eye[0]), (camera->eye[1]), (camera->eye[2]));
 
+  // TODO: asdlkfjasdf
+//
+//  // Set camera transformation
+//  switch (camera_view)
+//  {
+//  case 1: // free view (default view if no toggle)
+//
+//    R3Vector t = -(camera->towards);
+//    R3Vector& u = camera->up;
+//    R3Vector& r = camera->right;
+//    GLdouble camera_matrix[16] = { r[0], u[0], t[0], 0, r[1], u[1], t[1], 0, r[2], u[2], t[2], 0, 0, 0, 0, 1 };
+//    glMatrixMode(GL_MODELVIEW);
+//    glLoadIdentity();
+//    glMultMatrixd(camera_matrix);
+//    glTranslated(-(camera->eye[0]), -(camera->eye[1]), -(camera->eye[2]));
+//    break;
+//
+//  case 2: // 3rd person (above the plane looking forward)
+//    R3Vector t = -(camera->towards);
+//    R3Vector& u = camera->up;
+//    R3Vector& r = camera->right;
+//    GLdouble camera_matrix[16] = { r[0], u[0], t[0], 0, r[1], u[1], t[1], 0, r[2], u[2], t[2], 0, 0, 0, 0, 1 };
+//    glMatrixMode(GL_MODELVIEW);
+//    glLoadIdentity();
+//    glMultMatrixd(camera_matrix);
+//    glTranslated(-(camera->eye[0]), -(camera->eye[1]), -(camera->eye[2]));
+//    break;
+//
+//  case 3:
+//    break;
+//
+//  default:
+//    fprintf(stderr, "Invalid view");
+//    exit(1);
+//  }
 }
 
 
@@ -1103,7 +1139,7 @@ void GLUTKeyboard(unsigned char key, int x, int y)
     show_particle_sources_and_sinks = !show_particle_sources_and_sinks;
     break;
 
-    // TODO: add rest of pitch down, roll left, etc. Also add documentation
+    // TODO: Add documentation
   case 'W':
   case 'w':
     pitch_down = 1;
@@ -1134,6 +1170,22 @@ void GLUTKeyboard(unsigned char key, int x, int y)
     brake_backward = 1;
     break;
 
+  case 'H':
+  case 'h':
+    hard_mode = !hard_mode;
+    break;
+
+  case '1':
+     camera_view = 1;
+     break;
+
+  case '2':
+     camera_view = 2;
+     break;
+
+  case '3':
+     camera_view = 3;
+     break;
 
   case 'Q':
   case 'q':

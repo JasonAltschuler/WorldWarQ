@@ -3,7 +3,7 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 /// =================== TODO ================ ///
 
-
+capture video for realistic and non realistic thrust/turn (easy vs. hard mode). perhaps after trails
 
 Make camera on top of plane
 Make a thing to toggle whether camera from top or from normal camera viewpoint (1, 2, 3, 4 to toggle)
@@ -25,6 +25,10 @@ Landscape auto-creation and texture mapping
 
 
 /// =================== completed tasks below ================ ///
+
+// Done on Monday, the 5th
+Made turning more realistic
+
 
 // Done on Sunday, the 4th
 Add controls for thrust and brake (-thrust)

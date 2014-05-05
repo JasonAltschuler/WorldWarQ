@@ -28,13 +28,16 @@ struct R3Aircraft {
 //  double lifetime;
 
 
-  // methods
+  // move the plane
   void PitchUp(double delta_time);
   void PitchDown(double delta_time);
   void RollLeft(double delta_time);
   void RollRight(double delta_time);
   void ThrustForward(double delta_time);
   void BrakeBackward(double delta_time);
+
+  // get X, Y, and Z vectors (in modeling coordinates) when transformed to world coordinates
+  R3Vector Modeling_To_World(R3Vector vector_modeling_coordinates);
 
   void AssertValid(void);
 };
@@ -52,6 +55,16 @@ R3Aircraft(void) :
 {
 }
 
+inline R3Vector R3Aircraft::
+Modeling_To_World(R3Vector vector_modeling_coordinates)
+{
+  R3Vector vector_world_coordinates(vector_modeling_coordinates);
+  vector_world_coordinates.Transform(T);
+  vector_world_coordinates[0] += T[0][3];
+  vector_world_coordinates[1] += T[1][3];
+  vector_world_coordinates[2] += T[2][3];
+  return vector_world_coordinates;
+}
 
 
 #endif /* R3AIRCRAFT_H_ */

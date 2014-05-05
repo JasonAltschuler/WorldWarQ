@@ -14,6 +14,9 @@ extern int roll_right;
 extern int thrust_forward;
 extern int brake_backward;
 
+// mode for hard or not
+extern int hard_mode;
+
 void LoadMatrix(R3Matrix *matrix);
 void LoadMaterial(R3Material *material);
 void LoadLights(R3Scene *scene);

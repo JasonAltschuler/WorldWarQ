@@ -42,6 +42,8 @@ PitchUp(double delta_time)
                SIN_THETA, 0, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
+  if (hard_mode == 1) // makes aircraft velocity more realastic. see writeup for more details
+    velocity.Transform(mat.Transpose());
   AssertValid();
 }
 
@@ -56,6 +58,8 @@ PitchDown(double delta_time)
                -SIN_THETA, 0, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
+  if (hard_mode == 1) // makes aircraft velocity more realastic. see writeup for more details
+    velocity.Transform(mat.Transpose());
   AssertValid();
 }
 
@@ -70,6 +74,8 @@ RollLeft(double delta_time)
                0, -SIN_THETA, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
+  if (hard_mode == 1) // makes aircraft velocity more realastic. see writeup for more details
+    velocity.Transform(mat.Transpose());
   AssertValid();
 }
 
@@ -86,6 +92,8 @@ RollRight(double delta_time)
                0, SIN_THETA, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
+  if (hard_mode == 1) // makes aircraft velocity more realastic. see writeup for more details
+    velocity.Transform(mat.Transpose());
   AssertValid();
 }
 
@@ -93,21 +101,13 @@ void R3Aircraft::
 AssertValid(void)
 {
   assert(mesh != NULL);
-  assert(velocity.X() >= 0);
   assert(mass >= 0);
   assert(drag >= 0);
   assert(thrust_magnitude >= 0);
   assert(max_thrust >= 0);
-//  assert(right.IsNormalized());
-//  assert(up.IsNormalized());
-//  assert(forward.IsNormalized());
-//
-//  // assert right cross up == -forward --> right x up + forward = 0;
-//  R3Vector right_copy;
-//  right_copy.Cross(up);
-//  assert(abs(right_copy.X() + forward.X()) < 0.0001);
-//  assert(abs(right_copy.Y() + forward.Y()) < 0.0001);
-//  assert(abs(right_copy.Z() + forward.Z()) < 0.0001);
+
+  if (hard_mode == 0) // invariant only holds on easy mode (see writeup for more details)
+    assert(velocity.X() >= 0);
 }
 
 
@@ -171,6 +171,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
 
 
 
+
 void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
 {
   // Draw meshes under transformation
@@ -201,32 +202,10 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
   glBegin(GL_LINES);
 
   R3Aircraft *player_aircraft = scene->Aircraft(0);
-
-  R3Vector origin(0, 0, 0);
-  R3Vector x_vec(1, 0, 0);
-  R3Vector y_vec(0, 1, 0);
-  R3Vector z_vec(0, 0, 01);
-  origin.Transform(player_aircraft->T);
-  x_vec.Transform(player_aircraft->T);
-  y_vec.Transform(player_aircraft->T);
-  z_vec.Transform(player_aircraft->T);
-
-  origin = R3Vector(origin.X() + player_aircraft->T[0][3],
-                    origin.Y() + player_aircraft->T[1][3],
-                    origin.Z() + player_aircraft->T[2][3]);
-
-  x_vec = R3Vector(x_vec.X() + player_aircraft->T[0][3],
-                   x_vec.Y() + player_aircraft->T[1][3],
-                   x_vec.Z() + player_aircraft->T[2][3]);
-
-  y_vec = R3Vector(y_vec.X() + player_aircraft->T[0][3],
-                   y_vec.Y() + player_aircraft->T[1][3],
-                   y_vec.Z() + player_aircraft->T[2][3]);
-
-  z_vec = R3Vector(z_vec.X() + player_aircraft->T[0][3],
-                   z_vec.Y() + player_aircraft->T[1][3],
-                   z_vec.Z() + player_aircraft->T[2][3]);
-
+  R3Vector origin = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0));
+  R3Vector x_vec = player_aircraft->Modeling_To_World(R3Vector(1, 0, 0));
+  R3Vector y_vec = player_aircraft->Modeling_To_World(R3Vector(0, 1, 0));
+  R3Vector z_vec = player_aircraft->Modeling_To_World(R3Vector(0, 0, 01));
 
   // draw x in RED
   glColor3d(1, 0, 0);
