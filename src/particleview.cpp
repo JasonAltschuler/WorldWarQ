@@ -360,7 +360,7 @@ void LoadCamera(R3Camera *camera)
 
   }
 
-  // 3rd person (above the plane looking forward)
+  // 3rd person pov (above the plane looking forward)
   else if (camera_view == 2)
   {
     R3Aircraft * player_aircraft = scene->aircrafts[0];
@@ -419,6 +419,46 @@ void LoadCamera(R3Camera *camera)
     glTranslated(-(camera_position[0]), -(camera_position[1]), -(camera_position[2]));
   }
 
+  // third person, static angle
+  else if (camera_view == 4)
+   {
+     R3Aircraft * player_aircraft = scene->aircrafts[0];
+     double backwards = -1*player_aircraft->velocity.Length()/4 + -5;
+
+     R3Vector camera_position = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0)); // centroid of aircraft
+
+     R3Vector x_direction = R3Vector(1, 0, 0);
+     x_direction.Transform(player_aircraft->T);
+
+     R3Plane xy_plane(R3Vector(0, 0, 1), 0);
+     x_direction.Project(xy_plane);
+     x_direction.Normalize();
+
+     camera_position += backwards * x_direction;
+     camera_position += R3Vector(0, 0, 1);
+
+     R3Vector t(-1, 0, 0);
+     t.Transform(player_aircraft->T);
+     t.Normalize();
+     R3Vector u (0, 0, 1);
+     R3Vector r = -t;
+     r.Cross(u);
+     r.Normalize();
+
+     assert(!t.IsZero());
+     assert(!u.IsZero());
+     assert(!r.IsZero());
+
+     assert(t.IsNormalized());
+     assert(u.IsNormalized());
+     assert(r.IsNormalized());
+
+     GLdouble camera_matrix[16] = { r[0], u[0], t[0], 0, r[1], u[1], t[1], 0, r[2], u[2], t[2], 0, 0, 0, 0, 1 };
+     glMatrixMode(GL_MODELVIEW);
+     glLoadIdentity();
+     glMultMatrixd(camera_matrix);
+     glTranslated(-(camera_position[0]), -(camera_position[1]), -(camera_position[2]));
+   }
   else {
     fprintf(stderr, "Invalid view");
     exit(1);
@@ -1275,6 +1315,10 @@ void GLUTKeyboard(unsigned char key, int x, int y)
 
   case '3':
      camera_view = 3;
+     break;
+
+  case '4':
+     camera_view = 4;
      break;
 
   case 'Q':

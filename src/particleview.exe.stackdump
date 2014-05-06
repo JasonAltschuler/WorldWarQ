@@ -1,0 +1,3 @@
+Stack trace:
+Frame     Function  Args
+assertion "r.IsNormalized()" failed: file "particleview.cpp", line 457, function: void LoadCamera(R3Camera*)
