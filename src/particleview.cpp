@@ -53,7 +53,7 @@ static int save_image = 0;
 static int save_video = 0;
 static int num_frames_to_record = -1; 
 static int quit = 0;
-static int camera_view = 1; // defaulted to free view
+static int camera_view = 2; // defaulted to free view
 
 // controls for the aircraft
 int pitch_up = 0;
@@ -356,8 +356,6 @@ void LoadCamera(R3Camera *camera)
     glVertex3f(right.X(), right.Y(), right.Z());
 
     glEnd();
-
-
   }
 
   // 3rd person pov (above the plane looking forward)
