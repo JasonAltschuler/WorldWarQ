@@ -20,6 +20,8 @@ static const double SECONDS_TO_MAX_THRUST = 2.0; // TODO: play around with this
 
 static const double BULLET_VELOCITY = 100.0;
 
+static const double AIRCRAFT_EXHAUST_RATE_MAX = 100.0;
+
 
 
 ////////////////////////////////////////////////////////////
@@ -235,6 +237,10 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
 
     aircraft->sources[1]->shape->circle->Reposition(source_2_position_world.Point());
     aircraft->sources[1]->shape->circle->Align(normal_world);
+
+    aircraft->sources[0]->rate = fmax(5, AIRCRAFT_EXHAUST_RATE_MAX * aircraft->thrust_magnitude / aircraft->max_thrust);
+    aircraft->sources[1]->rate = fmax(5, AIRCRAFT_EXHAUST_RATE_MAX * aircraft->thrust_magnitude / aircraft->max_thrust);
+
 
 
 

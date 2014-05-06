@@ -6,14 +6,11 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 capture video for realistic and non realistic thrust/turn (easy vs. hard mode). perhaps after trails
 
 
-Add projectiles (bullets)
+UI:
+  Put thrust percentage, velocity (* 40 mph), etc. on left 
+  Put static shooter cross hairs on viewpoint 3 (and possibly viewpoint 2 too)
 
-
-Add trails (hide particle source, then put out particles with lifetime 1 second or something
-    and no velocity) with trails
-
-
-
+Collisions
 
 
 -------
@@ -27,6 +24,9 @@ Landscape auto-creation and texture mapping
 /// =================== completed tasks below ================ ///
 
 // Done on Monday, the 5th
+Add projectiles (bullets)
+Add trails (hide particle source, then put out particles with lifetime 1 second or something
+    and no velocity) with trails
 Make toggle-able viewpoint from nose of aircraft
 Make toggle-able viewpoint from above the aircraft
 Make turning more realistic

@@ -777,7 +777,7 @@ Read(const char *filename, R3Node *node)
         shape->circle = circle;
 
         aircraft->sources[i] = new R3ParticleSource();
-        aircraft->sources[i]-> rate = AIRCRAFT_SOURCE_RATE;
+        aircraft->sources[i]-> rate = 0;
         aircraft->sources[i]-> velocity = 0;
         aircraft->sources[i]-> angle_cutoff = 0;
         aircraft->sources[i]-> mass = 1;
