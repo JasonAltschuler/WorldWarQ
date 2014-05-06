@@ -390,28 +390,33 @@ void LoadCamera(R3Camera *camera)
     glLoadIdentity();
     glMultMatrixd(camera_matrix);
     glTranslated(-(camera_position[0]), -(camera_position[1]), -(camera_position[2]));
-//    glTranslated(-(camera->eye[0]), -(camera->eye[1]), -(camera->eye[2]));
-
-
-
-
-//    R3Vector t = -(camera->towards);
-//    R3Vector& u = camera->up;
-//    R3Vector& r = camera->right;
-//    GLdouble camera_matrix[16] = { r[0], u[0], t[0], 0, r[1], u[1], t[1], 0, r[2], u[2], t[2], 0, 0, 0, 0, 1 };
-//    glMatrixMode(GL_MODELVIEW);
-//    glLoadIdentity();
-//    glMultMatrixd(camera_matrix);
-//    glTranslated(-(camera->eye[0]), -(camera->eye[1]), -(camera->eye[2]));
-//
-//    R3Aircraft * player_aircraft = scene->aircrafts[0];
-//    R3Vector displacement_vec(-3, 0, 1);
-//    R3Vector camera_position = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0)); // centroid of aircraft
-//    camera_position += displacement_vec;
   }
 
   else if (camera_view == 3)
   {
+    R3Aircraft * player_aircraft = scene->aircrafts[0];
+    R3Vector displacement_vec(2.0, 0.0, 0.0);
+    displacement_vec.Transform(player_aircraft->T);
+    R3Vector camera_position = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0)); // centroid of aircraft
+    camera_position += displacement_vec;
+
+
+    R3Vector t (-1, 0, 0);
+    t.Transform(player_aircraft->T);
+    R3Vector u (0, 0, 1);
+    u.Transform(player_aircraft->T);
+    R3Vector r (0, -1, 0);
+    r.Transform(player_aircraft->T);
+
+    assert(t.IsNormalized());
+    assert(u.IsNormalized());
+    assert(r.IsNormalized());
+
+    GLdouble camera_matrix[16] = { r[0], u[0], t[0], 0, r[1], u[1], t[1], 0, r[2], u[2], t[2], 0, 0, 0, 0, 1 };
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glMultMatrixd(camera_matrix);
+    glTranslated(-(camera_position[0]), -(camera_position[1]), -(camera_position[2]));
   }
 
   else {
