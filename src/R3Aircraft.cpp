@@ -205,7 +205,7 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
   R3Vector origin = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0));
   R3Vector x_vec = player_aircraft->Modeling_To_World(R3Vector(1, 0, 0));
   R3Vector y_vec = player_aircraft->Modeling_To_World(R3Vector(0, 1, 0));
-  R3Vector z_vec = player_aircraft->Modeling_To_World(R3Vector(0, 0, 01));
+  R3Vector z_vec = player_aircraft->Modeling_To_World(R3Vector(0, 0, 1));
 
   // draw x in RED
   glColor3d(1, 0, 0);
