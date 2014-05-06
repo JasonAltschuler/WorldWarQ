@@ -1,10 +1,9 @@
 
 #include "R3Aircraft.h"
 #include "particleview.h"
+#include "particle.h"
 #include "R3Scene.h"
 #include <math.h>
-
-
 
 
 ////////////////////////////////////////////////////////////
@@ -221,8 +220,18 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     }
 
     // UPDATE POSITION with velocity (simple Euler integration)
-    R3Vector change_position = aircraft->velocity * delta_time;
-    aircraft->T.Translate(change_position);
+    R3Vector change_position_modeling = aircraft->velocity * delta_time;
+
+    // check no collision
+    R3Vector prev_position (aircraft->T[0][3], aircraft->T[1][3], aircraft->T[2][3]);
+    R3Vector change_position_world = change_position_modeling;
+    change_position_world.Transform(aircraft->T);
+    R3Ray ray(prev_position.Point(), change_position_world);
+    R3Intersection closest_intersection = ComputeIntersection(scene, scene->Root(), ray);
+    if (closest_intersection.IsHit() && closest_intersection.distance < change_position_world.Length())
+      cout << "COLLISION!!!" << endl; // TODO: do more
+
+    aircraft->T.Translate(change_position_modeling);
 
     R3Vector source_1_position_modeling(AIRCRAFT_SOURCE_BACK_NEG, AIRCRAFT_SOURCE_SIDE_POS, AIRCRAFT_SOURCE_DOWN_NEG);
     R3Vector source_2_position_modeling(AIRCRAFT_SOURCE_BACK_NEG, -AIRCRAFT_SOURCE_SIDE_POS, AIRCRAFT_SOURCE_DOWN_NEG);
