@@ -5,6 +5,7 @@
 #include <assert.h>
 
 struct R3Material;
+class R3ParticleSource;
 
 // TODO: add destructor
 struct R3Aircraft {
@@ -19,13 +20,7 @@ struct R3Aircraft {
   double drag;
   double thrust_magnitude;
   double max_thrust;
-
-  // TODO: do we need these?
-//  double mass;
-//  bool fixed;
-//  double drag;
-//  double elasticity;
-//  double lifetime;
+  vector<R3ParticleSource *> sources;
 
 
   // move the plane
@@ -42,18 +37,6 @@ struct R3Aircraft {
   void AssertValid(void);
 };
 
-inline R3Aircraft::
-R3Aircraft(void) :
-  velocity(R3zero_vector),
-  T(R3identity_matrix),
-  mesh(NULL),
-  material(NULL),
-  mass(-1),
-  drag(-1),
-  thrust_magnitude(-1),
-  max_thrust(-1)
-{
-}
 
 inline R3Vector R3Aircraft::
 Modeling_To_World(R3Vector vector_modeling_coordinates)

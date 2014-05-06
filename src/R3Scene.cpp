@@ -6,7 +6,7 @@
 
 #include "R3/R3.h"
 #include "R3Scene.h"
-
+#include "particleview.h"
 
 
 R3Scene::
@@ -765,6 +765,28 @@ Read(const char *filename, R3Node *node)
       aircraft->drag = drag;
       aircraft->thrust_magnitude = thrust_magnitude;
       aircraft->max_thrust = max_thrust;
+
+      assert(aircraft->sources.size() == 2);
+      for (int i = 0; i < aircraft->sources.size(); i++)
+      {
+        R3Circle *circle = new R3Circle(R3Point(0, 0, 0), AIRCRAFT_SOURCE_RADIUS, R3Vector(-1, 0, 0));
+        R3Shape *shape = new R3Shape();
+        shape->type = R3_CIRCLE_SHAPE;
+        shape->circle = circle;
+
+        aircraft->sources[i] = new R3ParticleSource();
+        aircraft->sources[i]-> rate = AIRCRAFT_SOURCE_RATE;
+        aircraft->sources[i]-> velocity = 0;
+        aircraft->sources[i]-> angle_cutoff = 0;
+        aircraft->sources[i]-> mass = 1;
+        aircraft->sources[i]-> fixed = true;
+        aircraft->sources[i]-> drag = 0;
+        aircraft->sources[i]-> elasticity = 0;
+        aircraft->sources[i]-> lifetime = 10;
+        aircraft->sources[i]-> material = group_materials[0];
+        aircraft->sources[i]->shape = shape;
+      }
+
 
       // Add particle to scene
       aircrafts.push_back(aircraft);

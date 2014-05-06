@@ -5,6 +5,22 @@
 #include <math.h>
 
 
+
+R3Aircraft::R3Aircraft(void) :
+  velocity(R3zero_vector),
+  T(R3identity_matrix),
+  mesh(NULL),
+  material(NULL),
+  mass(-1),
+  drag(-1),
+  thrust_magnitude(-1),
+  max_thrust(-1)
+{
+  sources.resize(2);
+}
+
+
+
 // TODO: make THETA and SEC_TO_MAX_THRUST a command-line input?
 // TODO: have different thetas for rolling left/right or up/down
 //static const double THETA = 0.00174532925; // .1 degree in radians
@@ -141,6 +157,22 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     R3Vector change_position = aircraft->velocity * delta_time;
     aircraft->T.Translate(change_position);
 
+    R3Vector source_1_position_modeling(AIRCRAFT_SOURCE_BACK_NEG, AIRCRAFT_SOURCE_SIDE_POS, AIRCRAFT_SOURCE_DOWN_NEG);
+    R3Vector source_2_position_modeling(AIRCRAFT_SOURCE_BACK_NEG, -AIRCRAFT_SOURCE_SIDE_POS, AIRCRAFT_SOURCE_DOWN_NEG);
+    R3Vector source_1_position_world = aircraft->Modeling_To_World(source_1_position_modeling);
+    R3Vector source_2_position_world = aircraft->Modeling_To_World(source_2_position_modeling);
+    R3Vector normal_modeling(-1, 0, 0);
+    R3Vector normal_world = normal_modeling;
+    normal_world.Transform(aircraft->T);
+
+    aircraft->sources[0]->shape->circle->Reposition(source_1_position_world.Point());
+    aircraft->sources[0]->shape->circle->Align(normal_world);
+
+    aircraft->sources[1]->shape->circle->Reposition(source_2_position_world.Point());
+    aircraft->sources[1]->shape->circle->Align(normal_world);
+
+
+
     // UPDATE VELOCITY with acceleration (simple Euler integration) // TODO: combine into 1 line
     R3Vector net_force(0, 0, 0);
 
@@ -155,10 +187,10 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     R3Vector acceleration = net_force / aircraft->mass;
     aircraft->velocity += acceleration * delta_time;
 
-    // TODO: delete later
-    cout << "velocity: " << aircraft->velocity.X() << endl;
-    if ((acceleration.X() / delta_time) < 0.01)
-      cout << "TERMINAL!" << endl;
+//    // TODO: delete later
+//    cout << "velocity: " << aircraft->velocity.X() << endl;
+//    if ((acceleration.X() / delta_time) < 0.01)
+//      cout << "TERMINAL!" << endl;
 
 
     // quick assert to make sure we didn't make any no-no's

@@ -753,7 +753,7 @@ void DrawParticlesAndAircrafts(R3Scene *scene)
   UpdateAircrafts(scene, current_time - time_lost_taking_videos, delta_time, integration_type);
 
 //  // Generate new particles
-//  GenerateParticles(scene, current_time - time_lost_taking_videos, delta_time);
+  GenerateParticles(scene, current_time - time_lost_taking_videos, delta_time);
 
   // Render particles
   if (show_particles) RenderParticles(scene, current_time - time_lost_taking_videos, delta_time);
@@ -795,6 +795,18 @@ void DrawParticleSources(R3Scene *scene)
   for (int i = 0; i < scene->NParticleSources(); i++) {
     R3ParticleSource *source = scene->ParticleSource(i);
     DrawShape(source->shape);
+  }
+
+  // TODO: delete later
+  for (int i = 0; i < scene->NAircrafts(); i++)
+  {
+    vector<R3ParticleSource *> sources = scene->Aircraft(i)->sources;
+    glEnable(GL_LIGHTING);
+    LoadMaterial(&source_material);
+    for (int j = 0; j < sources.size(); j++) {
+      R3ParticleSource *source = sources[j];
+      DrawShape(source->shape);
+    }
   }
 
   // Clean up

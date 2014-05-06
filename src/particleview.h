@@ -17,6 +17,14 @@ extern int brake_backward;
 // mode for hard or not
 extern int hard_mode;
 
+// source properties for aircraft engines
+const double AIRCRAFT_SOURCE_RADIUS = 0.003;
+const double AIRCRAFT_SOURCE_RATE = 50;
+const double AIRCRAFT_SOURCE_BACK_NEG = -0.3;
+const double AIRCRAFT_SOURCE_SIDE_POS = 0.2;
+const double AIRCRAFT_SOURCE_DOWN_NEG = -0.1;
+
+
 void LoadMatrix(R3Matrix *matrix);
 void LoadMaterial(R3Material *material);
 void LoadLights(R3Scene *scene);
