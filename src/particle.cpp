@@ -587,7 +587,9 @@ void ComputeUpdatedParticle(int i, R3Scene *scene, double current_time, double d
   if (integration_type == EULER_INTEGRATION)
   {
     // Get total force
-    R3Vector force = ForceOnParticle(particle, i, scene);
+    R3Vector force(0, 0, 0);
+    if (!particle->is_bullet)
+      R3Vector force = ForceOnParticle(particle, i, scene);
 
     // Advance simulation
     R3Vector acceleration = force / particle->mass;

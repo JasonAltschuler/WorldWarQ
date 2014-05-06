@@ -698,7 +698,7 @@ Read(const char *filename, R3Node *node)
      *    meshname
      *    pos_x, pos_y, pos_z
      *    vel_x, vel_, vel_z
-     *    mass, drag, thrust_magnitude, max_thrust
+     *    mass, drag, thrust_magnitude, max_thrust, firing_rate
      */
     else if (!strcmp(cmd, "aircraft")) {
       // Read data
@@ -709,13 +709,14 @@ Read(const char *filename, R3Node *node)
       double drag = -1;
       double thrust_magnitude = -1;
       double max_thrust = -1;
+      double firing_rate = -1;
 
       int m;
       char meshname[256];
-      if (fscanf(fp, "%d%s%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf", &m, meshname,
+      if (fscanf(fp, "%d%s%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf", &m, meshname,
           &position[0], &position[1], &position[2],
           &velocity[0], &velocity[1], &velocity[2],
-          &mass, &drag, &thrust_magnitude, &max_thrust)!= 12) {
+          &mass, &drag, &thrust_magnitude, &max_thrust, &firing_rate)!= 13) {
         fprintf(stderr, "Unable to parse mesh command %d in file %s\n", command_number, filename);
         return 0;
       }
@@ -765,6 +766,7 @@ Read(const char *filename, R3Node *node)
       aircraft->drag = drag;
       aircraft->thrust_magnitude = thrust_magnitude;
       aircraft->max_thrust = max_thrust;
+      aircraft->firing_rate = firing_rate;
 
       assert(aircraft->sources.size() == 2);
       for (int i = 0; i < aircraft->sources.size(); i++)

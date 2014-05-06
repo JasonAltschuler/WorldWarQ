@@ -21,6 +21,7 @@ struct R3Aircraft {
   double thrust_magnitude;
   double max_thrust;
   vector<R3ParticleSource *> sources;
+  double firing_rate;
 
 
   // move the plane

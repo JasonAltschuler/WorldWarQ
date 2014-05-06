@@ -62,6 +62,7 @@ int roll_left = 0;
 int roll_right = 0;
 int thrust_forward = 0;
 int brake_backward = 0;
+int firing_bullets = 0;
 
 int hard_mode = 0; // default to easy
 
@@ -1218,6 +1219,10 @@ void GLUTKeyboardUp(unsigned char key, int x, int y)
         roll_right = 0;
         break;
 
+    case ' ':
+      firing_bullets = 0;
+      break;
+
     case 'J':
     case 'j':
       thrust_forward = 0;
@@ -1310,6 +1315,10 @@ void GLUTKeyboard(unsigned char key, int x, int y)
     brake_backward = 1;
     break;
 
+  case ' ':
+    firing_bullets = 1;
+    break;
+
   case 'H':
   case 'h':
     hard_mode = !hard_mode;
@@ -1331,19 +1340,20 @@ void GLUTKeyboard(unsigned char key, int x, int y)
      camera_view = 4;
      break;
 
-  case 'Q':
-  case 'q':
+
+//  case 'Q':
+//  case 'q':
   case 27: // ESCAPE
     quit = 1;
     break;
 
-  case ' ': {
-    printf("camera %g %g %g  %g %g %g  %g %g %g  %g  %g %g \n",
-           camera.eye[0], camera.eye[1], camera.eye[2], 
-           camera.towards[0], camera.towards[1], camera.towards[2], 
-           camera.up[0], camera.up[1], camera.up[2], 
-           camera.xfov, camera.neardist, camera.fardist); 
-    break; }
+//  case ' ': {
+//    printf("camera %g %g %g  %g %g %g  %g %g %g  %g  %g %g \n",
+//           camera.eye[0], camera.eye[1], camera.eye[2],
+//           camera.towards[0], camera.towards[1], camera.towards[2],
+//           camera.up[0], camera.up[1], camera.up[2],
+//           camera.xfov, camera.neardist, camera.fardist);
+//    break; }
   }
 
   // Remember mouse position 

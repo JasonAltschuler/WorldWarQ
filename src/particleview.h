@@ -13,6 +13,7 @@ extern int roll_left;
 extern int roll_right;
 extern int thrust_forward;
 extern int brake_backward;
+extern int firing_bullets;
 
 // mode for hard or not
 extern int hard_mode;

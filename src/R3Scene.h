@@ -111,7 +111,8 @@ struct R3Particle {
   R3Particle(void);
   R3Particle(R3Point position, R3Vector direction_emanate, R3ParticleSource * source);
   R3Particle(R3Point position, R3Vector velocity, double mass, bool fixed, double drag, double
-      elasticity, double lifetime, R3Material *material, vector<struct R3ParticleSpring *> springs);
+      elasticity, double lifetime, R3Material *material, vector<struct R3ParticleSpring *> springs,
+      bool is_bullet);
 
   R3Point position;
   R3Vector velocity;
@@ -122,6 +123,7 @@ struct R3Particle {
   double lifetime;
   R3Material *material;
   vector<struct R3ParticleSpring *> springs;
+  bool is_bullet;
 };
 
 inline R3Particle::R3Particle(void) :
@@ -133,7 +135,8 @@ inline R3Particle::R3Particle(void) :
     elasticity(-1),
     lifetime(-1),
     material(NULL),
-    springs(vector<struct R3ParticleSpring *>(0))
+    springs(vector<struct R3ParticleSpring *>(0)),
+    is_bullet(false)
 {
 }
 
@@ -149,10 +152,12 @@ inline R3Particle::R3Particle(R3Point position, R3Vector direction_emanate, R3Pa
   this->lifetime = source->lifetime;
   this->material = source->material;
   this->springs.clear();
+  this->is_bullet = false;
 }
 
 inline R3Particle::R3Particle(R3Point position, R3Vector velocity, double mass, bool fixed, double drag,
-    double elasticity, double lifetime, R3Material *material, vector<struct R3ParticleSpring *> springs) :
+    double elasticity, double lifetime, R3Material *material, vector<struct R3ParticleSpring *> springs,
+    bool is_bullet) :
     position(position),
     velocity(velocity),
     mass(mass),
@@ -161,7 +166,8 @@ inline R3Particle::R3Particle(R3Point position, R3Vector velocity, double mass, 
     elasticity(elasticity),
     lifetime(lifetime),
     material(material),
-    springs(springs)
+    springs(springs),
+    is_bullet(is_bullet)
 {
 }
 

@@ -6,20 +6,10 @@
 
 
 
-R3Aircraft::R3Aircraft(void) :
-  velocity(R3zero_vector),
-  T(R3identity_matrix),
-  mesh(NULL),
-  material(NULL),
-  mass(-1),
-  drag(-1),
-  thrust_magnitude(-1),
-  max_thrust(-1)
-{
-  sources.resize(2);
-}
 
-
+////////////////////////////////////////////////////////////
+// Constants
+////////////////////////////////////////////////////////////
 
 // TODO: make THETA and SEC_TO_MAX_THRUST a command-line input?
 // TODO: have different thetas for rolling left/right or up/down
@@ -28,6 +18,73 @@ static const double THETA = 0.872664625; // 1 degree in radians
 
 static const double SECONDS_TO_MAX_THRUST = 2.0; // TODO: play around with this
 
+static const double BULLET_VELOCITY = 100.0;
+
+
+
+////////////////////////////////////////////////////////////
+// Random Number Generator
+////////////////////////////////////////////////////////////
+
+static double
+RandomNumber(void)
+{
+#if defined(_WIN32)
+  int r1 = rand();
+  double r2 = ((double) rand()) / ((double) (RAND_MAX + 1));
+  return (r1 + r2) / ((double) (RAND_MAX + 1));
+#else
+  return drand48();
+#endif
+}
+
+
+
+////////////////////////////////////////////////////////////
+// Constructor
+////////////////////////////////////////////////////////////
+
+
+R3Aircraft::R3Aircraft(void) :
+  velocity(R3zero_vector),
+  T(R3identity_matrix),
+  mesh(NULL),
+  material(NULL),
+  mass(-1),
+  drag(-1),
+  thrust_magnitude(-1),
+  max_thrust(-1),
+  firing_rate(-1)
+{
+  sources.resize(2);
+}
+
+
+void FireBullet(R3Scene *scene, R3Aircraft *aircraft)
+{
+//  BULLET_VELOCITY
+
+  R3Vector bullet_origin_modeling (2, 0, 0);
+  R3Vector bullet_origin_world = aircraft->Modeling_To_World(bullet_origin_modeling);
+  R3Vector bullet_velocity_modeling (BULLET_VELOCITY + aircraft->velocity.X(), 0, 0);
+  R3Vector bullet_velocity_world = bullet_velocity_modeling;
+  bullet_velocity_world.Transform(aircraft->T);
+
+  double bullet_mass = 1;
+  double bullet_fixed =false;
+  double bullet_elasticity = 0;
+  double bullet_drag = 0;
+  double bullet_lifetime = 10.0;
+  R3Material *bullet_material = aircraft->material;
+  vector<R3ParticleSpring *> bullet_springs(0);
+  bool bullet_is_bullet = true; // derp
+
+  R3Particle * new_bullet = new R3Particle(bullet_origin_world.Point(), bullet_velocity_world,
+      bullet_mass, bullet_fixed, bullet_drag, bullet_elasticity, bullet_lifetime,
+      bullet_material, bullet_springs, bullet_is_bullet);
+
+  scene->particles.push_back(new_bullet);
+}
 
 
 void R3Aircraft::
@@ -151,6 +208,14 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
         aircraft->ThrustForward(delta_time);
       if (brake_backward)
         aircraft->BrakeBackward(delta_time);
+      if (firing_bullets)
+      {
+        double mult_rate = aircraft->firing_rate * delta_time;
+        if (mult_rate >= 1)
+          FireBullet(scene, aircraft);
+        else if (RandomNumber() < mult_rate)
+          FireBullet(scene, aircraft);
+      }
     }
 
     // UPDATE POSITION with velocity (simple Euler integration)
