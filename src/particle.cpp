@@ -61,7 +61,7 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
     const R3Point& position = particle->position;
     glVertex3d(position[0], position[1], position[2]);
   }
-
+//  glEnd();
 
   // Trails (implemented for one point)
 
@@ -78,9 +78,9 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
   // remove positions if queue overflowing
   if (deque.size() > K_TRAIL_SIZE)
     deque.pop_back();
-
+//
   // draw trails
-  glBegin(GL_LINES);
+//  glBegin(GL_POINTS);
   for (int j = 0; j < deque.size() - 1; j++) {
     // interpolate between black and (0.0, 0.0, 1.0) blue for color of line,
     // with the end of the trail closer to black because it is fading out
@@ -100,7 +100,7 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
     for (int i = 0; i < num_particles; i++)
     {
       glVertex3d(vec_after[i].X(), vec_after[i].Y(), vec_after[i].Z());
-      glVertex3d(vec_before[i].X(), vec_before[i].Y(), vec_before[i].Z());
+//      glVertex3d(vec_before[i].X(), vec_before[i].Y(), vec_before[i].Z());
     }
   }
 
