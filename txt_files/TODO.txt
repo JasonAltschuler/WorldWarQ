@@ -7,7 +7,7 @@ capture video for realistic and non realistic thrust/turn (easy vs. hard mode). 
 
 
 Add projectiles (bullets)
-Add camera view from nose of aircraft
+
 
 Add trails (hide particle source, then put out particles with lifetime 1 second or something
     and no velocity) with trails
@@ -27,6 +27,7 @@ Landscape auto-creation and texture mapping
 /// =================== completed tasks below ================ ///
 
 // Done on Monday, the 5th
+Make toggle-able viewpoint from nose of aircraft
 Make toggle-able viewpoint from above the aircraft
 Make turning more realistic
 
