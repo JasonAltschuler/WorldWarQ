@@ -12,6 +12,7 @@
 #include "R3Scene.h"
 #include "particle.h"
 #include "fglut/fglut.h"
+//#include <GL/freeglut.h>
 
 
 ////////////////////////////////////////////////////////////
@@ -894,7 +895,8 @@ void GLUTDrawText(const R3Point& p, const char *s)
 {
   // Draw text string s and position p
   glRasterPos3d(p[0], p[1], p[2]);
-  while (*s) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *(s++));
+  while (*s) glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *(s++));
+//  while (*s) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *(s++));
 }
   
 
@@ -1084,13 +1086,19 @@ void GLUTRedraw(void)
 
   glClear(GL_DEPTH_BUFFER_BIT);
 
-  glBegin(GL_QUADS);
-      glColor3f(1, 1, 0);
-      glVertex2f(0.0, 0.0);
-      glVertex2f(50.0, 0.0);
-      glVertex2f(50.0, 10.0);
-      glVertex2f(0.0, 10.0);
-  glEnd();
+  // draw thrust string
+  glColor3f(1, 0.7, 0);
+  int percentage_thrust = scene->Aircraft(0)->thrust_magnitude/scene->Aircraft(0)->max_thrust*100;
+  char thrust_string[50];
+  sprintf(thrust_string, "Thrust: %d%%", percentage_thrust);
+  GLUTDrawText(R3Point(10, 15, 0), thrust_string);
+
+  // draw velocity string
+  glColor3f(1, 0.7, 0);
+  double velocity = scene->Aircraft(0)->velocity.Length() * 7;
+  char velocity_string[50];
+  sprintf(thrust_string, "Velocity: %.2f m/s", velocity);
+  GLUTDrawText(R3Point(10, 30, 0), thrust_string);
 
   // Making sure we can render 3d again
   glMatrixMode(GL_PROJECTION);
