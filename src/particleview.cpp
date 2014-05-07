@@ -459,42 +459,6 @@ void LoadCamera(R3Camera *camera)
     fprintf(stderr, "Invalid view");
     exit(1);
   }
-
-
-  // draw 2d HUD (heads up display)
-  // added by Kyle. Note: doesn't work right now.
-
-////  glEnable(GL_DEPTH_TEST);
-//  glMatrixMode(GL_PROJECTION);
-//  glPushMatrix();
-////  glLoadIdentity();
-//  glOrtho(0.0, GLUTwindow_width, GLUTwindow_height, 0.0, -1.0, 10.0);
-//  glMatrixMode(GL_MODELVIEW);
-//  glPushMatrix();    //    ----Not sure if I need this
-//  glLoadIdentity();
-////  glDisable(GL_CULL_FACE);
-//  glDisable(GL_DEPTH_TEST);
-//
-////  glClear(GL_DEPTH_BUFFER_BIT);
-//
-//  glBegin(GL_QUADS);
-//      glColor3f(1.0, 0.0, 0.0);
-//      glVertex2f(0.0, 0.0);
-//      glVertex2f(2.0, 0.0);
-//      glVertex2f(2.0, 2.0);
-//      glVertex2f(0.0, 2.0);
-//  glEnd();
-////
-//  glEnable(GL_DEPTH_TEST);
-//  glPopMatrix();
-//  // Making sure we can render 3d again
-//  glMatrixMode(GL_PROJECTION);
-//  glPopMatrix();
-////  glMatrixMode(GL_MODELVIEW);
-//  //glPopMatrix();        ----and this?
-////  glDisable(GL_DEPTH_TEST);
-
-//  glutSwapBuffers();
 }
 
 
@@ -1104,7 +1068,36 @@ void GLUTRedraw(void)
     GLUTStop();
   }
 
-  // Swap buffers 
+
+  // draw 2d HUD (heads up display)
+  // added by Kyle. Note: doesn't work right now.
+
+  glDisable(GL_LIGHTING);
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+  glOrtho(0.0, GLUTwindow_width, GLUTwindow_height, 0.0, -1.0, 10.0);
+  glMatrixMode(GL_MODELVIEW);
+//  glPushMatrix();    //    ----Not sure if I need this
+  glLoadIdentity();
+  glDisable(GL_CULL_FACE);
+
+  glClear(GL_DEPTH_BUFFER_BIT);
+
+  glBegin(GL_QUADS);
+      glColor3f(1, 1, 0);
+      glVertex2f(0.0, 0.0);
+      glVertex2f(50.0, 0.0);
+      glVertex2f(50.0, 10.0);
+      glVertex2f(0.0, 10.0);
+  glEnd();
+
+  // Making sure we can render 3d again
+  glMatrixMode(GL_PROJECTION);
+//  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
+  glEnable(GL_LIGHTING);
+
   glutSwapBuffers();
 }    
 

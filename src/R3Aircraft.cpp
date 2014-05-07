@@ -234,7 +234,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     R3Intersection closest_intersection = ComputeIntersection(scene, scene->Root(), ray);
     if (closest_intersection.IsHit())
     {
-        cout << delta_time << endl;
+//        cout << delta_time << endl;
         if (closest_intersection.distance < change_position_world.Length())
             cout << "COLLISION!!! " << endl; // TODO: do more
     }
