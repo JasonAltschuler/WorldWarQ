@@ -229,7 +229,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     R3Ray ray(prev_position.Point(), change_position_world);
 
     // KYLE: I discovered the problem with intersections. Current mesh intersection code can only handle triangle faces.
-    //       It should be pretty easy to make it handle rectangle faces as well. Or we could make Daway's code generate triangle meshes.
+    // TODO: It should be pretty easy to make it handle rectangle faces as well. Or we could make Daway's code generate triangle meshes.
 
     R3Intersection closest_intersection = ComputeIntersection(scene, scene->Root(), ray);
     if (closest_intersection.IsHit())
@@ -341,7 +341,6 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
   glColor3d(0, 0, 1);
   glVertex3f(origin.X(), origin.Y(), origin.Z());
   glVertex3f(z_vec.X(), z_vec.Y(), z_vec.Z());
-
 
 
   glEnd();
