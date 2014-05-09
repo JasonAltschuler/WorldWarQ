@@ -51,6 +51,10 @@ static int integration_type = EULER_INTEGRATION;
 
 static R3Scene *scene = NULL;
 static R3Camera camera;
+
+// Added by Kyle. Keeps track of current position of all camera views for SkyBox purposes.
+static R3Point current_camera_position(0,0,0);
+
 static int show_faces = 1;
 static int show_edges = 0;
 static int show_bboxes = 0;
@@ -298,8 +302,6 @@ void LoadCamera(R3Camera *camera)
   glLoadIdentity();
   gluPerspective(2*180.0*camera->yfov/M_PI, (GLdouble) GLUTwindow_width /(GLdouble) GLUTwindow_height, 0.01, 10000);
 
-  // TODO: asdlkfjasdf
-
   // free view (default view if no toggle)
   if (camera_view == 1)
   {
@@ -338,12 +340,15 @@ void LoadCamera(R3Camera *camera)
     glVertex3d(camera_position[0], camera_position[1], camera_position[2]);
     glEnd();
 
+    current_camera_position.SetX(camera_position[0]);
+    current_camera_position.SetY(camera_position[1]);
+    current_camera_position.SetZ(camera_position[2]);
 
 //    glLineWidth(3);
 //    glBegin(GL_LINES);
 
 //    R3Vector towards = player_aircraft->Modeling_To_World(R3Vector(1, 0, 0)  + displacement_vec);
-//    R3Vector up = player_aircraft->Modeling_To_World(R3Vector(0, 0, 1) + displacement_vec); // TODO: don't rotate camera
+//    R3Vector up = player_aircraft->Modeling_To_World(R3Vector(0, 0, 1) + displacement_vec);
 //    R3Vector right = player_aircraft->Modeling_To_World(R3Vector(0, -1, 0) + displacement_vec); // -y
     // draw x in RED
 //    glColor3d(1, 0, 0);
@@ -393,6 +398,10 @@ void LoadCamera(R3Camera *camera)
     glLoadIdentity();
     glMultMatrixd(camera_matrix);
     glTranslated(-(camera_position[0]), -(camera_position[1]), -(camera_position[2]));
+
+    current_camera_position.SetX(camera_position[0]);
+    current_camera_position.SetY(camera_position[1]);
+    current_camera_position.SetZ(camera_position[2]);
   }
 
   else if (camera_view == 3)
@@ -421,6 +430,10 @@ void LoadCamera(R3Camera *camera)
     glLoadIdentity();
     glMultMatrixd(camera_matrix);
     glTranslated(-(camera_position[0]), -(camera_position[1]), -(camera_position[2]));
+
+    current_camera_position.SetX(camera_position[0]);
+    current_camera_position.SetY(camera_position[1]);
+    current_camera_position.SetZ(camera_position[2]);
   }
 
   // third person, static angle
@@ -462,6 +475,10 @@ void LoadCamera(R3Camera *camera)
      glLoadIdentity();
      glMultMatrixd(camera_matrix);
      glTranslated(-(camera_position[0]), -(camera_position[1]), -(camera_position[2]));
+
+     current_camera_position.SetX(camera_position[0]);
+     current_camera_position.SetY(camera_position[1]);
+     current_camera_position.SetZ(camera_position[2]);
    }
   else {
     fprintf(stderr, "Invalid view");
@@ -770,119 +787,119 @@ void DrawParticlesAndAircrafts(R3Scene *scene)
   previous_time = current_time;
 }
 
-
-void DrawParticleSources(R3Scene *scene)
-{
-  // Check if should draw particle sources
-  if (!show_particle_sources_and_sinks) return;
-
-  // Setup
-  GLboolean lighting = glIsEnabled(GL_LIGHTING);
-  glEnable(GL_LIGHTING);
-
-  // Define source material
-  static R3Material source_material;
-  if (source_material.id != 33) {
-    source_material.ka.Reset(0.2,0.2,0.2,1);
-    source_material.kd.Reset(0,1,0,1);
-    source_material.ks.Reset(0,1,0,1);
-    source_material.kt.Reset(0,0,0,1);
-    source_material.emission.Reset(0,0,0,1);
-    source_material.shininess = 1;
-    source_material.indexofrefraction = 1;
-    source_material.texture = NULL;
-    source_material.texture_index = -1;
-    source_material.id = 33;
-  }
-
-  // Draw all particle sources
-  glEnable(GL_LIGHTING);
-  LoadMaterial(&source_material);
-  for (int i = 0; i < scene->NParticleSources(); i++) {
-    R3ParticleSource *source = scene->ParticleSource(i);
-    DrawShape(source->shape);
-  }
-
-  // TODO: delete later
-  for (int i = 0; i < scene->NAircrafts(); i++)
-  {
-    vector<R3ParticleSource *> sources = scene->Aircraft(i)->sources;
-    glEnable(GL_LIGHTING);
-    LoadMaterial(&source_material);
-    for (int j = 0; j < sources.size(); j++) {
-      R3ParticleSource *source = sources[j];
-      DrawShape(source->shape);
-    }
-  }
-
-  // Clean up
-  if (!lighting) glDisable(GL_LIGHTING);
-}
-
-
-
-void DrawParticleSinks(R3Scene *scene)
-{
-  // Check if should draw particle sinks
-  if (!show_particle_sources_and_sinks) return;
-
-  // Setup
-  GLboolean lighting = glIsEnabled(GL_LIGHTING);
-  glEnable(GL_LIGHTING);
-
-  // Define sink material
-  static R3Material sink_material;
-  if (sink_material.id != 33) {
-    sink_material.ka.Reset(0.2,0.2,0.2,1);
-    sink_material.kd.Reset(1,0,0,1);
-    sink_material.ks.Reset(1,0,0,1);
-    sink_material.kt.Reset(0,0,0,1);
-    sink_material.emission.Reset(0,0,0,1);
-    sink_material.shininess = 1;
-    sink_material.indexofrefraction = 1;
-    sink_material.texture = NULL;
-    sink_material.texture_index = -1;
-    sink_material.id = 33;
-  }
-
-  // Draw all particle sinks
-  glEnable(GL_LIGHTING);
-  LoadMaterial(&sink_material);
-  for (int i = 0; i < scene->NParticleSinks(); i++) {
-    R3ParticleSink *sink = scene->ParticleSink(i);
-    DrawShape(sink->shape);
-  }
-
-  // Clean up
-  if (!lighting) glDisable(GL_LIGHTING);
-}
-
-
-
-void DrawParticleSprings(R3Scene *scene)
-{
-  // Check if should draw particle springs
-  if (!show_particle_springs) return;
-
-  // Setup
-  GLboolean lighting = glIsEnabled(GL_LIGHTING);
-  glDisable(GL_LIGHTING);
-
-  // Draw all particle sources
-  glColor3d(0.5, 0.5, 0.5);
-  glBegin(GL_LINES);
-  for (unsigned int i = 0; i < scene->particle_springs.size(); i++) {
-    R3ParticleSpring *spring = scene->particle_springs[i];
-    const R3Point& p0 = spring->particles[0]->position;
-    const R3Point& p1 = spring->particles[1]->position;
-    glVertex3d(p0[0], p0[1], p0[2]);
-    glVertex3d(p1[0], p1[1], p1[2]);
-  }
-  glEnd();
-
-  // Clean up
-  if (lighting) glEnable(GL_LIGHTING);
-}
+//
+//void DrawParticleSources(R3Scene *scene)
+//{
+//  // Check if should draw particle sources
+//  if (!show_particle_sources_and_sinks) return;
+//
+//  // Setup
+//  GLboolean lighting = glIsEnabled(GL_LIGHTING);
+//  glEnable(GL_LIGHTING);
+//
+//  // Define source material
+//  static R3Material source_material;
+//  if (source_material.id != 33) {
+//    source_material.ka.Reset(0.2,0.2,0.2,1);
+//    source_material.kd.Reset(0,1,0,1);
+//    source_material.ks.Reset(0,1,0,1);
+//    source_material.kt.Reset(0,0,0,1);
+//    source_material.emission.Reset(0,0,0,1);
+//    source_material.shininess = 1;
+//    source_material.indexofrefraction = 1;
+//    source_material.texture = NULL;
+//    source_material.texture_index = -1;
+//    source_material.id = 33;
+//  }
+//
+//  // Draw all particle sources
+//  glEnable(GL_LIGHTING);
+//  LoadMaterial(&source_material);
+//  for (int i = 0; i < scene->NParticleSources(); i++) {
+//    R3ParticleSource *source = scene->ParticleSource(i);
+//    DrawShape(source->shape);
+//  }
+//
+//  // TODO: delete later
+//  for (int i = 0; i < scene->NAircrafts(); i++)
+//  {
+//    vector<R3ParticleSource *> sources = scene->Aircraft(i)->sources;
+//    glEnable(GL_LIGHTING);
+//    LoadMaterial(&source_material);
+//    for (int j = 0; j < sources.size(); j++) {
+//      R3ParticleSource *source = sources[j];
+//      DrawShape(source->shape);
+//    }
+//  }
+//
+//  // Clean up
+//  if (!lighting) glDisable(GL_LIGHTING);
+//}
+//
+//
+//
+//void DrawParticleSinks(R3Scene *scene)
+//{
+//  // Check if should draw particle sinks
+//  if (!show_particle_sources_and_sinks) return;
+//
+//  // Setup
+//  GLboolean lighting = glIsEnabled(GL_LIGHTING);
+//  glEnable(GL_LIGHTING);
+//
+//  // Define sink material
+//  static R3Material sink_material;
+//  if (sink_material.id != 33) {
+//    sink_material.ka.Reset(0.2,0.2,0.2,1);
+//    sink_material.kd.Reset(1,0,0,1);
+//    sink_material.ks.Reset(1,0,0,1);
+//    sink_material.kt.Reset(0,0,0,1);
+//    sink_material.emission.Reset(0,0,0,1);
+//    sink_material.shininess = 1;
+//    sink_material.indexofrefraction = 1;
+//    sink_material.texture = NULL;
+//    sink_material.texture_index = -1;
+//    sink_material.id = 33;
+//  }
+//
+//  // Draw all particle sinks
+//  glEnable(GL_LIGHTING);
+//  LoadMaterial(&sink_material);
+//  for (int i = 0; i < scene->NParticleSinks(); i++) {
+//    R3ParticleSink *sink = scene->ParticleSink(i);
+//    DrawShape(sink->shape);
+//  }
+//
+//  // Clean up
+//  if (!lighting) glDisable(GL_LIGHTING);
+//}
+//
+//
+//
+//void DrawParticleSprings(R3Scene *scene)
+//{
+//  // Check if should draw particle springs
+//  if (!show_particle_springs) return;
+//
+//  // Setup
+//  GLboolean lighting = glIsEnabled(GL_LIGHTING);
+//  glDisable(GL_LIGHTING);
+//
+//  // Draw all particle sources
+//  glColor3d(0.5, 0.5, 0.5);
+//  glBegin(GL_LINES);
+//  for (unsigned int i = 0; i < scene->particle_springs.size(); i++) {
+//    R3ParticleSpring *spring = scene->particle_springs[i];
+//    const R3Point& p0 = spring->particles[0]->position;
+//    const R3Point& p1 = spring->particles[1]->position;
+//    glVertex3d(p0[0], p0[1], p0[2]);
+//    glVertex3d(p1[0], p1[1], p1[2]);
+//  }
+//  glEnd();
+//
+//  // Clean up
+//  if (lighting) glEnable(GL_LIGHTING);
+//}
 
 
 
@@ -1010,14 +1027,16 @@ void GLUTRedraw(void)
   // Draw particles
   DrawParticlesAndAircrafts(scene);
 
-  // Draw particle sources 
-  DrawParticleSources(scene);
+//  // Draw particle sources
+//  DrawParticleSources(scene);
+//
+//  // Draw particle sinks
+//  DrawParticleSinks(scene);
+//
+//  // Draw particle springs
+//  DrawParticleSprings(scene);
 
-  // Draw particle sinks 
-  DrawParticleSinks(scene);
-
-  // Draw particle springs
-  DrawParticleSprings(scene);
+  drawSkybox(100);
 
   // Draw scene surfaces
   if (show_faces) {
@@ -1058,7 +1077,7 @@ void GLUTRedraw(void)
        int circle_x = GLUTwindow_width/2;
        int circle_y = GLUTwindow_height/2 + 7;
 
-       double radius = 15;
+       double radius = 10;
  //      if (camera_view == 3)
  //          radius = 20;
 
@@ -1075,20 +1094,20 @@ void GLUTRedraw(void)
    }
 
    // draw thrust string
-   glColor3f(1, 1, 1);
+   glColor3f(1, 0, 0);
    int percentage_thrust = scene->Aircraft(0)->thrust_magnitude/scene->Aircraft(0)->max_thrust*100;
    char buffer[50];
    sprintf(buffer, "Thrust: %d%%", percentage_thrust);
    GLUTDrawText(R3Point(7, 15, 0), buffer);
 
    // draw velocity string
-   glColor3f(1, 1, 1);
+   glColor3f(1, 0, 0);
    double velocity = scene->Aircraft(0)->velocity.Length() * METERS_PER_UNIT;
    sprintf(buffer, "Velocity: %.2f m/s", velocity);
    GLUTDrawText(R3Point(7, 30, 0), buffer);
 
    // draw altitude string
-    glColor3f(1, 1, 1);
+    glColor3f(1, 0, 0);
     R3Vector altitude_vec = scene->Aircraft(0)->Modeling_To_World(R3Vector(0, 0, 0));
     double altitude = altitude_vec.Z();
     sprintf(buffer, "Altitude: %.2f m", altitude);
@@ -1099,7 +1118,6 @@ void GLUTRedraw(void)
  //  glPopMatrix();
    glMatrixMode(GL_MODELVIEW);
    glEnable(GL_LIGHTING);
-
 
 
   // Save image
@@ -1145,8 +1163,6 @@ void GLUTRedraw(void)
     GLUTStop();
   }
 
-  drawSkybox(3.5*25);
-
   glutSwapBuffers();
 }    
 
@@ -1154,55 +1170,71 @@ void drawSkybox(double D)
 {
     float white[]={1,1,1,1};
     glColor3fv(white);
-      glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    //      cout << "drawing" << endl;
 
-      /* Sides */
-      glBindTexture(GL_TEXTURE_2D,skybox[SKY_RIGHT]);
-      glBegin(GL_QUADS);
-      glTexCoord2f(0,0); glVertex3f(-D,-D,-D);
-      glTexCoord2f(1,0); glVertex3f(+D,-D,-D);
-      glTexCoord2f(1,1); glVertex3f(+D,+D,-D);
-      glTexCoord2f(0,1); glVertex3f(-D,+D,-D);
-      glEnd();
-      glBindTexture(GL_TEXTURE_2D,skybox[SKY_FRONT]);
-      glBegin(GL_QUADS);
-      glTexCoord2f(0,0); glVertex3f(+D,-D,-D);
-      glTexCoord2f(1,0); glVertex3f(+D,-D,+D);
-      glTexCoord2f(1,1); glVertex3f(+D,+D,+D);
-      glTexCoord2f(0,1); glVertex3f(+D,+D,-D);
-      glEnd();
-      glBindTexture(GL_TEXTURE_2D,skybox[SKY_LEFT]);
-      glBegin(GL_QUADS);
-      glTexCoord2f(0,0); glVertex3f(+D,-D,+D);
-      glTexCoord2f(1,0); glVertex3f(-D,-D,+D);
-      glTexCoord2f(1,1); glVertex3f(-D,+D,+D);
-      glTexCoord2f(0,1); glVertex3f(+D,+D,+D);
-      glEnd();
-      glBindTexture(GL_TEXTURE_2D,skybox[SKY_BACK]);
-      glBegin(GL_QUADS);
-      glTexCoord2f(0,0); glVertex3f(-D,-D,+D);
-      glTexCoord2f(1,0); glVertex3f(-D,-D,-D);
-      glTexCoord2f(1,1); glVertex3f(-D,+D,-D);
-      glTexCoord2f(0,1); glVertex3f(-D,+D,+D);
-      glEnd();
 
-      /* Top and Bottom */
-      glBindTexture(GL_TEXTURE_2D,skybox[SKY_UP]);
-      glBegin(GL_QUADS);
-      glTexCoord2f(0,0); glVertex3f(-D,+D,-D);
-      glTexCoord2f(1,0); glVertex3f(+D,+D,-D);
-      glTexCoord2f(1,1); glVertex3f(+D,+D,+D);
-      glTexCoord2f(0,1); glVertex3f(-D,+D,+D);
-      glEnd();
-      glBindTexture(GL_TEXTURE_2D,skybox[SKY_DOWN]);
-      glBegin(GL_QUADS);
-      glTexCoord2f(1,1); glVertex3f(+D,-D,-D);
-      glTexCoord2f(0,1); glVertex3f(-D,-D,-D);
-      glTexCoord2f(0,0); glVertex3f(-D,-D,+D);
-      glTexCoord2f(1,0); glVertex3f(+D,-D,+D);
-      glEnd();
+    D = 5000;
+
+//    glBegin(GL_QUADS);
+//    glTexCoord2f(0,0); glVertex3f(-D+current_camera_position.X(),-D+current_camera_position.Y(),-D+current_camera_position.Z());
+//    glTexCoord2f(1,0); glVertex3f(+D+current_camera_position.X(),-D+current_camera_position.Y(),-D+current_camera_position.Z());
+//    glTexCoord2f(1,1); glVertex3f(+D+current_camera_position.X(),+D+current_camera_position.Y(),-D+current_camera_position.Z());
+//    glTexCoord2f(0,1); glVertex3f(-D+current_camera_position.X(),+D+current_camera_position.Y(),-D+current_camera_position.Z());
+//    glEnd();
+
+    /* Sides */
+    glBindTexture(GL_TEXTURE_2D,skybox[SKY_DOWN]);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0,0); glVertex3f(-D+current_camera_position.X(),-D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(1,0); glVertex3f(+D+current_camera_position.X(),-D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(1,1); glVertex3f(+D+current_camera_position.X(),+D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(0,1); glVertex3f(-D+current_camera_position.X(),+D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D,skybox[SKY_FRONT]);
+    glBegin(GL_QUADS);
+
+//    glTexCoord2f(0,1); glVertex3f(+D+current_camera_position.X(),+D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(1,0); glVertex3f(+D+current_camera_position.X(),-D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(1,1); glVertex3f(+D+current_camera_position.X(),-D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glTexCoord2f(0,1); glVertex3f(+D+current_camera_position.X(),+D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glTexCoord2f(0,0); glVertex3f(+D+current_camera_position.X(),+D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D,skybox[SKY_UP]);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0,1); glVertex3f(+D+current_camera_position.X(),-D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glTexCoord2f(0,0); glVertex3f(-D+current_camera_position.X(),-D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glTexCoord2f(1,0); glVertex3f(-D+current_camera_position.X(),+D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glTexCoord2f(1,1); glVertex3f(+D+current_camera_position.X(),+D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D,skybox[SKY_BACK]);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0,1); glVertex3f(-D+current_camera_position.X(),-D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glTexCoord2f(0,0); glVertex3f(-D+current_camera_position.X(),-D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(1,0); glVertex3f(-D+current_camera_position.X(),+D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(1,1); glVertex3f(-D+current_camera_position.X(),+D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glEnd();
+
+    /* Left and Right */
+    glBindTexture(GL_TEXTURE_2D,skybox[SKY_RIGHT]);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0,0); glVertex3f(-D+current_camera_position.X(),+D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(1,0); glVertex3f(+D+current_camera_position.X(),+D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(1,1); glVertex3f(+D+current_camera_position.X(),+D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glTexCoord2f(0,1); glVertex3f(-D+current_camera_position.X(),+D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D,skybox[SKY_LEFT]);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0,0); glVertex3f(+D+current_camera_position.X(),-D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(1,0); glVertex3f(-D+current_camera_position.X(),-D+current_camera_position.Y(),-D+current_camera_position.Z());
+    glTexCoord2f(1,1); glVertex3f(-D+current_camera_position.X(),-D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glTexCoord2f(0,1); glVertex3f(+D+current_camera_position.X(),-D+current_camera_position.Y(),+D+current_camera_position.Z());
+    glEnd();
 
       glDisable(GL_TEXTURE_2D);
+      glEnable(GL_LIGHTING);
 }
 
 
@@ -1595,6 +1627,18 @@ void errCheck(char* where)
   if (err) fprintf(stderr,"ERROR: %s [%s]\n",gluErrorString(err),where);
 }
 
+static void reverse(void* x,const int n)
+{
+   int k;
+   char* ch = (char*)x;
+   for (k=0;k<n/2;k++)
+   {
+      char tmp = ch[k];
+      ch[k] = ch[n-1-k];
+      ch[n-1-k] = tmp;
+   }
+}
+
 unsigned int loadTexBMP(char* file)
 {
   unsigned int   texture;    /* Texture name */
@@ -1616,13 +1660,13 @@ unsigned int loadTexBMP(char* file)
       fread(&nbp,2,1,f)!=1 || fread(&bpp,2,1,f)!=1 || fread(&k,4,1,f)!=1)
     fatal("Cannot read header from %s\n",file);
   /*  Reverse bytes on big endian hardware (detected by backwards magic) */
-//  if (magic==0x424D) {
-//    reverse(&dx,4);
-//    reverse(&dy,4);
-//    reverse(&nbp,2);
-//    reverse(&bpp,2);
-//    reverse(&k,4);
-//  }
+  if (magic==0x424D) {
+    reverse(&dx,4);
+    reverse(&dy,4);
+    reverse(&nbp,2);
+    reverse(&bpp,2);
+    reverse(&k,4);
+  }
   /*  Check image parameters */
   if (dx<1 || dx>65536) fatal("%s image width out of range: %d\n",file,dx);
   if (dy<1 || dy>65536) fatal("%s image height out of range: %d\n",file,dy);
@@ -1680,6 +1724,13 @@ void initSkyBox()
     skybox[SKY_BACK] = loadTexBMP("bmp/txStormydays_back.bmp");
     skybox[SKY_UP] = loadTexBMP("bmp/txStormydays_up.bmp");
     skybox[SKY_DOWN] = loadTexBMP("bmp/txStormydays_down.bmp");
+
+    skybox[SKY_FRONT] = loadTexBMP("bmp/front.bmp");
+    skybox[SKY_RIGHT] = loadTexBMP("bmp/right.bmp");
+    skybox[SKY_LEFT] = loadTexBMP("bmp/left.bmp");
+    skybox[SKY_BACK] = loadTexBMP("bmp/back.bmp");
+    skybox[SKY_UP] = loadTexBMP("bmp/up.bmp");
+    skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
 }
 
 

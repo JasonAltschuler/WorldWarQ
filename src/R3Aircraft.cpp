@@ -66,7 +66,7 @@ void FireBullet(R3Scene *scene, R3Aircraft *aircraft)
 //  BULLET_VELOCITY
 
   double pi = 3.14159265;
-  double angle_cutoff = .015;
+  double angle_cutoff = .01;
 
   R3Vector bullet_origin_modeling (2, 0, 0);
   R3Vector bullet_origin_world = aircraft->Modeling_To_World(bullet_origin_modeling);

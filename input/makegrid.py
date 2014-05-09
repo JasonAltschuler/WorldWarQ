@@ -114,13 +114,18 @@ def makegrid(n, filename):
 	# 		print(heights[a][b]);
 	# 	print();
 
+        #added by kyle: scale factor:
+	scale = 100
+	heightscale = 20
+        
 	# vertex coordinates
 	for a in range(0, n):
 		for b in range(0, n):
-			fp.write(str(a) + " " + str(b) + " " + str(heights[a][b]) + "\n");
+			fp.write(str(a*scale) + " " + str(b*scale) + " " + str(heights[a][b]*heightscale) + "\n");
 
 	# now write faces with their vertices (do two triangle at a time)
-
+  
+    
 	for a in range(0, n-1):
 		for b in range(0, n-1):
 			vertex1 = a*n + b
