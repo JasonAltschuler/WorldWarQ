@@ -1612,6 +1612,8 @@ void GLUTInit(int *argc, char **argv)
   GLUTCreateMenu();
 }
 
+
+// Kyle: Below code is for adding skybox
 void fatal(const char* format , ...)
 {
    va_list args;
@@ -1711,7 +1713,7 @@ unsigned int loadTexBMP(char* file)
   /*  Free image memory */
   free(image);
   /*  Return texture name */
-  cout << "returning texture" << endl;
+//  cout << "returning texture" << endl;
   return texture;
 }
 

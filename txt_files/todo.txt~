@@ -5,17 +5,16 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 capture video for realistic and non realistic thrust/turn (easy vs. hard mode). perhaps after trails
 
-Collisions:
-test bullets and basic AI by having a turret on the ground shoot up at the plane
 
-Add animation on collision and respawning
+UI:
+  Put thrust percentage, velocity (* 40 mph), etc. on left 
+  Put static shooter cross hairs on viewpoint 3 (and possibly viewpoint 2 too)
 
-(UI: Add radar/minimap?)
+Collisions
 
-AI:
-Create computer-controlled aircraft
 
-Terrain:
+-------
+
 Landscape auto-creation and texture mapping
 
 
@@ -23,18 +22,6 @@ Landscape auto-creation and texture mapping
 
 
 /// =================== completed tasks below ================ ///
-
-
-
-// Done on Friday, the 9th
-Added skybox   
-
-// Done on Thurdsay, the 8th
-Put thrust percentage, velocity (* 40 mph), etc. on left 
-Put static shooter cross hairs on viewpoint 3 (and possibly viewpoint 2 too)
-
-// Done on Wednesday, the 7th
-Made meshes be triangles so collisions now work
 
 // Done on Monday, the 5th
 Add projectiles (bullets)
