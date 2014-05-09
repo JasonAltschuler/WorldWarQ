@@ -65,9 +65,31 @@ void FireBullet(R3Scene *scene, R3Aircraft *aircraft)
 {
 //  BULLET_VELOCITY
 
+  double pi = 3.14159265;
+  double angle_cutoff = .015;
+
   R3Vector bullet_origin_modeling (2, 0, 0);
   R3Vector bullet_origin_world = aircraft->Modeling_To_World(bullet_origin_modeling);
-  R3Vector bullet_velocity_modeling (BULLET_VELOCITY + aircraft->velocity.X(), 0, 0);
+
+  // TODO add bullet spread
+  R3Vector N(1, 0, 0);
+
+  R3Vector A = N;
+  A.Cross(R3Vector(.2,.1,0));
+  A.Normalize();
+
+  double t1 = RandomNumber()*2*pi;
+  double t2 = RandomNumber()*sin(angle_cutoff);
+  R3Vector V = A;
+  V.Rotate(N, t1);
+  R3Vector cross = V;
+  cross.Cross(N);
+  V.Rotate(cross, acos(t2));
+  V.Normalize();
+
+//  R3Vector bullet_velocity_modeling (BULLET_VELOCITY + aircraft->velocity.X(), 0, 0);
+  R3Vector bullet_velocity_modeling = V*(BULLET_VELOCITY + aircraft->velocity.X());
+
   R3Vector bullet_velocity_world = bullet_velocity_modeling;
   bullet_velocity_world.Transform(aircraft->T);
 
@@ -317,33 +339,33 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
   // TODO: delete later (only for visualization)
   // Draw x, y, z for each aircraft
   // Draw meshes under transformation
-  glDisable(GL_LIGHTING);
-  glLineWidth(3);
-  glBegin(GL_LINES);
-
-  R3Aircraft *player_aircraft = scene->Aircraft(0);
-  R3Vector origin = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0));
-  R3Vector x_vec = player_aircraft->Modeling_To_World(R3Vector(1, 0, 0));
-  R3Vector y_vec = player_aircraft->Modeling_To_World(R3Vector(0, 1, 0));
-  R3Vector z_vec = player_aircraft->Modeling_To_World(R3Vector(0, 0, 1));
-
-  // draw x in RED
-  glColor3d(1, 0, 0);
-  glVertex3f(origin.X(), origin.Y(), origin.Z());
-  glVertex3f(x_vec.X(), x_vec.Y(), x_vec.Z());
-
-  // draw y in GREEN
-  glColor3d(0, 1, 0);
-  glVertex3f(origin.X(), origin.Y(), origin.Z());
-  glVertex3f(y_vec.X(), y_vec.Y(), y_vec.Z());
-
-  // draw z in BLUE
-  glColor3d(0, 0, 1);
-  glVertex3f(origin.X(), origin.Y(), origin.Z());
-  glVertex3f(z_vec.X(), z_vec.Y(), z_vec.Z());
-
-
-  glEnd();
+//  glDisable(GL_LIGHTING);
+//  glLineWidth(3);
+//  glBegin(GL_LINES);
+//
+//  R3Aircraft *player_aircraft = scene->Aircraft(0);
+//  R3Vector origin = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0));
+//  R3Vector x_vec = player_aircraft->Modeling_To_World(R3Vector(1, 0, 0));
+//  R3Vector y_vec = player_aircraft->Modeling_To_World(R3Vector(0, 1, 0));
+//  R3Vector z_vec = player_aircraft->Modeling_To_World(R3Vector(0, 0, 1));
+//
+//  // draw x in RED
+//  glColor3d(1, 0, 0);
+//  glVertex3f(origin.X(), origin.Y(), origin.Z());
+//  glVertex3f(x_vec.X(), x_vec.Y(), x_vec.Z());
+//
+//  // draw y in GREEN
+//  glColor3d(0, 1, 0);
+//  glVertex3f(origin.X(), origin.Y(), origin.Z());
+//  glVertex3f(y_vec.X(), y_vec.Y(), y_vec.Z());
+//
+//  // draw z in BLUE
+//  glColor3d(0, 0, 1);
+//  glVertex3f(origin.X(), origin.Y(), origin.Z());
+//  glVertex3f(z_vec.X(), z_vec.Y(), z_vec.Z());
+//
+//
+//  glEnd();
 
 
 //  WORKING! Draw every particle

@@ -53,20 +53,23 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
 {
   // Draw every particle
   glDisable(GL_LIGHTING);
-  glPointSize(5);
+  glPointSize(3);
   glBegin(GL_POINTS);
   for (int i = 0; i < scene->NParticles(); i++) {
-    R3Particle *particle = scene->Particle(i);
-    glColor3d(particle->material->kd[0], particle->material->kd[1], particle->material->kd[2]);
-    const R3Point& position = particle->position;
-    glVertex3d(position[0], position[1], position[2]);
+      R3Particle *particle = scene->Particle(i);
+      if (particle->is_bullet)
+          glColor3d(1, .6, 0);
+      else
+          glColor3d(particle->material->kd[0], particle->material->kd[1], particle->material->kd[2]);
+      const R3Point& position = particle->position;
+      glVertex3d(position[0], position[1], position[2]);
   }
 //  glEnd();
 
   // Trails (implemented for one point)
 
   // remember the positions of the particles for the last K time steps
-  const int K_TRAIL_SIZE = 50; // hardcoded, but can be changed easily
+  const int K_TRAIL_SIZE = 30; // hardcoded, but can be changed easily
   static deque<vector<R3Point> > deque(0);
 
   // store latest positions
@@ -80,11 +83,10 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
     deque.pop_back();
 //
   // draw trails
-//  glBegin(GL_POINTS);
+  glBegin(GL_POINTS);
   for (int j = 0; j < deque.size() - 1; j++) {
     // interpolate between black and (0.0, 0.0, 1.0) blue for color of line,
     // with the end of the trail closer to black because it is fading out
-
     R3Rgb white(1.0, 1.0, 1.0, 1.0);
     R3Rgb black(0.0, 0.0, 0.0, 1.0);
 
@@ -626,7 +628,11 @@ void ComputeUpdatedParticle(int i, R3Scene *scene, double current_time, double d
   }
 }
 
-
+// Kyle on Wednesday:
+// this method is very slow for bullets, because every bullet every frame must compute intersection with the ground.
+// easy fix: just don't do collisions for bullets
+// hard fix: because bullets just move in a straight line, compute the time until it will intersect with the ground just once.
+//          Then, set the particle's lifetime to be that time. Or do something more clever so we can animate bullets hitting the ground.
 
 void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int integration_type)
 {
@@ -667,6 +673,14 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
       particle->velocity = R3zero_vector;
     }
 
+
+    // modified by Kyle so bullets are not computing intersections
+    else if (particle->is_bullet)
+    {
+        particle->position = positions[i];
+        particle->velocity = velocities[i];
+    }
+
     else
     {
       // check for collisions iteratively (if one collision, then "reverse" velocity, and
@@ -685,67 +699,67 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
         R3Intersection closest_intersection = ComputeIntersection(scene, scene->Root(), ray);
 
         // check for intersections with sinks
-        for (int j = 0; j < scene->NParticleSinks(); j++)
-        {
-          R3ParticleSink *sink = scene->ParticleSink(j);
-          R3Intersection sink_intersection;
+//        for (int j = 0; j < scene->NParticleSinks(); j++)
+//        {
+//          R3ParticleSink *sink = scene->ParticleSink(j);
+//          R3Intersection sink_intersection;
+//
+//          if (sink->shape->type == R3_SPHERE_SHAPE)
+//          {
+//            sink_intersection = IntersectRayWithSphere(ray, sink->shape->sphere, scene->Root());
+//          }
+//
+//          else if (sink->shape->type == R3_CIRCLE_SHAPE)
+//          {
+//            R3Circle *circle = sink->shape->circle;
+//            R3Plane plane = circle->Plane();
+//            R3Point P = old_position;
+//            R3Point P_projected = old_position;
+//            P_projected.Project(plane);
+//
+//            // edge case of ray is on the circle's plane:
+//            if (((P - P_projected).Length() < 0.0001) &&
+//                abs(ray.Vector().Dot(plane.Normal())) < 0.0001)
+//            {
+//              R3Sphere fake_sphere(circle->Center(), circle->Radius());
+//              sink_intersection = IntersectRayWithSphere(ray, &fake_sphere, scene->Root());
+//            }
+//
+//            // normal case: ray is not on the circle's plane:
+//            else
+//            {
+//              double t = -(R3Vector(old_position.X(), old_position.Y(), old_position.Z()).Dot(plane.Normal()) + plane.D()) /
+//                  (ray.Vector().Dot(plane.Normal()));
+//              R3Point plane_intersection_point = old_position + t * ray.Vector();
+//
+//              if ((t > 0.00001) && ((plane_intersection_point - circle->Center()).Length() <= circle->Radius()))
+//              {
+//                R3Intersection plane_intersection;
+//                plane_intersection.hit = true;
+//                plane_intersection.node = scene->Root();
+//                plane_intersection.position = plane_intersection_point;
+//                plane_intersection.normal = plane.Normal();
+//                if (ray.Vector().Dot(plane_intersection.normal) > 0)
+//                  plane_intersection.normal = -plane_intersection.normal;
+//                plane_intersection.normal.Normalize();
+//                plane_intersection.distance = (plane_intersection.position - old_position).Length();
+//                plane_intersection.t = ray.T(plane_intersection_point);
+//                plane_intersection.AssertValid();
+//
+//                sink_intersection = plane_intersection;
+//              }
+//            }
+//          }
 
-          if (sink->shape->type == R3_SPHERE_SHAPE)
-          {
-            sink_intersection = IntersectRayWithSphere(ray, sink->shape->sphere, scene->Root());
-          }
-
-          else if (sink->shape->type == R3_CIRCLE_SHAPE)
-          {
-            R3Circle *circle = sink->shape->circle;
-            R3Plane plane = circle->Plane();
-            R3Point P = old_position;
-            R3Point P_projected = old_position;
-            P_projected.Project(plane);
-
-            // edge case of ray is on the circle's plane:
-            if (((P - P_projected).Length() < 0.0001) &&
-                abs(ray.Vector().Dot(plane.Normal())) < 0.0001)
-            {
-              R3Sphere fake_sphere(circle->Center(), circle->Radius());
-              sink_intersection = IntersectRayWithSphere(ray, &fake_sphere, scene->Root());
-            }
-
-            // normal case: ray is not on the circle's plane:
-            else
-            {
-              double t = -(R3Vector(old_position.X(), old_position.Y(), old_position.Z()).Dot(plane.Normal()) + plane.D()) /
-                  (ray.Vector().Dot(plane.Normal()));
-              R3Point plane_intersection_point = old_position + t * ray.Vector();
-
-              if ((t > 0.00001) && ((plane_intersection_point - circle->Center()).Length() <= circle->Radius()))
-              {
-                R3Intersection plane_intersection;
-                plane_intersection.hit = true;
-                plane_intersection.node = scene->Root();
-                plane_intersection.position = plane_intersection_point;
-                plane_intersection.normal = plane.Normal();
-                if (ray.Vector().Dot(plane_intersection.normal) > 0)
-                  plane_intersection.normal = -plane_intersection.normal;
-                plane_intersection.normal.Normalize();
-                plane_intersection.distance = (plane_intersection.position - old_position).Length();
-                plane_intersection.t = ray.T(plane_intersection_point);
-                plane_intersection.AssertValid();
-
-                sink_intersection = plane_intersection;
-              }
-            }
-          }
-
-          if (sink_intersection.IsHit()) // implementation assures that this is false if no intesection calcualted above (see constructor)
-          {
-            if ((!closest_intersection.IsHit()) ||
-                (closest_intersection.IsHit() && sink_intersection.distance < closest_intersection.distance))
-            {
-              closest_intersection = sink_intersection;
-            }
-          }
-        }
+//          if (sink_intersection.IsHit()) // implementation assures that this is false if no intesection calcualted above (see constructor)
+//          {
+//            if ((!closest_intersection.IsHit()) ||
+//                (closest_intersection.IsHit() && sink_intersection.distance < closest_intersection.distance))
+//            {
+//              closest_intersection = sink_intersection;
+//            }
+//          }
+//        }
 
 
       // if no collision
@@ -755,7 +769,6 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
         particle->velocity = new_velocity;
         break;
       }
-
 
       // if collision
       else

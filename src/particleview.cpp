@@ -22,7 +22,8 @@
 // XXX: Note when I created the videos, I commented out line 20 and uncommented line 21
 static const double VIDEO_FRAME_DELAY = 1./25.; // 25 FPS
 //static const double VIDEO_FRAME_DELAY = 1./100.; // 100 FPS
-
+static const double METERS_PER_UNIT = 7;
+static const float DEG2RAD = 3.14159/180;
 
 
 ////////////////////////////////////////////////////////////
@@ -303,14 +304,11 @@ void LoadCamera(R3Camera *camera)
     glMultMatrixd(camera_matrix);
     glTranslated(-(camera->eye[0]), -(camera->eye[1]), -(camera->eye[2]));
 
-
-
     R3Aircraft * player_aircraft = scene->aircrafts[0];
     R3Vector displacement_vec(-3, 0, 0.4);
     displacement_vec.Transform(player_aircraft->T);
     R3Vector camera_position = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0)); // centroid of aircraft
     camera_position += displacement_vec;
-
 
     R3Vector towards (1, 0, 0); // note -1 for real! below
     towards.Transform(player_aircraft->T);
@@ -333,28 +331,28 @@ void LoadCamera(R3Camera *camera)
     glEnd();
 
 
-    glLineWidth(3);
-    glBegin(GL_LINES);
+//    glLineWidth(3);
+//    glBegin(GL_LINES);
 
 //    R3Vector towards = player_aircraft->Modeling_To_World(R3Vector(1, 0, 0)  + displacement_vec);
 //    R3Vector up = player_aircraft->Modeling_To_World(R3Vector(0, 0, 1) + displacement_vec); // TODO: don't rotate camera
 //    R3Vector right = player_aircraft->Modeling_To_World(R3Vector(0, -1, 0) + displacement_vec); // -y
     // draw x in RED
-    glColor3d(1, 0, 0);
-    glVertex3f(camera_position[0], camera_position[1], camera_position[2]);
-    glVertex3f(towards.X(), towards.Y(), towards.Z());
+//    glColor3d(1, 0, 0);
+//    glVertex3f(camera_position[0], camera_position[1], camera_position[2]);
+//    glVertex3f(towards.X(), towards.Y(), towards.Z());
+//
+//    // draw y in GREEN
+//    glColor3d(0, 1, 0);
+//    glVertex3f(camera_position[0], camera_position[1], camera_position[2]);
+//    glVertex3f(up.X(), up.Y(), up.Z());
+//
+//    // draw z in BLUE
+//    glColor3d(0, 0, 1);
+//    glVertex3f(camera_position[0], camera_position[1], camera_position[2]);
+//    glVertex3f(right.X(), right.Y(), right.Z());
 
-    // draw y in GREEN
-    glColor3d(0, 1, 0);
-    glVertex3f(camera_position[0], camera_position[1], camera_position[2]);
-    glVertex3f(up.X(), up.Y(), up.Z());
-
-    // draw z in BLUE
-    glColor3d(0, 0, 1);
-    glVertex3f(camera_position[0], camera_position[1], camera_position[2]);
-    glVertex3f(right.X(), right.Y(), right.Z());
-
-    glEnd();
+//    glEnd();
   }
 
   // 3rd person pov (above the plane looking forward)
@@ -392,12 +390,13 @@ void LoadCamera(R3Camera *camera)
   else if (camera_view == 3)
   {
     R3Aircraft * player_aircraft = scene->aircrafts[0];
-    R3Vector displacement_vec(2.0, 0.0, 0.0);
+    R3Vector displacement_vec(2.0, 0.0, 0.5);
     displacement_vec.Transform(player_aircraft->T);
     R3Vector camera_position = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0)); // centroid of aircraft
     camera_position += displacement_vec;
 
 
+    // Kyle added a bit of height so you can see when you shoot bullets
     R3Vector t (-1, 0, 0);
     t.Transform(player_aircraft->T);
     R3Vector u (0, 0, 1);
@@ -1072,7 +1071,7 @@ void GLUTRedraw(void)
 
 
   // draw 2d HUD (heads up display)
-  // added by Kyle. Note: doesn't work right now.
+  // added by Kyle
 
   glDisable(GL_LIGHTING);
   glMatrixMode(GL_PROJECTION);
@@ -1083,22 +1082,46 @@ void GLUTRedraw(void)
 //  glPushMatrix();    //    ----Not sure if I need this
   glLoadIdentity();
   glDisable(GL_CULL_FACE);
-
   glClear(GL_DEPTH_BUFFER_BIT);
 
+  // draw crosshair
+  // code from https://www.opengl.org/discussion_boards/showthread.php/167955-drawing-a-smooth-circle
+  glBegin(GL_LINE_LOOP);
+  glColor3f(1, 1, 1);
+  int circle_x = GLUTwindow_width/2;
+  int circle_y = GLUTwindow_height/2 + 7;
+
+  double radius = 10;
+  for (int i = 0; i < 360; i++)
+  {
+      float degInRad = i*DEG2RAD;
+      glVertex2f(cos(degInRad)*radius + circle_x,sin(degInRad)*radius + circle_y);
+  }
+  glEnd();
+  glPointSize(2);
+  glBegin(GL_POINTS);
+  glVertex2f(circle_x, circle_y);
+  glEnd();
+
   // draw thrust string
-  glColor3f(1, 0.7, 0);
+  glColor3f(1, 1, 1);
   int percentage_thrust = scene->Aircraft(0)->thrust_magnitude/scene->Aircraft(0)->max_thrust*100;
-  char thrust_string[50];
-  sprintf(thrust_string, "Thrust: %d%%", percentage_thrust);
-  GLUTDrawText(R3Point(10, 15, 0), thrust_string);
+  char buffer[50];
+  sprintf(buffer, "Thrust: %d%%", percentage_thrust);
+  GLUTDrawText(R3Point(7, 15, 0), buffer);
 
   // draw velocity string
-  glColor3f(1, 0.7, 0);
-  double velocity = scene->Aircraft(0)->velocity.Length() * 7;
-  char velocity_string[50];
-  sprintf(thrust_string, "Velocity: %.2f m/s", velocity);
-  GLUTDrawText(R3Point(10, 30, 0), thrust_string);
+  glColor3f(1, 1, 1);
+  double velocity = scene->Aircraft(0)->velocity.Length() * METERS_PER_UNIT;
+  sprintf(buffer, "Velocity: %.2f m/s", velocity);
+  GLUTDrawText(R3Point(7, 30, 0), buffer);
+
+  // draw altitude string
+   glColor3f(1, 1, 1);
+   R3Vector altitude_vec = scene->Aircraft(0)->Modeling_To_World(R3Vector(0, 0, 0));
+   double altitude = altitude_vec.Z();
+   sprintf(buffer, "Altitude: %.2f m", altitude);
+   GLUTDrawText(R3Point(7, 45, 0), buffer);
 
   // Making sure we can render 3d again
   glMatrixMode(GL_PROJECTION);
