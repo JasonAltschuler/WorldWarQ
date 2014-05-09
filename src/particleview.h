@@ -25,9 +25,13 @@ const double AIRCRAFT_SOURCE_SIDE_POS = 0.2;
 const double AIRCRAFT_SOURCE_DOWN_NEG = -0.1;
 
 
+// textures
+int skybox[6];
+
 void LoadMatrix(R3Matrix *matrix);
 void LoadMaterial(R3Material *material);
 void LoadLights(R3Scene *scene);
-
+void drawSkybox(double D);
+void initSkyBox();
 
 #endif /* PARTICLEVIEW_H_ */

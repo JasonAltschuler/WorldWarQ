@@ -15,6 +15,14 @@
 //#include <GL/freeglut.h>
 
 
+// Define skybox constants
+#define SKY_FRONT 0
+#define SKY_RIGHT 1
+#define SKY_LEFT 2
+#define SKY_BACK 3
+#define SKY_UP 4
+#define SKY_DOWN 5
+
 ////////////////////////////////////////////////////////////
 // GLOBAL CONSTANTS
 ////////////////////////////////////////////////////////////
@@ -1026,6 +1034,74 @@ void GLUTRedraw(void)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   }
 
+  // draw skybox
+
+  // draw 2d HUD (heads up display)
+   // added by Kyle
+
+   glDisable(GL_LIGHTING);
+   glMatrixMode(GL_PROJECTION);
+   glPushMatrix();
+   glLoadIdentity();
+   glOrtho(0.0, GLUTwindow_width, GLUTwindow_height, 0.0, -1.0, 10.0);
+   glMatrixMode(GL_MODELVIEW);
+ //  glPushMatrix();    //    ----Not sure if I need this
+   glLoadIdentity();
+   glDisable(GL_CULL_FACE);
+   glClear(GL_DEPTH_BUFFER_BIT);
+
+   // draw crosshair
+   // code from https://www.opengl.org/discussion_boards/showthread.php/167955-drawing-a-smooth-circle
+   if (camera_view == 2 || camera_view == 3) {
+       glBegin(GL_LINE_LOOP);
+       glColor3f(1, 1, 1);
+       int circle_x = GLUTwindow_width/2;
+       int circle_y = GLUTwindow_height/2 + 7;
+
+       double radius = 15;
+ //      if (camera_view == 3)
+ //          radius = 20;
+
+       for (int i = 0; i < 360; i++)
+       {
+           float degInRad = i*DEG2RAD;
+           glVertex2f(cos(degInRad)*radius + circle_x,sin(degInRad)*radius + circle_y);
+       }
+       glEnd();
+       glPointSize(2);
+       glBegin(GL_POINTS);
+       glVertex2f(circle_x, circle_y);
+       glEnd();
+   }
+
+   // draw thrust string
+   glColor3f(1, 1, 1);
+   int percentage_thrust = scene->Aircraft(0)->thrust_magnitude/scene->Aircraft(0)->max_thrust*100;
+   char buffer[50];
+   sprintf(buffer, "Thrust: %d%%", percentage_thrust);
+   GLUTDrawText(R3Point(7, 15, 0), buffer);
+
+   // draw velocity string
+   glColor3f(1, 1, 1);
+   double velocity = scene->Aircraft(0)->velocity.Length() * METERS_PER_UNIT;
+   sprintf(buffer, "Velocity: %.2f m/s", velocity);
+   GLUTDrawText(R3Point(7, 30, 0), buffer);
+
+   // draw altitude string
+    glColor3f(1, 1, 1);
+    R3Vector altitude_vec = scene->Aircraft(0)->Modeling_To_World(R3Vector(0, 0, 0));
+    double altitude = altitude_vec.Z();
+    sprintf(buffer, "Altitude: %.2f m", altitude);
+    GLUTDrawText(R3Point(7, 45, 0), buffer);
+
+   // Making sure we can render 3d again
+   glMatrixMode(GL_PROJECTION);
+ //  glPopMatrix();
+   glMatrixMode(GL_MODELVIEW);
+   glEnable(GL_LIGHTING);
+
+
+
   // Save image
   if (save_image) {
     char image_name[256];
@@ -1069,68 +1145,65 @@ void GLUTRedraw(void)
     GLUTStop();
   }
 
-
-  // draw 2d HUD (heads up display)
-  // added by Kyle
-
-  glDisable(GL_LIGHTING);
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
-  glLoadIdentity();
-  glOrtho(0.0, GLUTwindow_width, GLUTwindow_height, 0.0, -1.0, 10.0);
-  glMatrixMode(GL_MODELVIEW);
-//  glPushMatrix();    //    ----Not sure if I need this
-  glLoadIdentity();
-  glDisable(GL_CULL_FACE);
-  glClear(GL_DEPTH_BUFFER_BIT);
-
-  // draw crosshair
-  // code from https://www.opengl.org/discussion_boards/showthread.php/167955-drawing-a-smooth-circle
-  glBegin(GL_LINE_LOOP);
-  glColor3f(1, 1, 1);
-  int circle_x = GLUTwindow_width/2;
-  int circle_y = GLUTwindow_height/2 + 7;
-
-  double radius = 10;
-  for (int i = 0; i < 360; i++)
-  {
-      float degInRad = i*DEG2RAD;
-      glVertex2f(cos(degInRad)*radius + circle_x,sin(degInRad)*radius + circle_y);
-  }
-  glEnd();
-  glPointSize(2);
-  glBegin(GL_POINTS);
-  glVertex2f(circle_x, circle_y);
-  glEnd();
-
-  // draw thrust string
-  glColor3f(1, 1, 1);
-  int percentage_thrust = scene->Aircraft(0)->thrust_magnitude/scene->Aircraft(0)->max_thrust*100;
-  char buffer[50];
-  sprintf(buffer, "Thrust: %d%%", percentage_thrust);
-  GLUTDrawText(R3Point(7, 15, 0), buffer);
-
-  // draw velocity string
-  glColor3f(1, 1, 1);
-  double velocity = scene->Aircraft(0)->velocity.Length() * METERS_PER_UNIT;
-  sprintf(buffer, "Velocity: %.2f m/s", velocity);
-  GLUTDrawText(R3Point(7, 30, 0), buffer);
-
-  // draw altitude string
-   glColor3f(1, 1, 1);
-   R3Vector altitude_vec = scene->Aircraft(0)->Modeling_To_World(R3Vector(0, 0, 0));
-   double altitude = altitude_vec.Z();
-   sprintf(buffer, "Altitude: %.2f m", altitude);
-   GLUTDrawText(R3Point(7, 45, 0), buffer);
-
-  // Making sure we can render 3d again
-  glMatrixMode(GL_PROJECTION);
-//  glPopMatrix();
-  glMatrixMode(GL_MODELVIEW);
-  glEnable(GL_LIGHTING);
+  drawSkybox(3.5*25);
 
   glutSwapBuffers();
 }    
+
+void drawSkybox(double D)
+{
+    float white[]={1,1,1,1};
+    glColor3fv(white);
+      glEnable(GL_TEXTURE_2D);
+
+      /* Sides */
+      glBindTexture(GL_TEXTURE_2D,skybox[SKY_RIGHT]);
+      glBegin(GL_QUADS);
+      glTexCoord2f(0,0); glVertex3f(-D,-D,-D);
+      glTexCoord2f(1,0); glVertex3f(+D,-D,-D);
+      glTexCoord2f(1,1); glVertex3f(+D,+D,-D);
+      glTexCoord2f(0,1); glVertex3f(-D,+D,-D);
+      glEnd();
+      glBindTexture(GL_TEXTURE_2D,skybox[SKY_FRONT]);
+      glBegin(GL_QUADS);
+      glTexCoord2f(0,0); glVertex3f(+D,-D,-D);
+      glTexCoord2f(1,0); glVertex3f(+D,-D,+D);
+      glTexCoord2f(1,1); glVertex3f(+D,+D,+D);
+      glTexCoord2f(0,1); glVertex3f(+D,+D,-D);
+      glEnd();
+      glBindTexture(GL_TEXTURE_2D,skybox[SKY_LEFT]);
+      glBegin(GL_QUADS);
+      glTexCoord2f(0,0); glVertex3f(+D,-D,+D);
+      glTexCoord2f(1,0); glVertex3f(-D,-D,+D);
+      glTexCoord2f(1,1); glVertex3f(-D,+D,+D);
+      glTexCoord2f(0,1); glVertex3f(+D,+D,+D);
+      glEnd();
+      glBindTexture(GL_TEXTURE_2D,skybox[SKY_BACK]);
+      glBegin(GL_QUADS);
+      glTexCoord2f(0,0); glVertex3f(-D,-D,+D);
+      glTexCoord2f(1,0); glVertex3f(-D,-D,-D);
+      glTexCoord2f(1,1); glVertex3f(-D,+D,-D);
+      glTexCoord2f(0,1); glVertex3f(-D,+D,+D);
+      glEnd();
+
+      /* Top and Bottom */
+      glBindTexture(GL_TEXTURE_2D,skybox[SKY_UP]);
+      glBegin(GL_QUADS);
+      glTexCoord2f(0,0); glVertex3f(-D,+D,-D);
+      glTexCoord2f(1,0); glVertex3f(+D,+D,-D);
+      glTexCoord2f(1,1); glVertex3f(+D,+D,+D);
+      glTexCoord2f(0,1); glVertex3f(-D,+D,+D);
+      glEnd();
+      glBindTexture(GL_TEXTURE_2D,skybox[SKY_DOWN]);
+      glBegin(GL_QUADS);
+      glTexCoord2f(1,1); glVertex3f(+D,-D,-D);
+      glTexCoord2f(0,1); glVertex3f(-D,-D,-D);
+      glTexCoord2f(0,0); glVertex3f(-D,-D,+D);
+      glTexCoord2f(1,0); glVertex3f(+D,-D,+D);
+      glEnd();
+
+      glDisable(GL_TEXTURE_2D);
+}
 
 
 
@@ -1494,6 +1567,9 @@ void GLUTInit(int *argc, char **argv)
   glutMouseFunc(GLUTMouse);
   glutMotionFunc(GLUTMotion);
 
+  // Initialize skybox
+  initSkyBox();
+
   // Initialize graphics modes 
   glEnable(GL_NORMALIZE);
   glEnable(GL_LIGHTING);
@@ -1504,6 +1580,107 @@ void GLUTInit(int *argc, char **argv)
   GLUTCreateMenu();
 }
 
+void fatal(const char* format , ...)
+{
+   va_list args;
+   va_start(args,format);
+   vfprintf(stderr,format,args);
+   va_end(args);
+   exit(1);
+}
+
+void errCheck(char* where)
+{
+  int err = glGetError();
+  if (err) fprintf(stderr,"ERROR: %s [%s]\n",gluErrorString(err),where);
+}
+
+unsigned int loadTexBMP(char* file)
+{
+  unsigned int   texture;    /* Texture name */
+  FILE*          f;          /* File pointer */
+  unsigned short magic;      /* Image magic */
+  unsigned int   dx,dy,size; /* Image dimensions */
+  unsigned short nbp,bpp;    /* Planes and bits per pixel */
+  unsigned char* image;      /* Image data */
+  unsigned int   k;          /* Counter */
+
+  /*  Open file */
+  f = fopen(file,"rb");
+  if (!f) fatal("Cannot open file %s\n",file);
+  /*  Check image magic */
+  if (fread(&magic,2,1,f)!=1) fatal("Cannot read magic from %s\n",file);
+  if (magic!=0x4D42 && magic!=0x424D) fatal("Image magic not BMP in %s\n",file);
+  /*  Seek to and read header */
+  if (fseek(f,16,SEEK_CUR) || fread(&dx ,4,1,f)!=1 || fread(&dy ,4,1,f)!=1 ||
+      fread(&nbp,2,1,f)!=1 || fread(&bpp,2,1,f)!=1 || fread(&k,4,1,f)!=1)
+    fatal("Cannot read header from %s\n",file);
+  /*  Reverse bytes on big endian hardware (detected by backwards magic) */
+//  if (magic==0x424D) {
+//    reverse(&dx,4);
+//    reverse(&dy,4);
+//    reverse(&nbp,2);
+//    reverse(&bpp,2);
+//    reverse(&k,4);
+//  }
+  /*  Check image parameters */
+  if (dx<1 || dx>65536) fatal("%s image width out of range: %d\n",file,dx);
+  if (dy<1 || dy>65536) fatal("%s image height out of range: %d\n",file,dy);
+  if (nbp!=1)  fatal("%s bit planes is not 1: %d\n",file,nbp);
+  if (bpp!=24) fatal("%s bits per pixel is not 24: %d\n",file,bpp);
+  if (k!=0)    fatal("%s compressed files not supported\n",file);
+#ifndef GL_VERSION_2_0
+  /*  OpenGL 2.0 lifts the restriction that texture size must be a power of two */
+  for (k=1;k<dx;k*=2);
+  if (k!=dx) fatal("%s image width not a power of two: %d\n",file,dx);
+  for (k=1;k<dy;k*=2);
+  if (k!=dy) fatal("%s image height not a power of two: %d\n",file,dy);
+#endif
+
+  /*  Allocate image memory */
+  size = 3*dx*dy;
+  image = (unsigned char*) malloc(size);
+  if (!image) fatal("Cannot allocate %d bytes of memory for image %s\n",size,file);
+  /*  Seek to and read image */
+  if (fseek(f,20,SEEK_CUR) || fread(image,size,1,f)!=1)
+    fatal("Error reading data from image %s\n",file);
+  fclose(f);
+  /*  Reverse colors (BGR -> RGB) */
+  for (k=0;k<size;k+=3) {
+    unsigned char temp = image[k];
+    image[k]   = image[k+2];
+    image[k+2] = temp;
+  }
+
+  /*  Sanity check */
+  errCheck("loadTexBMP");
+  /*  Generate 2D texture */
+  glGenTextures(1,&texture);
+  glBindTexture(GL_TEXTURE_2D,texture);
+  /*  Copy image */
+  glTexImage2D(GL_TEXTURE_2D,0,3,dx,dy,0,GL_RGB,GL_UNSIGNED_BYTE,image);
+  if (glGetError()) fatal("Error in glTexImage2D %s %dx%d\n",file,dx,dy);
+  /*  Scale linearly when image size doesn't match */
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+  /*  Free image memory */
+  free(image);
+  /*  Return texture name */
+  cout << "returning texture" << endl;
+  return texture;
+}
+
+void initSkyBox()
+{
+//    cout << "initializeing" << endl;
+    skybox[SKY_FRONT] = loadTexBMP("bmp/txStormydays_front.bmp");
+    skybox[SKY_RIGHT] = loadTexBMP("bmp/txStormydays_right.bmp");
+    skybox[SKY_LEFT] = loadTexBMP("bmp/txStormydays_left.bmp");
+    skybox[SKY_BACK] = loadTexBMP("bmp/txStormydays_back.bmp");
+    skybox[SKY_UP] = loadTexBMP("bmp/txStormydays_up.bmp");
+    skybox[SKY_DOWN] = loadTexBMP("bmp/txStormydays_down.bmp");
+}
 
 
 
