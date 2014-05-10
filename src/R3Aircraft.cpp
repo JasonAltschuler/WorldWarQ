@@ -281,8 +281,6 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     aircraft->sources[1]->rate = fmax(5, AIRCRAFT_EXHAUST_RATE_MAX * aircraft->thrust_magnitude / aircraft->max_thrust);
 
 
-
-
     // UPDATE VELOCITY with acceleration (simple Euler integration) // TODO: combine into 1 line
     R3Vector net_force(0, 0, 0);
 
@@ -306,8 +304,6 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     // quick assert to make sure we didn't make any no-no's
     aircraft->AssertValid();
   }
-
-
 }
 
 

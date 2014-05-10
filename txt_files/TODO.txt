@@ -5,21 +5,24 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 capture video for realistic and non realistic thrust/turn (easy vs. hard mode). perhaps after trails
 
-Collisions:
+add sound effects when firing bullets.
+note: you may need to modify the code that uses randomnumbers to shoot at the proper rate.
+      we want the stream of bullets to be constant, so the gun sound will be good.
+
 test bullets and basic AI by having a turret on the ground shoot up at the plane
 
 Add animation on collision and respawning
 
+screen maximized and look good
+
 (UI: Add radar/minimap?)
+leading crosshair for targeting
 
 AI:
 Create computer-controlled aircraft
 
 Terrain:
 Landscape auto-creation and texture mapping
-
-
-
 
 
 /// =================== completed tasks below ================ ///
