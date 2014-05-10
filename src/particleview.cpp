@@ -33,6 +33,9 @@ static const double VIDEO_FRAME_DELAY = 1./25.; // 25 FPS
 static const double METERS_PER_UNIT = 7;
 static const float DEG2RAD = 3.14159/180;
 
+static int skybox[6];
+
+
 
 ////////////////////////////////////////////////////////////
 // GLOBAL VARIABLES
