@@ -22,6 +22,13 @@ struct R3Aircraft {
   double max_thrust;
   vector<R3ParticleSource *> sources;
   double firing_rate;
+  int hitpoints; // alive if positive (so should always be positive)
+
+  // remember original fields for when aircraft is destroyed and respawns
+  R3Vector respawn_velocity;
+  R3Matrix respawn_T;
+  double respawn_thrust_magnitude;
+  int respawn_hitpoints; // equivalently: max_hitpoints
 
 
   // move the plane
@@ -34,6 +41,9 @@ struct R3Aircraft {
 
   // get X, Y, and Z vectors (in modeling coordinates) when transformed to world coordinates
   R3Vector Modeling_To_World(R3Vector vector_modeling_coordinates);
+
+  // respawn if aircraft is destroyed
+  void Respawn(void);
 
   void AssertValid(void);
 };

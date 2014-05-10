@@ -25,6 +25,8 @@ Terrain:
 Landscape auto-creation and texture mapping
 
 
+At the end: remove some of the R3Aircraft.AssertValid() and R3Intersection.AssertValid() calls to speed up
+
 /// =================== completed tasks below ================ ///
 
 

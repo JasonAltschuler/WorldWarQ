@@ -53,29 +53,28 @@ R3Aircraft::R3Aircraft(void) :
   drag(-1),
   thrust_magnitude(-1),
   max_thrust(-1),
-  firing_rate(-1)
+  firing_rate(-1),
+  hitpoints(-1)
 {
   sources.resize(2);
 }
 
 
-void FireBullet(R3Scene *scene, R3Aircraft *aircraft)
+void FireBullet(R3Scene *scene, R3Aircraft *aircraft, int aircraft_id)
 {
 //  BULLET_VELOCITY
 
   double pi = 3.14159265;
   double angle_cutoff = .01;
 
-  R3Vector bullet_origin_modeling (2, 0, 0);
+  R3Vector bullet_origin_modeling (10, 0, 0);
   R3Vector bullet_origin_world = aircraft->Modeling_To_World(bullet_origin_modeling);
 
   // TODO add bullet spread
   R3Vector N(1, 0, 0);
-
   R3Vector A = N;
   A.Cross(R3Vector(.2,.1,0));
   A.Normalize();
-
   double t1 = RandomNumber()*2*pi;
   double t2 = RandomNumber()*sin(angle_cutoff);
   R3Vector V = A;
@@ -92,17 +91,18 @@ void FireBullet(R3Scene *scene, R3Aircraft *aircraft)
   bullet_velocity_world.Transform(aircraft->T);
 
   double bullet_mass = 1;
-  double bullet_fixed =false;
+  double bullet_fixed = false;
   double bullet_elasticity = 0;
   double bullet_drag = 0;
   double bullet_lifetime = 10.0;
   R3Material *bullet_material = aircraft->material;
   vector<R3ParticleSpring *> bullet_springs(0);
   bool bullet_is_bullet = true; // derp
+  R3Aircraft *aircraft_fired_from = aircraft;
 
   R3Particle * new_bullet = new R3Particle(bullet_origin_world.Point(), bullet_velocity_world,
       bullet_mass, bullet_fixed, bullet_drag, bullet_elasticity, bullet_lifetime,
-      bullet_material, bullet_springs, bullet_is_bullet);
+      bullet_material, bullet_springs, bullet_is_bullet, aircraft_fired_from);
 
   scene->particles.push_back(new_bullet);
 }
@@ -186,10 +186,43 @@ RollRight(double delta_time)
                0, SIN_THETA, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
-  if (hard_mode == 1) // makes aircraft velocity more realastic. see writeup for more details
+  if (hard_mode == 1) // makes aircraft velocity more realistic. see writeup for more details
     velocity.Transform(mat.Transpose());
   AssertValid();
 }
+
+void HitAircraft(R3Scene *scene, R3Aircraft *aircraft)
+{
+  aircraft->hitpoints--;
+
+  // plane dies if hitpoints <= 0
+  if (aircraft->hitpoints <= 0)
+  {
+    // if user-controlled airplane that blows up, you lose!
+    if (aircraft == scene->Aircraft(0))
+    {
+      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
+    }
+
+    // else, it is an AI plane
+    else
+    {
+      cout << "PLANE DEAD" << endl;
+      aircraft->Respawn();
+    }
+  }
+}
+
+void R3Aircraft::
+Respawn(void)
+{
+  velocity = respawn_velocity;
+  T = respawn_T;
+  thrust_magnitude = respawn_thrust_magnitude;
+  hitpoints = respawn_hitpoints;
+  AssertValid();
+}
+
 
 void R3Aircraft::
 AssertValid(void)
@@ -199,6 +232,7 @@ AssertValid(void)
   assert(drag >= 0);
   assert(thrust_magnitude >= 0);
   assert(max_thrust >= 0);
+//  assert(hitpoints > 0); // TODO
 
   if (hard_mode == 0) // invariant only holds on easy mode (see writeup for more details)
     assert(velocity.X() >= 0);
@@ -233,9 +267,9 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
       {
         double mult_rate = aircraft->firing_rate * delta_time;
         if (mult_rate >= 1)
-          FireBullet(scene, aircraft);
+          FireBullet(scene, aircraft, 0);
         else if (RandomNumber() < mult_rate)
-          FireBullet(scene, aircraft);
+          FireBullet(scene, aircraft, 0);
       }
     }
 

@@ -4,16 +4,16 @@ aircraft
   aircraft1219_edited.off
   50 5000 400
   1 0 0
-  1 0.3 1 8 10
+  1 0.3 1 8 10 3
   
   
   #
   aircraft
   -1
   aircraft1219_edited.off
-  300 5000 400
+  75 5000 400
   1 0 0
-  1 0.3 1 8 10
+  1 0.3 1 8 10 3
 
 mesh
 -1

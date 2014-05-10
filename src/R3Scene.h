@@ -112,7 +112,7 @@ struct R3Particle {
   R3Particle(R3Point position, R3Vector direction_emanate, R3ParticleSource * source);
   R3Particle(R3Point position, R3Vector velocity, double mass, bool fixed, double drag, double
       elasticity, double lifetime, R3Material *material, vector<struct R3ParticleSpring *> springs,
-      bool is_bullet);
+      bool is_bullet, R3Aircraft *aircraft_fired_from);
 
   R3Point position;
   R3Vector velocity;
@@ -124,6 +124,7 @@ struct R3Particle {
   R3Material *material;
   vector<struct R3ParticleSpring *> springs;
   bool is_bullet;
+  R3Aircraft *aircraft_fired_from; // NULL if not a bullet. otherwise a pointer to the aircraft that fired the bullet
 };
 
 inline R3Particle::R3Particle(void) :
@@ -136,7 +137,8 @@ inline R3Particle::R3Particle(void) :
     lifetime(-1),
     material(NULL),
     springs(vector<struct R3ParticleSpring *>(0)),
-    is_bullet(false)
+    is_bullet(false),
+    aircraft_fired_from(NULL)
 {
 }
 
@@ -153,11 +155,12 @@ inline R3Particle::R3Particle(R3Point position, R3Vector direction_emanate, R3Pa
   this->material = source->material;
   this->springs.clear();
   this->is_bullet = false;
+  this->aircraft_fired_from = NULL;
 }
 
 inline R3Particle::R3Particle(R3Point position, R3Vector velocity, double mass, bool fixed, double drag,
     double elasticity, double lifetime, R3Material *material, vector<struct R3ParticleSpring *> springs,
-    bool is_bullet) :
+    bool is_bullet, R3Aircraft *aircraft_fired_from) :
     position(position),
     velocity(velocity),
     mass(mass),
@@ -167,7 +170,8 @@ inline R3Particle::R3Particle(R3Point position, R3Vector velocity, double mass, 
     lifetime(lifetime),
     material(material),
     springs(springs),
-    is_bullet(is_bullet)
+    is_bullet(is_bullet),
+    aircraft_fired_from(aircraft_fired_from)
 {
 }
 
@@ -393,6 +397,7 @@ struct R3Intersection {
   // member variables
   bool hit;
   R3Node *node;
+  R3Aircraft *aircraft;
   R3Point position;
   R3Vector normal;
   double t;
@@ -409,6 +414,7 @@ inline R3Intersection::
 R3Intersection(void)
   : hit(false),
     node(NULL),
+    aircraft(NULL),
     position(R3zero_point),
     normal(R3zero_vector),
     t(-1),
@@ -423,13 +429,14 @@ AssertValid(void)
   if (hit) {
     assert(t > 0);
     assert(distance > 0);
-    assert(node != NULL);
+//    assert(node != NULL || aircraft != NULL);
     assert(abs(normal.Length() - 1) < 0.01);
   }
   else {
     assert(t <= 0);
     assert(distance = DOUBLE_MAX);
     assert(node == NULL);
+    assert(aircraft == NULL);
   }
 }
 
@@ -440,6 +447,7 @@ SetMiss(void)
   t = -1;
   distance = DOUBLE_MAX;
   node = NULL;
+  aircraft = NULL;
 }
 
 inline bool R3Intersection::

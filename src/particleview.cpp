@@ -741,6 +741,31 @@ void DrawScene(R3Scene *scene)
 {
   // Draw nodes recursively
   DrawNode(scene, scene->root);
+
+
+  //  TODO: delete later? also, note quite working...
+  // Added by Jason: May 10. Shows bounding boxes of airplanes
+//  GLboolean lighting = glIsEnabled(GL_LIGHTING);
+//  glDisable(GL_LIGHTING);
+//  for (int i = 0; i < scene->NAircrafts(); i++)
+//  {
+//    R3Aircraft *aircraft = scene->Aircraft(i);
+//
+//    // Push transformation onto stack
+//    glPushMatrix();
+//    LoadMatrix(&aircraft->T);
+//
+//    // Load material
+//    if (aircraft->material) LoadMaterial(aircraft->material);
+//
+//    // Draw shape
+//    aircraft->mesh->bbox.Outline();
+//    if (aircraft->mesh) aircraft->mesh->Draw();
+//    else { fprintf(stderr, "problem drawing bounding aircraft bounding boxes!"); exit(1); }
+//  }
+//
+//  if (lighting) glEnable(GL_LIGHTING);
+
 }
 
 

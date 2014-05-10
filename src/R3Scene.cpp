@@ -698,7 +698,7 @@ Read(const char *filename, R3Node *node)
      *    meshname
      *    pos_x, pos_y, pos_z
      *    vel_x, vel_, vel_z
-     *    mass, drag, thrust_magnitude, max_thrust, firing_rate
+     *    mass, drag, thrust_magnitude, max_thrust, firing_rate, hitpoints
      */
     else if (!strcmp(cmd, "aircraft")) {
       // Read data
@@ -710,13 +710,14 @@ Read(const char *filename, R3Node *node)
       double thrust_magnitude = -1;
       double max_thrust = -1;
       double firing_rate = -1;
+      double hitpoints = -1;
 
       int m;
       char meshname[256];
-      if (fscanf(fp, "%d%s%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf", &m, meshname,
+      if (fscanf(fp, "%d%s%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf", &m, meshname,
           &position[0], &position[1], &position[2],
           &velocity[0], &velocity[1], &velocity[2],
-          &mass, &drag, &thrust_magnitude, &max_thrust, &firing_rate)!= 13) {
+          &mass, &drag, &thrust_magnitude, &max_thrust, &firing_rate, &hitpoints)!= 14) {
         fprintf(stderr, "Unable to parse mesh command %d in file %s\n", command_number, filename);
         return 0;
       }
@@ -758,7 +759,7 @@ Read(const char *filename, R3Node *node)
       aircraft->T = R3Matrix(1, 0, 0, position.X(),
                              0, 1, 0, position.Y(),
                              0, 0, 1, position.Z(),
-                             0, 0, 0, 1); // TODO: needs to be dependent on input position!!!!!!
+                             0, 0, 0, 1);
       aircraft->mesh = mesh;
       aircraft->velocity = velocity;
       aircraft->material = material;
@@ -767,6 +768,12 @@ Read(const char *filename, R3Node *node)
       aircraft->thrust_magnitude = thrust_magnitude;
       aircraft->max_thrust = max_thrust;
       aircraft->firing_rate = firing_rate;
+      aircraft->hitpoints = (int) hitpoints;
+
+      aircraft->respawn_velocity = aircraft->velocity;
+      aircraft->respawn_T = aircraft->T;
+      aircraft->respawn_thrust_magnitude = aircraft->thrust_magnitude;
+      aircraft->respawn_hitpoints = aircraft->hitpoints;
 
       assert(aircraft->sources.size() == 2);
       for (int i = 0; i < aircraft->sources.size(); i++)
@@ -790,7 +797,8 @@ Read(const char *filename, R3Node *node)
       }
 
 
-      // Add particle to scene
+      // Add aircraft to scene
+      aircraft->AssertValid();
       aircrafts.push_back(aircraft);
 
       // Update scene bounding box

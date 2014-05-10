@@ -674,157 +674,193 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
     }
 
 
-    // modified by Kyle so bullets are not computing intersections
+    // modified by Jason so bullets intersect with airplanes, but not mesh (on May 10)
+    // modified by Kyle so bullets are not computing intersections (before May 10)
     else if (particle->is_bullet)
     {
+      // calculate intersections with other aircrafts
+      R3Ray ray(particle->position, positions[i]);
+      R3Intersection closest_intersection = ComputeIntersectionWithAircrafts(scene, ray, particle);
+
+      // make sure intersection is actually an intersection
+      if (closest_intersection.IsHit())
+      {
+        double t = ray.T(positions[i]);
+        double t_collision = ray.T(closest_intersection.position);
+        if (t_collision < 0 || t_collision > t)
+          closest_intersection.SetMiss();
+      }
+
+      if (!closest_intersection.IsHit())
+      {
         particle->position = positions[i];
         particle->velocity = velocities[i];
+      }
+
+      else
+      {
+        // TODO: later, make an explosion! Delete bullet, and destroy (possibly respawn) airplane
+        cout << "PLANE INTERSECTION !!!" << endl;
+        particle->position = positions[i];
+        particle->velocity = R3zero_vector;
+        particle->lifetime = 10;
+
+        HitAircraft(scene, closest_intersection.aircraft);
+      }
     }
+
 
     else
     {
-      // check for collisions iteratively (if one collision, then "reverse" velocity, and
-      // check for more collisions in that direction etc.)
-      double remaining_time = delta_time;
-      R3Point old_position = particle->position;
-      R3Point new_position = positions[i];
-      R3Vector new_velocity = velocities[i];
+      // TODO: delete later
+      cout << "ERROR!! SHOULDN'T GET HERE!!" << endl;
+      exit(1);
+    }
 
-      while (remaining_time > 0)
-      {
-        double delta_distance = (old_position - new_position).Length();
-        R3Ray ray(old_position, new_position);
-
-        // check for intersection with scene graph (note that sinks and sources are NOT in the scene graph)
-        R3Intersection closest_intersection = ComputeIntersection(scene, scene->Root(), ray);
-
-        // check for intersections with sinks
-//        for (int j = 0; j < scene->NParticleSinks(); j++)
+//    else
+//    {
+//      // check for collisions iteratively (if one collision, then "reverse" velocity, and
+//      // check for more collisions in that direction etc.)
+//      double remaining_time = delta_time;
+//      R3Point old_position = particle->position;
+//      R3Point new_position = positions[i];
+//      R3Vector new_velocity = velocities[i];
+//
+//      while (remaining_time > 0)
+//      {
+//        double delta_distance = (old_position - new_position).Length();
+//        R3Ray ray(old_position, new_position);
+//
+//        // check for intersection with scene graph (note that sinks and sources are NOT in the scene graph)
+//        R3Intersection closest_intersection = ComputeIntersection(scene, scene->Root(), ray);
+//
+//        // check for intersections with sinks
+//        //        for (int j = 0; j < scene->NParticleSinks(); j++)
+//        //        {
+//        //          R3ParticleSink *sink = scene->ParticleSink(j);
+//        //          R3Intersection sink_intersection;
+//        //
+//        //          if (sink->shape->type == R3_SPHERE_SHAPE)
+//        //          {
+//        //            sink_intersection = IntersectRayWithSphere(ray, sink->shape->sphere, scene->Root());
+//        //          }
+//        //
+//        //          else if (sink->shape->type == R3_CIRCLE_SHAPE)
+//        //          {
+//        //            R3Circle *circle = sink->shape->circle;
+//        //            R3Plane plane = circle->Plane();
+//        //            R3Point P = old_position;
+//        //            R3Point P_projected = old_position;
+//        //            P_projected.Project(plane);
+//        //
+//        //            // edge case of ray is on the circle's plane:
+//        //            if (((P - P_projected).Length() < 0.0001) &&
+//        //                abs(ray.Vector().Dot(plane.Normal())) < 0.0001)
+//        //            {
+//        //              R3Sphere fake_sphere(circle->Center(), circle->Radius());
+//        //              sink_intersection = IntersectRayWithSphere(ray, &fake_sphere, scene->Root());
+//        //            }
+//        //
+//        //            // normal case: ray is not on the circle's plane:
+//        //            else
+//        //            {
+//        //              double t = -(R3Vector(old_position.X(), old_position.Y(), old_position.Z()).Dot(plane.Normal()) + plane.D()) /
+//        //                  (ray.Vector().Dot(plane.Normal()));
+//        //              R3Point plane_intersection_point = old_position + t * ray.Vector();
+//        //
+//        //              if ((t > 0.00001) && ((plane_intersection_point - circle->Center()).Length() <= circle->Radius()))
+//        //              {
+//        //                R3Intersection plane_intersection;
+//        //                plane_intersection.hit = true;
+//        //                plane_intersection.node = scene->Root();
+//        //                plane_intersection.position = plane_intersection_point;
+//        //                plane_intersection.normal = plane.Normal();
+//        //                if (ray.Vector().Dot(plane_intersection.normal) > 0)
+//        //                  plane_intersection.normal = -plane_intersection.normal;
+//        //                plane_intersection.normal.Normalize();
+//        //                plane_intersection.distance = (plane_intersection.position - old_position).Length();
+//        //                plane_intersection.t = ray.T(plane_intersection_point);
+//        //                plane_intersection.AssertValid();
+//        //
+//        //                sink_intersection = plane_intersection;
+//        //              }
+//        //            }
+//        //          }
+//
+//        //          if (sink_intersection.IsHit()) // implementation assures that this is false if no intesection calcualted above (see constructor)
+//        //          {
+//        //            if ((!closest_intersection.IsHit()) ||
+//        //                (closest_intersection.IsHit() && sink_intersection.distance < closest_intersection.distance))
+//        //            {
+//        //              closest_intersection = sink_intersection;
+//        //            }
+//        //          }
+//        //        }
+//
+//
+//        // if no collision
+//        if (!closest_intersection.IsHit() || (closest_intersection.IsHit() && closest_intersection.distance > delta_distance))
 //        {
-//          R3ParticleSink *sink = scene->ParticleSink(j);
-//          R3Intersection sink_intersection;
-//
-//          if (sink->shape->type == R3_SPHERE_SHAPE)
-//          {
-//            sink_intersection = IntersectRayWithSphere(ray, sink->shape->sphere, scene->Root());
-//          }
-//
-//          else if (sink->shape->type == R3_CIRCLE_SHAPE)
-//          {
-//            R3Circle *circle = sink->shape->circle;
-//            R3Plane plane = circle->Plane();
-//            R3Point P = old_position;
-//            R3Point P_projected = old_position;
-//            P_projected.Project(plane);
-//
-//            // edge case of ray is on the circle's plane:
-//            if (((P - P_projected).Length() < 0.0001) &&
-//                abs(ray.Vector().Dot(plane.Normal())) < 0.0001)
-//            {
-//              R3Sphere fake_sphere(circle->Center(), circle->Radius());
-//              sink_intersection = IntersectRayWithSphere(ray, &fake_sphere, scene->Root());
-//            }
-//
-//            // normal case: ray is not on the circle's plane:
-//            else
-//            {
-//              double t = -(R3Vector(old_position.X(), old_position.Y(), old_position.Z()).Dot(plane.Normal()) + plane.D()) /
-//                  (ray.Vector().Dot(plane.Normal()));
-//              R3Point plane_intersection_point = old_position + t * ray.Vector();
-//
-//              if ((t > 0.00001) && ((plane_intersection_point - circle->Center()).Length() <= circle->Radius()))
-//              {
-//                R3Intersection plane_intersection;
-//                plane_intersection.hit = true;
-//                plane_intersection.node = scene->Root();
-//                plane_intersection.position = plane_intersection_point;
-//                plane_intersection.normal = plane.Normal();
-//                if (ray.Vector().Dot(plane_intersection.normal) > 0)
-//                  plane_intersection.normal = -plane_intersection.normal;
-//                plane_intersection.normal.Normalize();
-//                plane_intersection.distance = (plane_intersection.position - old_position).Length();
-//                plane_intersection.t = ray.T(plane_intersection_point);
-//                plane_intersection.AssertValid();
-//
-//                sink_intersection = plane_intersection;
-//              }
-//            }
-//          }
-
-//          if (sink_intersection.IsHit()) // implementation assures that this is false if no intesection calcualted above (see constructor)
-//          {
-//            if ((!closest_intersection.IsHit()) ||
-//                (closest_intersection.IsHit() && sink_intersection.distance < closest_intersection.distance))
-//            {
-//              closest_intersection = sink_intersection;
-//            }
-//          }
+//          particle->position = new_position;
+//          particle->velocity = new_velocity;
+//          break;
 //        }
-
-
-      // if no collision
-      if (!closest_intersection.IsHit() || (closest_intersection.IsHit() && closest_intersection.distance > delta_distance))
-      {
-        particle->position = new_position;
-        particle->velocity = new_velocity;
-        break;
-      }
-
-      // if collision
-      else
-      {
-
-        // collision with sink --> end the particle
-        if (closest_intersection.node == scene->Root())
-        {
-          particle->lifetime = 0; // end the particle after this for loop
-          particle->position = closest_intersection.position;
-          particle->velocity = R3zero_vector;
-          remaining_time = 0;
-          break;
-        }
-
-        // not just particle->velocity if non-Euler integration type
-        R3Vector old_velocity = (new_position - old_position) / remaining_time;
-        assert(old_velocity.Length() > 0);
-
-        // get info about collision
-        double collision_time = closest_intersection.distance / old_velocity.Length(); // distance = rate * time
-        remaining_time -= collision_time;
-        assert(remaining_time >= 0);
-
-        // get info about bounce
-        R3Vector N = closest_intersection.normal;
-        assert(abs(N.Length() - 1) < 0.001);
-
-        // reflect over normal
-        double V_old_length = old_velocity.Length();
-        R3Vector V_old = -old_velocity;
-        V_old.Normalize();
-        R3Vector R_old = 2 * N * (N.Dot(V_old)) - V_old;
-        R_old *= V_old_length;
-
-        double V_new_length = new_velocity.Length();
-        R3Vector V_new = -new_velocity;
-        V_new.Normalize();
-        R3Vector R_new = 2 * N * (N.Dot(V_new) / V_new.Length()) - V_new;
-        R_new *= V_new_length;
-
-        // adjust velocity for elasticity
-        R3Vector projection_old = R_old;
-        projection_old.Project(N);
-        R3Vector projection_new = R_new;
-        projection_new.Project(N);
-
-        old_velocity = R_old + ((particle->elasticity - 1) * projection_old);
-        new_velocity = R_new + ((particle->elasticity - 1) * projection_new);
-
-        // update positions after bounce
-        old_position = closest_intersection.position;
-        new_position = old_position + remaining_time * old_velocity; // correct regardless of integration type
-      }
-    }
-    }
+//
+//        // if collision
+//        else
+//        {
+//
+//          // collision with sink --> end the particle
+//          if (closest_intersection.node == scene->Root())
+//          {
+//            particle->lifetime = 0; // end the particle after this for loop
+//            particle->position = closest_intersection.position;
+//            particle->velocity = R3zero_vector;
+//            remaining_time = 0;
+//            break;
+//          }
+//
+//          // not just particle->velocity if non-Euler integration type
+//          R3Vector old_velocity = (new_position - old_position) / remaining_time;
+//          assert(old_velocity.Length() > 0);
+//
+//          // get info about collision
+//          double collision_time = closest_intersection.distance / old_velocity.Length(); // distance = rate * time
+//          remaining_time -= collision_time;
+//          assert(remaining_time >= 0);
+//
+//          // get info about bounce
+//          R3Vector N = closest_intersection.normal;
+//          assert(abs(N.Length() - 1) < 0.001);
+//
+//          // reflect over normal
+//          double V_old_length = old_velocity.Length();
+//          R3Vector V_old = -old_velocity;
+//          V_old.Normalize();
+//          R3Vector R_old = 2 * N * (N.Dot(V_old)) - V_old;
+//          R_old *= V_old_length;
+//
+//          double V_new_length = new_velocity.Length();
+//          R3Vector V_new = -new_velocity;
+//          V_new.Normalize();
+//          R3Vector R_new = 2 * N * (N.Dot(V_new) / V_new.Length()) - V_new;
+//          R_new *= V_new_length;
+//
+//          // adjust velocity for elasticity
+//          R3Vector projection_old = R_old;
+//          projection_old.Project(N);
+//          R3Vector projection_new = R_new;
+//          projection_new.Project(N);
+//
+//          old_velocity = R_old + ((particle->elasticity - 1) * projection_old);
+//          new_velocity = R_new + ((particle->elasticity - 1) * projection_new);
+//
+//          // update positions after bounce
+//          old_position = closest_intersection.position;
+//          new_position = old_position + remaining_time * old_velocity; // correct regardless of integration type
+//        }
+//      }
+//    }
   }
 
 
@@ -849,11 +885,57 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
 
 
 
-// NOTE THAT THE FOLLOWING CODE IS COPIED FROM MY ASSIGNMENT 3, with only a few minor improvements
+
+
+
+
+
+
+
 //========================== Intersection Computations =========================== //
 
 // construct small epsilon s.t. intersection t must be > epsilon to count (talked about in precept)
 static const double EPSILON = 0.00001;
+
+
+
+R3Intersection ComputeIntersectionWithAircrafts(R3Scene* scene, R3Ray ray, R3Particle *bullet)
+{
+  assert(scene != NULL);
+
+  R3Intersection closest_intersection;
+
+  for (int i = 0; i < scene->NAircrafts(); i++)
+  {
+    R3Aircraft *aircraft = scene->Aircraft(i);
+
+    // don't count intersections with the plane that fired the bullet
+    if (aircraft == bullet->aircraft_fired_from)
+      continue;
+
+    R3Ray new_ray = ray;
+    new_ray.InverseTransform(aircraft->T);
+
+    // speed intersection check up by just intersecting with a box
+    //    R3Intersection aircraft_intersection = IntersectRayWithMesh(new_ray, aircraft->mesh, NULL);
+    R3Intersection aircraft_intersection = IntersectRayWithBox(new_ray, &aircraft->mesh->bbox, NULL);
+    if (aircraft_intersection.IsHit())
+      aircraft_intersection.aircraft = aircraft;
+    aircraft_intersection.AssertValid();
+
+    if (aircraft_intersection.IsHit() && aircraft_intersection.t >= EPSILON)
+    {
+      aircraft_intersection.Transform(aircraft->T, ray);
+      aircraft_intersection.AssertValid();
+
+      if (aircraft_intersection.distance < closest_intersection.distance)
+        closest_intersection = aircraft_intersection;
+    }
+  }
+
+  return closest_intersection;
+}
+
 
 
 
