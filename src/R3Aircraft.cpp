@@ -261,60 +261,69 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
   R3Point aircraft_position = this->Modeling_To_World(R3Vector(0, 0, 0)).Point();
   R3Point enemy_position = enemy->Modeling_To_World(R3Vector(0, 0, 0)).Point();
 
-  // TODO: delete
   // convert cartesian coordinates (to_enemy) to spherical coordinates: (x,y,z) -> (dist, theta, phi)
   R3Vector vector_to_enemy_xyz = enemy_position - aircraft_position;
   double dist_to_enemy = vector_to_enemy_xyz.Length();
-  double phi_xyz = atan2(sqrt(vector_to_enemy_xyz.X() * vector_to_enemy_xyz.X() + vector_to_enemy_xyz.Y() * vector_to_enemy_xyz.Y()), vector_to_enemy_xyz.Z());
-  double theta_xyz = atan2(vector_to_enemy_xyz.Y(), vector_to_enemy_xyz.X());
 
   // convert cartesian coordinates (to_enemy) to spherical coordinates: rotated(x,y,z) -> (dist, theta, phi)
   R3Vector vector_to_enemy_rotated = vector_to_enemy_xyz;
   vector_to_enemy_rotated.Transform(this->T.Transpose());
-  assert(abs(vector_to_enemy_rotated.Length() - dist_to_enemy) < 0.00001);
   double phi_rotated = atan2(sqrt(vector_to_enemy_rotated.X() * vector_to_enemy_rotated.X() + vector_to_enemy_rotated.Y() * vector_to_enemy_rotated.Y()), vector_to_enemy_rotated.Z());
   double theta_rotated = atan2(vector_to_enemy_rotated.Y(), vector_to_enemy_rotated.X());
 
-  cout << theta_rotated << "\t" << phi_rotated << endl;
+
+  //  cout << theta_rotated << "\t" << phi_rotated << endl;
+  //  cout << (int) dist_to_enemy << endl;
+
+
 
   // TODO: play with these:
-  const double RADIUS_SHOOTING_RANGE = 0.130899694;                 // 7.5 degrees in radians
-  const double RADIUS_MOVING_RANGE = RADIUS_SHOOTING_RANGE / 50.0;  // the smaller this is, the better the AI is/ TODO: change with hard mode?
-
+  const double AI_RADIUS_SHOOTING_RANGE = 0.130899694;                 // 7.5 degrees in radians
+  const double AI_RADIUS_MOVING_RANGE = AI_RADIUS_SHOOTING_RANGE / 50.0;  // the smaller this is, the better the AI is/ TODO: change with hard mode?
+  const double AI_DISTANCE_HI_LO_THRUST = 75.0; // probably somewhere between 75 and 100 is best
 
   // shoot if aimed properly
-  if (abs(theta_rotated) < RADIUS_SHOOTING_RANGE && abs(phi_rotated - PI/2) < RADIUS_SHOOTING_RANGE)
-  {
+  if (abs(theta_rotated) < AI_RADIUS_SHOOTING_RANGE && abs(phi_rotated - PI/2.0) < AI_RADIUS_SHOOTING_RANGE)
     this->FireBullet(scene); // TODO: AI is actually way too good... maybe make it only shoot with probability 1/2 or something?
-  }
 
 
-  //
-  bool rolled = false;
-
-  // roll left or right to aim
-  if (abs(theta_rotated) < RADIUS_MOVING_RANGE)
+  // ROLL LEFT OR RIGHT TO AIM
+  if (abs(theta_rotated) > AI_RADIUS_MOVING_RANGE)
   {
-    if (theta_rotated < 0)
-    {
-      RollRight(delta_time);
-//      Pitch
-    }
-    if (theta_rotated > 0)
-    {
-      RollLeft(delta_time);
-    }
-    rolled = true;
-  }
-
-  // tilt up or down to aim
-  if (!rolled && abs(phi_rotated - PI/2) > RADIUS_MOVING_RANGE)
-  {
-    if (phi_rotated < PI/2)
+    // boundary case: if enemy is directly behind AI
+    if (abs(theta_rotated - PI) < AI_RADIUS_MOVING_RANGE)
       PitchUp(delta_time);
-    if (phi_rotated > PI/2)
+
+    // else, not directly behind: so just make small adjustments to aim
+    else if (theta_rotated < 0)
+      RollRight(delta_time);
+    else if (theta_rotated > 0)
+      RollLeft(delta_time);
+  }
+
+
+  // TILT UP OR DOWN TO AIM
+  // Note: "else if" because planes can't simultaneously roll and tilt at the same time; this also
+  // makes turning left / right more smooth
+  else if (abs(phi_rotated - PI/2.0) > AI_RADIUS_MOVING_RANGE)
+  {
+
+    if (phi_rotated < PI/2.0)
+      PitchUp(delta_time);
+    else if (phi_rotated > PI/2.0)
       PitchDown(delta_time);
   }
+
+
+  // SPEED UP OR SLOW DOWN BASED ON HOW FAR AWAY THE ENEMY IS
+  if (abs(dist_to_enemy - AI_DISTANCE_HI_LO_THRUST) > 1)
+  {
+    if (abs(dist_to_enemy) > AI_DISTANCE_HI_LO_THRUST)
+      ThrustForward(delta_time);
+    else
+      BrakeBackward(delta_time);
+  }
+
 
 
 
