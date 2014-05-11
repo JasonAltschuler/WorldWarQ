@@ -65,7 +65,8 @@ R3Aircraft::R3Aircraft(void) :
 }
 
 
-void FireBullet(R3Scene *scene, R3Aircraft *aircraft, int aircraft_id)
+void R3Aircraft::
+FireBullet(R3Scene *scene)
 {
 //  BULLET_VELOCITY
 
@@ -73,7 +74,7 @@ void FireBullet(R3Scene *scene, R3Aircraft *aircraft, int aircraft_id)
   double angle_cutoff = .01;
 
   R3Vector bullet_origin_modeling (3, 0, 0);
-  R3Vector bullet_origin_world = aircraft->Modeling_To_World(bullet_origin_modeling);
+  R3Vector bullet_origin_world = Modeling_To_World(bullet_origin_modeling);
 
   // TODO add bullet spread
   R3Vector N(1, 0, 0);
@@ -89,21 +90,21 @@ void FireBullet(R3Scene *scene, R3Aircraft *aircraft, int aircraft_id)
   V.Rotate(cross, acos(t2));
   V.Normalize();
 
-//  R3Vector bullet_velocity_modeling (BULLET_VELOCITY + aircraft->velocity.X(), 0, 0);
-  R3Vector bullet_velocity_modeling = V*(BULLET_VELOCITY + aircraft->velocity.X());
+//  R3Vector bullet_velocity_modeling (BULLET_VELOCITY + velocity.X(), 0, 0);
+  R3Vector bullet_velocity_modeling = V*(BULLET_VELOCITY + velocity.X());
 
   R3Vector bullet_velocity_world = bullet_velocity_modeling;
-  bullet_velocity_world.Transform(aircraft->T);
+  bullet_velocity_world.Transform(T);
 
   double bullet_mass = 1;
   double bullet_fixed = false;
   double bullet_elasticity = 0;
   double bullet_drag = 0;
   double bullet_lifetime = 10.0;
-  R3Material *bullet_material = aircraft->material;
+  R3Material *bullet_material = material;
   vector<R3ParticleSpring *> bullet_springs(0);
   bool bullet_is_bullet = true; // derp
-  R3Aircraft *aircraft_fired_from = aircraft;
+  R3Aircraft *aircraft_fired_from = this;
 
   R3Particle * new_bullet = new R3Particle(bullet_origin_world.Point(), bullet_velocity_world,
       bullet_mass, bullet_fixed, bullet_drag, bullet_elasticity, bullet_lifetime,
@@ -252,26 +253,35 @@ AssertValid(void)
 
 
 void R3Aircraft::
-AI_decision(R3Aircraft *enemy, double delta_time)
+AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
 {
-//  // modeling coordinates -> world coordinates for both planes
-//  R3Point aircraft_position = this->Modeling_To_World(R3Vector(0, 0, 0)).Point();
-//  R3Point enemy_position = enemy->Modeling_To_World(R3Vector(0, 0, 0)).Point();
-//
-//  // TODO: delete
-//  // convert cartesian coordinates (to_enemy) to spherical coordinates: (x,y,z) -> (dist, theta, phi)
-//  R3Vector vector_to_enemy_xyz = enemy_position - aircraft_position;
-//  double dist_to_enemy = vector_to_enemy_xyz.Length();
-//  double phi_xyz = atan2(sqrt(vector_to_enemy_xyz.X() * vector_to_enemy_xyz.X() + vector_to_enemy_xyz.Y() * vector_to_enemy_xyz.Y()), vector_to_enemy_xyz.Z());
-//  double theta_xyz = atan2(vector_to_enemy_xyz.Y(), vector_to_enemy_xyz.X());
-//
-//  // convert cartesian coordinates (to_enemy) to spherical coordinates: rotated(x,y,z) -> (dist, theta, phi)
-//  R3Vector vector_to_enemy_rotated = vector_to_enemy_xyz;
-//  vector_to_enemy_rotated.Transform(this->T.Transpose());
-//  double dist_to_enemy = vector_to_enemy_xyz.Length();
-//  double phi_xyz = atan2(sqrt(vector_to_enemy_xyz.X() * vector_to_enemy_xyz.X() + vector_to_enemy_xyz.Y() * vector_to_enemy_xyz.Y()), vector_to_enemy_xyz.Z());
-//  double theta_xyz = atan2(vector_to_enemy_xyz.Y(), vector_to_enemy_xyz.X());
-//
+  // modeling coordinates -> world coordinates for both planes
+  R3Point aircraft_position = this->Modeling_To_World(R3Vector(0, 0, 0)).Point();
+  R3Point enemy_position = enemy->Modeling_To_World(R3Vector(0, 0, 0)).Point();
+
+  // TODO: delete
+  // convert cartesian coordinates (to_enemy) to spherical coordinates: (x,y,z) -> (dist, theta, phi)
+  R3Vector vector_to_enemy_xyz = enemy_position - aircraft_position;
+  double dist_to_enemy = vector_to_enemy_xyz.Length();
+  double phi_xyz = atan2(sqrt(vector_to_enemy_xyz.X() * vector_to_enemy_xyz.X() + vector_to_enemy_xyz.Y() * vector_to_enemy_xyz.Y()), vector_to_enemy_xyz.Z());
+  double theta_xyz = atan2(vector_to_enemy_xyz.Y(), vector_to_enemy_xyz.X());
+
+  // convert cartesian coordinates (to_enemy) to spherical coordinates: rotated(x,y,z) -> (dist, theta, phi)
+  R3Vector vector_to_enemy_rotated = vector_to_enemy_xyz;
+  vector_to_enemy_rotated.Transform(this->T.Transpose());
+  assert(abs(vector_to_enemy_rotated.Length() - dist_to_enemy) < 0.00001);
+  double phi_rotated = atan2(sqrt(vector_to_enemy_rotated.X() * vector_to_enemy_rotated.X() + vector_to_enemy_rotated.Y() * vector_to_enemy_rotated.Y()), vector_to_enemy_rotated.Z());
+  double theta_rotated = atan2(vector_to_enemy_rotated.Y(), vector_to_enemy_rotated.X());
+
+  const double RADIUS_SHOOTING_RANGE = 0.34906585; // 20 degrees in radians
+  if (abs(theta_rotated) < RADIUS_SHOOTING_RANGE && abs(phi_rotated) < RADIUS_SHOOTING_RANGE)
+  {
+    this->FireBullet(scene);
+  }
+
+
+
+
 //  // TODO: delete visualization later!
 //  // Draw x, y, z for each aircraft
 //  // Draw meshes under transformation
@@ -284,8 +294,13 @@ AI_decision(R3Aircraft *enemy, double delta_time)
 //  R3Vector x_vec = aircraft->Modeling_To_World(R3Vector(1, 0, 0));
 //  R3Vector y_vec = aircraft->Modeling_To_World(R3Vector(0, 1, 0));
 //  R3Vector z_vec = aircraft->Modeling_To_World(R3Vector(0, 0, 1));
-//  R3Vector enemy_vec_modeling = dist_to_enemy * R3Vector(sin(phi_xyz) * cos(theta_xyz), sin(theta_xyz) * sin(phi_xyz), cos(phi_xyz));
-//  R3Vector enemy_vec = aircraft->Modeling_To_World(enemy_vec_modeling);
+//  R3Vector enemy_vec_modeling1 = dist_to_enemy * R3Vector(sin(phi_xyz) * cos(theta_xyz), sin(phi_rotated) * sin(theta_xyz), cos(phi_xyz));
+//  R3Vector enemy_vec1 = aircraft->Modeling_To_World(enemy_vec_modeling1);
+//
+//  R3Vector enemy_vec_modeling2 = dist_to_enemy * R3Vector(sin(phi_rotated) * cos(theta_rotated), sin(phi_rotated) * sin(theta_rotated), cos(phi_xyz));
+//  enemy_vec_modeling2.Transform(this->T);
+//  R3Vector enemy_vec2 = aircraft->Modeling_To_World(enemy_vec_modeling2);
+//
 //  // draw x in RED
 //  glColor3d(1, 0, 0);
 //  glVertex3f(origin.X(), origin.Y(), origin.Z());
@@ -299,16 +314,21 @@ AI_decision(R3Aircraft *enemy, double delta_time)
 //  glVertex3f(origin.X(), origin.Y(), origin.Z());
 //  glVertex3f(z_vec.X(), z_vec.Y(), z_vec.Z());
 //
-//  // draw enemy_vec in PINK
-//  glColor3d(1, 0, 1);
-//  glVertex3f(origin.X(), origin.Y(), origin.Z());
-//  glVertex3f(enemy_vec.X(), enemy_vec.Y(), enemy_vec.Z());
+////  // draw enemy_vec1 in PINK
+////  glColor3d(1, 0, 1);
+////  glVertex3f(origin.X(), origin.Y(), origin.Z());
+////  glVertex3f(enemy_vec1.X(), enemy_vec1.Y(), enemy_vec1.Z());
 //
-//  glEnd();
+//  // draw enemy_vec2 in YELLOW
+//   glColor3d(1, 1, 0);
+//   glVertex3f(origin.X(), origin.Y(), origin.Z());
+//   glVertex3f(enemy_vec2.X(), enemy_vec2.Y(), enemy_vec2.Z());
+//
 
 
 
 
+  
 
 //  // PLAYER-CONTROLLED AIRCRAFT
 //  if (i == 0)
@@ -367,9 +387,9 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
       {
         double mult_rate = aircraft->firing_rate * delta_time;
         if (mult_rate >= 1)
-          FireBullet(scene, aircraft, 0);
+          aircraft->FireBullet(scene);
         else if (RandomNumber() < mult_rate)
-          FireBullet(scene, aircraft, 0);
+          aircraft->FireBullet(scene);
       }
     }
 
@@ -379,7 +399,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
       // TODO: if make teams for dogfights, actually find the closest_enemy (easy).
       R3Aircraft *closest_enemy = scene->Aircraft(0);
 
-      aircraft->AI_decision(closest_enemy, delta_time);
+      aircraft->AI_decision(scene, closest_enemy, delta_time);
     }
 
     // UPDATE POSITION with velocity (simple Euler integration)

@@ -4,6 +4,7 @@
 #include "R3/R3.h"
 #include <assert.h>
 
+struct R3Scene;
 struct R3Material;
 class R3ParticleSource;
 
@@ -34,7 +35,7 @@ struct R3Aircraft {
   // ------------------------- Methods for aircraft movements ------------------------- //
 
   // Moves the aircrafts not controlled by player #AI2gud
-  void AI_decision(R3Aircraft *enemy, double delta_time);
+  void AI_decision(R3Scene* scene, R3Aircraft *enemy, double delta_time);
 
   // move the plane
   void PitchUp(double delta_time);
@@ -43,6 +44,8 @@ struct R3Aircraft {
   void RollRight(double delta_time);
   void ThrustForward(double delta_time);
   void BrakeBackward(double delta_time);
+
+  void FireBullet(R3Scene *scene);
 
   // respawn if aircraft is destroyed
   void Respawn(void);
