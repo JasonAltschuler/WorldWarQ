@@ -5,6 +5,7 @@
 #include "R3Scene.h"
 #include <math.h>
 
+#define PI 3.14159
 
 ////////////////////////////////////////////////////////////
 // Constants
@@ -13,7 +14,8 @@
 // TODO: make THETA and SEC_TO_MAX_THRUST a command-line input?
 // TODO: have different thetas for rolling left/right or up/down
 //static const double THETA = 0.00174532925; // .1 degree in radians
-static const double THETA = 0.872664625; // 1 degree in radians
+//static const double THETA = 0.872664625; // 50 degree in radians
+static const double THETA = 0.4363323125; // 25degrees in radians
 
 static const double SECONDS_TO_MAX_THRUST = 2.0; // TODO: play around with this
 
@@ -166,8 +168,8 @@ PitchDown(double delta_time)
 void R3Aircraft::
 RollLeft(double delta_time)
 {
-  const double COS_THETA = cos(THETA * delta_time);
-  const double SIN_THETA = sin(THETA * delta_time);
+  const double COS_THETA = cos(2 * THETA * delta_time);
+  const double SIN_THETA = sin(2 * THETA * delta_time);
 
   R3Matrix mat(1, 0, 0, 0,
                0, COS_THETA, SIN_THETA, 0,
@@ -184,8 +186,8 @@ RollLeft(double delta_time)
 void R3Aircraft::
 RollRight(double delta_time)
 {
-  const double COS_THETA = cos(THETA * delta_time);
-  const double SIN_THETA = sin(THETA * delta_time);
+  const double COS_THETA = cos(2 * THETA * delta_time);
+  const double SIN_THETA = sin(2 * THETA * delta_time);
 
   R3Matrix mat(1, 0, 0, 0,
                0, COS_THETA, -SIN_THETA, 0,
@@ -273,57 +275,91 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
   double phi_rotated = atan2(sqrt(vector_to_enemy_rotated.X() * vector_to_enemy_rotated.X() + vector_to_enemy_rotated.Y() * vector_to_enemy_rotated.Y()), vector_to_enemy_rotated.Z());
   double theta_rotated = atan2(vector_to_enemy_rotated.Y(), vector_to_enemy_rotated.X());
 
-  const double RADIUS_SHOOTING_RANGE = 0.34906585; // 20 degrees in radians
-  if (abs(theta_rotated) < RADIUS_SHOOTING_RANGE && abs(phi_rotated) < RADIUS_SHOOTING_RANGE)
+  cout << theta_rotated << "\t" << phi_rotated << endl;
+
+  // TODO: play with these:
+  const double RADIUS_SHOOTING_RANGE = 0.130899694;                 // 7.5 degrees in radians
+  const double RADIUS_MOVING_RANGE = RADIUS_SHOOTING_RANGE / 50.0;  // the smaller this is, the better the AI is/ TODO: change with hard mode?
+
+
+  // shoot if aimed properly
+  if (abs(theta_rotated) < RADIUS_SHOOTING_RANGE && abs(phi_rotated - PI/2) < RADIUS_SHOOTING_RANGE)
   {
-    this->FireBullet(scene);
+    this->FireBullet(scene); // TODO: AI is actually way too good... maybe make it only shoot with probability 1/2 or something?
+  }
+
+
+  //
+  bool rolled = false;
+
+  // roll left or right to aim
+  if (abs(theta_rotated) < RADIUS_MOVING_RANGE)
+  {
+    if (theta_rotated < 0)
+    {
+      RollRight(delta_time);
+//      Pitch
+    }
+    if (theta_rotated > 0)
+    {
+      RollLeft(delta_time);
+    }
+    rolled = true;
+  }
+
+  // tilt up or down to aim
+  if (!rolled && abs(phi_rotated - PI/2) > RADIUS_MOVING_RANGE)
+  {
+    if (phi_rotated < PI/2)
+      PitchUp(delta_time);
+    if (phi_rotated > PI/2)
+      PitchDown(delta_time);
   }
 
 
 
+  // TODO: delete visualization later!
+  // Draw x, y, z for each aircraft
+  // Draw meshes under transformation
+  glDisable(GL_LIGHTING);
+  glLineWidth(3);
+  glBegin(GL_LINES);
 
-//  // TODO: delete visualization later!
-//  // Draw x, y, z for each aircraft
-//  // Draw meshes under transformation
-//  glDisable(GL_LIGHTING);
-//  glLineWidth(3);
-//  glBegin(GL_LINES);
-//
-//  R3Aircraft *aircraft = this;
-//  R3Vector origin = aircraft->Modeling_To_World(R3Vector(0, 0, 0));
-//  R3Vector x_vec = aircraft->Modeling_To_World(R3Vector(1, 0, 0));
-//  R3Vector y_vec = aircraft->Modeling_To_World(R3Vector(0, 1, 0));
-//  R3Vector z_vec = aircraft->Modeling_To_World(R3Vector(0, 0, 1));
-//  R3Vector enemy_vec_modeling1 = dist_to_enemy * R3Vector(sin(phi_xyz) * cos(theta_xyz), sin(phi_rotated) * sin(theta_xyz), cos(phi_xyz));
-//  R3Vector enemy_vec1 = aircraft->Modeling_To_World(enemy_vec_modeling1);
-//
-//  R3Vector enemy_vec_modeling2 = dist_to_enemy * R3Vector(sin(phi_rotated) * cos(theta_rotated), sin(phi_rotated) * sin(theta_rotated), cos(phi_xyz));
-//  enemy_vec_modeling2.Transform(this->T);
-//  R3Vector enemy_vec2 = aircraft->Modeling_To_World(enemy_vec_modeling2);
-//
-//  // draw x in RED
-//  glColor3d(1, 0, 0);
+  R3Aircraft *aircraft = this;
+  R3Vector origin = aircraft->Modeling_To_World(R3Vector(0, 0, 0));
+  R3Vector x_vec = aircraft->Modeling_To_World(R3Vector(1, 0, 0));
+  R3Vector y_vec = aircraft->Modeling_To_World(R3Vector(0, 1, 0));
+  R3Vector z_vec = aircraft->Modeling_To_World(R3Vector(0, 0, 1));
+  R3Vector enemy_vec_modeling1 = dist_to_enemy * R3Vector(sin(phi_xyz) * cos(theta_xyz), sin(phi_rotated) * sin(theta_xyz), cos(phi_xyz));
+  R3Vector enemy_vec1 = aircraft->Modeling_To_World(enemy_vec_modeling1);
+
+  R3Vector enemy_vec_modeling2 = dist_to_enemy * R3Vector(sin(phi_rotated) * cos(theta_rotated), sin(phi_rotated) * sin(theta_rotated), cos(phi_xyz));
+  enemy_vec_modeling2.Transform(this->T);
+  R3Vector enemy_vec2 = aircraft->Modeling_To_World(enemy_vec_modeling2);
+
+  // draw x in RED
+  glColor3d(1, 0, 0);
+  glVertex3f(origin.X(), origin.Y(), origin.Z());
+  glVertex3f(x_vec.X(), x_vec.Y(), x_vec.Z());
+  // draw y in GREEN
+  glColor3d(0, 1, 0);
+  glVertex3f(origin.X(), origin.Y(), origin.Z());
+  glVertex3f(y_vec.X(), y_vec.Y(), y_vec.Z());
+  // draw z in BLUE
+  glColor3d(0, 0, 1);
+  glVertex3f(origin.X(), origin.Y(), origin.Z());
+  glVertex3f(z_vec.X(), z_vec.Y(), z_vec.Z());
+
+//  // draw enemy_vec1 in PINK
+//  glColor3d(1, 0, 1);
 //  glVertex3f(origin.X(), origin.Y(), origin.Z());
-//  glVertex3f(x_vec.X(), x_vec.Y(), x_vec.Z());
-//  // draw y in GREEN
-//  glColor3d(0, 1, 0);
-//  glVertex3f(origin.X(), origin.Y(), origin.Z());
-//  glVertex3f(y_vec.X(), y_vec.Y(), y_vec.Z());
-//  // draw z in BLUE
-//  glColor3d(0, 0, 1);
-//  glVertex3f(origin.X(), origin.Y(), origin.Z());
-//  glVertex3f(z_vec.X(), z_vec.Y(), z_vec.Z());
-//
-////  // draw enemy_vec1 in PINK
-////  glColor3d(1, 0, 1);
-////  glVertex3f(origin.X(), origin.Y(), origin.Z());
-////  glVertex3f(enemy_vec1.X(), enemy_vec1.Y(), enemy_vec1.Z());
-//
-//  // draw enemy_vec2 in YELLOW
-//   glColor3d(1, 1, 0);
-//   glVertex3f(origin.X(), origin.Y(), origin.Z());
-//   glVertex3f(enemy_vec2.X(), enemy_vec2.Y(), enemy_vec2.Z());
-//
+//  glVertex3f(enemy_vec1.X(), enemy_vec1.Y(), enemy_vec1.Z());
+
+  // draw enemy_vec2 in YELLOW
+   glColor3d(1, 1, 0);
+   glVertex3f(origin.X(), origin.Y(), origin.Z());
+   glVertex3f(enemy_vec2.X(), enemy_vec2.Y(), enemy_vec2.Z());
+   glEnd();
 
 
 
