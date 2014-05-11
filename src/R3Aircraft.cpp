@@ -278,27 +278,47 @@ Destroy(R3Scene *scene, bool should_explode, bool should_respawn)
 void R3Aircraft::
 Explode(R3Scene *scene)
 {
-  static R3Material orange_shrapnel;
-  orange_shrapnel.ka.Reset(0.2,0.2,0.2,1);
-  orange_shrapnel.kd.Reset(1, 0.5, 0,1);
-  orange_shrapnel.ks.Reset(0, 0, 1,1);
-  orange_shrapnel.kt.Reset(0,0,0,1);
-  orange_shrapnel.emission.Reset(0,0,0,1);
-  orange_shrapnel.shininess = 1;
-  orange_shrapnel.indexofrefraction = 1;
-  orange_shrapnel.texture = NULL;
-  orange_shrapnel.texture_index = -1;
+  // set up materials only once
+  static bool is_material_intialized = false;
+  static R3Material orange_shrapnel, red_shrapnel, black_shrapnel;
+  if (!is_material_intialized)
+  {
+    is_material_intialized = true;
 
-  static R3Material red_shrapnel;
-  red_shrapnel.ka.Reset(0.2,0.2,0.2,1);
-  red_shrapnel.kd.Reset(1, 0,0,1);
-  red_shrapnel.ks.Reset(0, 0, 1,1);
-  red_shrapnel.kt.Reset(0,0,0,1);
-  red_shrapnel.emission.Reset(0,0,0,1);
-  red_shrapnel.shininess = 1;
-  red_shrapnel.indexofrefraction = 1;
-  red_shrapnel.texture = NULL;
-  red_shrapnel.texture_index = -1;
+    // set up orange shrapnel
+    orange_shrapnel.ka.Reset(0.2,0.2,0.2,1);
+    orange_shrapnel.kd.Reset(1, 0.5, 0,1);
+    orange_shrapnel.ks.Reset(0, 0, 1,1);
+    orange_shrapnel.kt.Reset(0,0,0,1);
+    orange_shrapnel.emission.Reset(0,0,0,1);
+    orange_shrapnel.shininess = 1;
+    orange_shrapnel.indexofrefraction = 1;
+    orange_shrapnel.texture = NULL;
+    orange_shrapnel.texture_index = -1;
+
+    // set up red shrapnel
+    red_shrapnel.ka.Reset(0.2,0.2,0.2,1);
+    red_shrapnel.kd.Reset(1, 0,0,1);
+    red_shrapnel.ks.Reset(0, 0, 1,1);
+    red_shrapnel.kt.Reset(0,0,0,1);
+    red_shrapnel.emission.Reset(0,0,0,1);
+    red_shrapnel.shininess = 1;
+    red_shrapnel.indexofrefraction = 1;
+    red_shrapnel.texture = NULL;
+    red_shrapnel.texture_index = -1;
+
+    // set up black shrapnel
+    black_shrapnel.ka.Reset(0.2,0.2,0.2,1);
+    black_shrapnel.kd.Reset(0, 0, 0,1);
+    black_shrapnel.ks.Reset(0, 0, 1,1);
+    black_shrapnel.kt.Reset(0,0,0,1);
+    black_shrapnel.emission.Reset(0,0,0,1);
+    black_shrapnel.shininess = 1;
+    black_shrapnel.indexofrefraction = 1;
+    black_shrapnel.texture = NULL;
+    black_shrapnel.texture_index = -1;
+  }
+
 
 
   // TODO: play with these
@@ -331,11 +351,15 @@ Explode(R3Scene *scene)
   DrawSource(new_source);
 
 
+  int one_third = (int) num_particles_to_generate / 3.0;
+  int two_third = one_third * 2;
 
   for (int i = 0; i < num_particles_to_generate; i++)
   {
-    if (i > num_particles_to_generate / 2.0)
+    if (i > one_third && i < two_third)
       new_source->material = &red_shrapnel;
+    if (i > two_third)
+      new_source->material = &black_shrapnel;
 
     // calculate point of emanation
     double z = RandomNumber() * 2 * radius - radius;

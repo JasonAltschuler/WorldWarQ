@@ -861,10 +861,10 @@ void DrawSource(R3ParticleSource *new_source)
 {
   static R3Material source_material;
   if (source_material.id != 33) {
-    source_material.ka.Reset(0.2,0.2,0.2,1);
-    source_material.kd.Reset(0,1,0,1);
-    source_material.ks.Reset(0,1,0,1);
-    source_material.kt.Reset(0,0,0,1);
+    source_material.ka.Reset(1.0, 0.5, 0, 1);
+    source_material.kd.Reset(1.0, 0.5, 0, 1);
+    source_material.ks.Reset(1.0, 0.5, 0, 1);
+    source_material.kt.Reset(1.0, 0.5, 0, 1);
     source_material.emission.Reset(0,0,0,1);
     source_material.shininess = 1;
     source_material.indexofrefraction = 1;

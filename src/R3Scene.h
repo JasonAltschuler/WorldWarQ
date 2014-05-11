@@ -8,6 +8,7 @@
 #include "R3Aircraft.h"
 #include <iostream>
 #include <vector>
+#include <deque>
 
 
 // Constant definitions
@@ -125,6 +126,7 @@ struct R3Particle {
   vector<struct R3ParticleSpring *> springs;
   bool is_bullet;
   R3Aircraft *aircraft_fired_from; // NULL if not a bullet. otherwise a pointer to the aircraft that fired the bullet
+  deque<R3Point> trail;
 };
 
 inline R3Particle::R3Particle(void) :
@@ -138,7 +140,8 @@ inline R3Particle::R3Particle(void) :
     material(NULL),
     springs(vector<struct R3ParticleSpring *>(0)),
     is_bullet(false),
-    aircraft_fired_from(NULL)
+    aircraft_fired_from(NULL),
+    trail(0)
 {
 }
 
@@ -156,6 +159,7 @@ inline R3Particle::R3Particle(R3Point position, R3Vector direction_emanate, R3Pa
   this->springs.clear();
   this->is_bullet = false;
   this->aircraft_fired_from = NULL;
+  this->trail.resize(0);
 }
 
 inline R3Particle::R3Particle(R3Point position, R3Vector velocity, double mass, bool fixed, double drag,
@@ -171,7 +175,8 @@ inline R3Particle::R3Particle(R3Point position, R3Vector velocity, double mass, 
     material(material),
     springs(springs),
     is_bullet(is_bullet),
-    aircraft_fired_from(aircraft_fired_from)
+    aircraft_fired_from(aircraft_fired_from),
+    trail(0)
 {
 }
 

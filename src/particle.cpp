@@ -70,44 +70,58 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
 
   // remember the positions of the particles for the last K time steps
   const int K_TRAIL_SIZE = 30; // hardcoded, but can be changed easily
-  static deque<vector<R3Point> > deque(0);
 
-  // store latest positions
-  vector<R3Point> most_recent_positions(scene->NParticles());
-  for (int i = 0; i < scene->NParticles(); i++)
-    most_recent_positions[i] = scene->Particle(i)->position;
-  deque.push_front(most_recent_positions);
-
-  // remove positions if queue overflowing
-  if (deque.size() > K_TRAIL_SIZE)
-    deque.pop_back();
-//
-  // draw trails
   glBegin(GL_POINTS);
-  for (int j = 0; j < deque.size() - 1; j++) {
-    // interpolate between black and (0.0, 0.0, 1.0) blue for color of line,
-    // with the end of the trail closer to black because it is fading out
-    R3Rgb white(1.0, 1.0, 1.0, 1.0);
-    R3Rgb black(0.0, 0.0, 0.0, 1.0);
+  for (int i = 0; i < scene->NParticles(); i++)
+  {
+    // update trails
+    R3Particle *particle = scene->Particle(i);
+    deque<R3Point> &trail = particle->trail;
+    trail.push_front(particle->position);
+    if (trail.size() > K_TRAIL_SIZE)
+      trail.pop_back();
 
-    double c = (double) j / (double) deque.size();
-    R3Rgb interpolated_color = white * (1 - c) + c * black;
-    interpolated_color.Clamp();
-
-    vector<R3Point> vec_after = deque[j];
-    vector<R3Point> vec_before = deque[j + 1];
-    int num_particles = min(vec_after.size(), vec_before.size());
-
-    glColor3d(interpolated_color.Red(), interpolated_color.Green(), interpolated_color.Blue());
-    glLineWidth(2);
-    for (int i = 0; i < num_particles; i++)
+    // draw trails
+    R3Rgb material_color = particle->material->kd;
+    for (int j = 0; j < trail.size(); j++)
     {
-      glVertex3d(vec_after[i].X(), vec_after[i].Y(), vec_after[i].Z());
-//      glVertex3d(vec_before[i].X(), vec_before[i].Y(), vec_before[i].Z());
-    }
-  }
+      double c = (double) j / (double) trail.size();
+      R3Rgb interpolated_color = material_color * c;
 
+      glColor3d(interpolated_color.Red(), interpolated_color.Green(), interpolated_color.Blue());
+      glLineWidth(2);
+
+      glVertex3d(trail[j].X(), trail[j].Y(), trail[j].Z());
+    }
+
+  }
   glEnd();
+
+
+//  for (int j = 0; j < deque.size() - 1; j++) {
+//    // interpolate between black and (0.0, 0.0, 1.0) blue for color of line,
+//    // with the end of the trail closer to black because it is fading out
+//    R3Rgb white(1.0, 1.0, 1.0, 1.0);
+//    R3Rgb black(0.0, 0.0, 0.0, 1.0);
+//
+//    double c = (double) j / (double) deque.size();
+//    R3Rgb interpolated_color = white * (1 - c) + c * black;
+//    interpolated_color.Clamp();
+//
+//    vector<R3Point> vec_after = deque[j];
+//    vector<R3Point> vec_before = deque[j + 1];
+//    int num_particles = min(vec_after.size(), vec_before.size());
+//
+//    glColor3d(interpolated_color.Red(), interpolated_color.Green(), interpolated_color.Blue());
+//    glLineWidth(2);
+//    for (int i = 0; i < num_particles; i++)
+//    {
+//      glVertex3d(vec_after[i].X(), vec_after[i].Y(), vec_after[i].Z());
+////      glVertex3d(vec_before[i].X(), vec_before[i].Y(), vec_before[i].Z());
+//    }
+//  }
+//
+//  glEnd();
 }
 
 
