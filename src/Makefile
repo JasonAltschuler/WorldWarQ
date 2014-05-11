@@ -44,7 +44,7 @@ endif
 #
 
 OBJS=particleview.o particle.o R3Scene.o R3Aircraft.o
-LIBS=R3/libR3.a R2/libR2.a jpeg/libjpeg.a fglut/libfglut.a
+LIBS=R3/libR3.a R2/libR2.a jpeg/libjpeg.a fglut/libfglut.a ../irrKlang/bin/macosx-gcc/libirrklang.dylib
 
 all: particleview
 

@@ -8,6 +8,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+// sounds
+#include <../irrKlang/include/irrKlang.h>
+
+using namespace irrklang;
+//#pragma comment(lib, "irrKlang/lib/irrKlang.lib") // link with irrKlang.dll
+
+//#pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
+
+//
+static ISoundEngine *engine = createIrrKlangDevice();
 
 ////////////////////////////////////////////////////////////
 // Constants
@@ -101,6 +111,14 @@ AssertValid(void)
 void R3Aircraft::
 FireBullet(R3Scene *scene)
 {
+  // make sound for firing bullet
+  if (!engine)
+  {
+    fprintf(stderr, "Error starting up sound engine");
+    exit(1);
+  }
+  engine->play2D("../wav/shot.wav");
+
 //  BULLET_VELOCITY
 
   double pi = 3.14159265;
@@ -574,12 +592,16 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     change_position_world.Transform(aircraft->T);
     R3Ray ray(prev_position.Point(), change_position_world);
 
-    R3Intersection closest_intersection = ComputeIntersection(scene, scene->Root(), ray);
-    if (closest_intersection.IsHit())
+    R3Intersection scene_intersection = ComputeIntersection(scene, scene->Root(), ray);
+    // TODO: add a check here for aircraft - aircraft intersections
+    if (scene_intersection.IsHit() && scene_intersection.distance < change_position_world.Length())
     {
-//        cout << delta_time << endl;
-        if (closest_intersection.distance < change_position_world.Length())
-            cout << "COLLISION!!! " << endl; // TODO: do more
+      cout << "COLLISION!!! " << endl;
+
+      // TODO: want to be able to see the explosion... respawn after 1 second or something?
+      aircraft->Explode(scene);
+      return;
+      //        aircraft->Respawn();
     }
 
     aircraft->T.Translate(change_position_modeling);
