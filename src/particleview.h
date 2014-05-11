@@ -31,4 +31,6 @@ void LoadLights(R3Scene *scene);
 void drawSkybox(double D);
 void initSkyBox();
 
+void DrawSource(R3ParticleSource *new_source);
+
 #endif /* PARTICLEVIEW_H_ */

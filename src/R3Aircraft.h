@@ -32,12 +32,13 @@ struct R3Aircraft {
   int respawn_hitpoints; // equivalently: max_hitpoints
 
 
-  // ------------------------- Methods for aircraft movements ------------------------- //
+  // ------------------------- Methods for aircraft actions ------------------------- //
 
-  // Moves the aircrafts not controlled by player #AI2gud
+  // intelligent aircraft movement
   void AI_decision(R3Scene* scene, R3Aircraft *enemy, double delta_time);
 
-  // move the plane
+  // basic plane movements
+  void FireBullet(R3Scene *scene);
   void PitchUp(double delta_time);
   void PitchDown(double delta_time);
   void RollLeft(double delta_time);
@@ -45,9 +46,10 @@ struct R3Aircraft {
   void ThrustForward(double delta_time);
   void BrakeBackward(double delta_time);
 
-  void FireBullet(R3Scene *scene);
-
-  // respawn if aircraft is destroyed
+  // actions for if aircraft is destroyed (bullets hit or crash into mesh)
+  void HitAircraft(R3Scene *scene);
+  void Destroy(R3Scene *scene, bool should_explode, bool should_respawn);
+  void Explode(R3Scene *scene);
   void Respawn(void);
 
 
@@ -59,6 +61,10 @@ struct R3Aircraft {
   // checks this aircraft
   void AssertValid(void);
 };
+
+// Update and render aircrafts
+void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int integration_type);
+void RenderAircrafts(R3Scene *scene, double current_time, double delta_time);
 
 
 inline R3Vector R3Aircraft::

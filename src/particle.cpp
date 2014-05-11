@@ -90,8 +90,9 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
     R3Rgb white(1.0, 1.0, 1.0, 1.0);
     R3Rgb black(0.0, 0.0, 0.0, 1.0);
 
-    double c = (double) j / (double) K_TRAIL_SIZE;
+    double c = (double) j / (double) deque.size();
     R3Rgb interpolated_color = white * (1 - c) + c * black;
+    interpolated_color.Clamp();
 
     vector<R3Point> vec_after = deque[j];
     vector<R3Point> vec_before = deque[j + 1];
@@ -457,8 +458,11 @@ void EndParticles(R3Scene *scene, double delta_time)
   for (size_t i = 0; i < scene->NParticles(); )
   {
     scene->particles[i]->lifetime -= delta_time;
-    if (scene->particles[i]->lifetime <= 0)
+    if (scene->particles[i]->lifetime <= 0) {
+//      R3Particle *particle = scene->particles[i]; // TODO: delete later
       scene->particles.erase(scene->particles.begin() + i);
+//      delete particle;
+    }
     else
       i++;
   }
@@ -590,8 +594,6 @@ void ComputeUpdatedParticle(int i, R3Scene *scene, double current_time, double d
   {
     // Get total force
     R3Vector force(0, 0, 0);
-    if (!particle->is_bullet)
-      R3Vector force = ForceOnParticle(particle, i, scene);
 
     // Advance simulation
     R3Vector acceleration = force / particle->mass;
@@ -650,42 +652,28 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
   }
 
 
-  // Update position for every particle
-  vector<R3Vector> velocities((size_t) scene->NParticles());
-  vector<R3Point> positions ((size_t) scene->NParticles());
-
-
-  for (int i = 0; i < scene->NParticles(); i++)
-  {
-    ComputeUpdatedParticle(i, scene, current_time, delta_time, integration_type, positions, velocities);
-  }
-
-
-
   // update particles (includes particle-scene collision detection)
   for (int i = 0; i < scene->NParticles(); i++)
   {
     R3Particle *particle = scene->Particle(i);
 
     if (particle->fixed)
-    {
-      // don't change the particle's position
       particle->velocity = R3zero_vector;
-    }
-
 
     // modified by Jason so bullets intersect with airplanes, but not mesh (on May 10)
     // modified by Kyle so bullets are not computing intersections (before May 10)
     else if (particle->is_bullet)
     {
+      R3Point new_position = particle->position + particle->velocity * delta_time;
+
       // calculate intersections with other aircrafts
-      R3Ray ray(particle->position, positions[i]);
+      R3Ray ray(particle->position, new_position);
       R3Intersection closest_intersection = ComputeIntersectionWithAircrafts(scene, ray, particle);
 
       // make sure intersection is actually an intersection
       if (closest_intersection.IsHit())
       {
-        double t = ray.T(positions[i]);
+        double t = ray.T(new_position);
         double t_collision = ray.T(closest_intersection.position);
         if (t_collision < 0 || t_collision > t)
           closest_intersection.SetMiss();
@@ -693,29 +681,48 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
 
       if (!closest_intersection.IsHit())
       {
-        particle->position = positions[i];
-        particle->velocity = velocities[i];
+        particle->position = new_position;
+        // velocity of bullet is constant because we assume no forces (fast enough)
       }
 
       else
       {
-        // TODO: later, make an explosion! Delete bullet, and destroy (possibly respawn) airplane
-        cout << "PLANE INTERSECTION !!!" << endl;
-        particle->position = positions[i];
+        particle->position = new_position;
         particle->velocity = R3zero_vector;
         particle->lifetime = 10;
 
-        HitAircraft(scene, closest_intersection.aircraft);
+        cout << "HIT" << endl;
+        closest_intersection.aircraft->HitAircraft(scene);
       }
     }
 
 
+    // only executed for schrapnel from aircraft explosions: don't check for intersections with scene here
     else
     {
-      // TODO: delete later
-      cout << "ERROR!! SHOULDN'T GET HERE!!" << endl;
-      exit(1);
+      particle->position += particle->velocity * delta_time;
     }
+  }
+
+
+  EndParticles(scene, delta_time);
+
+
+//  PrintDebuggingInfo(scene);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //    else
 //    {
@@ -861,17 +868,6 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
 //        }
 //      }
 //    }
-  }
-
-
-  EndParticles(scene, delta_time);
-
-
-//  PrintDebuggingInfo(scene);
-}
-
-
-
 
 
 

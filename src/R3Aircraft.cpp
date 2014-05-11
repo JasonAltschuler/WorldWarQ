@@ -4,12 +4,16 @@
 #include "particle.h"
 #include "R3Scene.h"
 #include <math.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#define PI 3.14159
 
 ////////////////////////////////////////////////////////////
 // Constants
 ////////////////////////////////////////////////////////////
+
+#define PI 3.14159
 
 // TODO: make THETA and SEC_TO_MAX_THRUST a command-line input?
 // TODO: have different thetas for rolling left/right or up/down
@@ -22,6 +26,13 @@ static const double SECONDS_TO_MAX_THRUST = 2.0; // TODO: play around with this
 static const double BULLET_VELOCITY = 100.0;
 
 static const double AIRCRAFT_EXHAUST_RATE_MAX = 100.0;
+
+
+
+// TODO: play with these?
+const double AI_RADIUS_SHOOTING_RANGE = 0.130899694;                 // 7.5 degrees in radians
+const double AI_RADIUS_MOVING_RANGE = AI_RADIUS_SHOOTING_RANGE / 50.0;  // the smaller this is, the better the AI is/ TODO: change with hard mode?
+const double AI_DISTANCE_HI_LO_THRUST = 75.0; // probably somewhere between 75 and 100 is best
 
 ////////////////////////////////////////////////////////////
 // Random Number Generator
@@ -66,6 +77,26 @@ R3Aircraft::R3Aircraft(void) :
   sources.resize(2);
 }
 
+
+
+void R3Aircraft::
+AssertValid(void)
+{
+  assert(mesh != NULL);
+  assert(mass >= 0);
+  assert(drag >= 0);
+  assert(thrust_magnitude >= 0);
+  assert(max_thrust >= 0);
+//  assert(hitpoints > 0); // TODO
+
+  if (hard_mode == 0) // invariant only holds on easy mode (see writeup for more details)
+    assert(velocity.X() >= 0);
+}
+
+
+////////////////////////////////////////////////////////////
+// Aircraft actions
+////////////////////////////////////////////////////////////
 
 void R3Aircraft::
 FireBullet(R3Scene *scene)
@@ -144,7 +175,7 @@ PitchUp(double delta_time)
                SIN_THETA, 0, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
-  if (hard_mode == 1) // makes aircraft velocity more realastic. see writeup for more details
+  if (hard_mode == 1) // makes aircraft velocity more realistic. see writeup for more details
     velocity.Transform(mat.Transpose());
   AssertValid();
 }
@@ -160,7 +191,7 @@ PitchDown(double delta_time)
                -SIN_THETA, 0, COS_THETA, 0,
                0, 0, 0, 1);
   T *= mat;
-  if (hard_mode == 1) // makes aircraft velocity more realastic. see writeup for more details
+  if (hard_mode == 1) // makes aircraft velocity more realistic. see writeup for more details
     velocity.Transform(mat.Transpose());
   AssertValid();
 }
@@ -199,23 +230,24 @@ RollRight(double delta_time)
   AssertValid();
 }
 
-void HitAircraft(R3Scene *scene, R3Aircraft *aircraft)
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Actions for if aircraft is hit/destroyed (bullets hit or aircraft crashes into mesh)
+//////////////////////////////////////////////////////////////////////////////////////////
+
+void R3Aircraft::
+HitAircraft(R3Scene *scene)
 {
-  aircraft->hitpoints--;
+  hitpoints--;
 
   // plane dies if hitpoints <= 0
-  if (aircraft->hitpoints <= 0)
+  if (hitpoints <= 0)
   {
     // if user-controlled airplane that blows up, you lose!
-    if (aircraft == scene->Aircraft(0))
+    if (this == scene->Aircraft(0))
     {
-      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
-      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
-      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
-      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
-      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
-      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
-      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
+      cout << "GAME OVER. YOU LOSE. " << endl << endl << endl; // TODO
+      this->hitpoints = respawn_hitpoints;
     }
 
     // else, it is an AI plane
@@ -223,9 +255,123 @@ void HitAircraft(R3Scene *scene, R3Aircraft *aircraft)
     {
       cout << "PLANE DESTROYED" << endl;
       cout << "attaway big boy" << endl;
-      aircraft->Respawn();
+      bool should_explode = true;
+      bool should_respawn = true;
+      this->Destroy(scene, should_explode, should_respawn);
     }
   }
+}
+
+void R3Aircraft::
+Destroy(R3Scene *scene, bool should_explode, bool should_respawn)
+{
+  if (should_explode)
+    this->Explode(scene);
+
+  if (should_respawn)
+    this->Respawn();
+}
+
+
+
+
+void R3Aircraft::
+Explode(R3Scene *scene)
+{
+  static R3Material orange_shrapnel;
+  orange_shrapnel.ka.Reset(0.2,0.2,0.2,1);
+  orange_shrapnel.kd.Reset(1, 0.5, 0,1);
+  orange_shrapnel.ks.Reset(0, 0, 1,1);
+  orange_shrapnel.kt.Reset(0,0,0,1);
+  orange_shrapnel.emission.Reset(0,0,0,1);
+  orange_shrapnel.shininess = 1;
+  orange_shrapnel.indexofrefraction = 1;
+  orange_shrapnel.texture = NULL;
+  orange_shrapnel.texture_index = -1;
+
+  static R3Material red_shrapnel;
+  red_shrapnel.ka.Reset(0.2,0.2,0.2,1);
+  red_shrapnel.kd.Reset(1, 0,0,1);
+  red_shrapnel.ks.Reset(0, 0, 1,1);
+  red_shrapnel.kt.Reset(0,0,0,1);
+  red_shrapnel.emission.Reset(0,0,0,1);
+  red_shrapnel.shininess = 1;
+  red_shrapnel.indexofrefraction = 1;
+  red_shrapnel.texture = NULL;
+  red_shrapnel.texture_index = -1;
+
+
+  // TODO: play with these
+  const int num_particles_to_generate = 1000;
+  const double radius = 1;
+  const double fast_velocity = 30;
+  const double particle_lifetime = 0.25;
+
+  R3ParticleSource * new_source = new R3ParticleSource();
+  R3Point center = Modeling_To_World(R3Vector(0, 0, 0)).Point();
+  R3Sphere *sphere = new R3Sphere(center, radius);
+  R3Shape *shape = new R3Shape();
+  shape->sphere = sphere;
+  shape->type = R3_SPHERE_SHAPE;
+  new_source->shape = shape;
+  new_source->rate = 0;
+  new_source->velocity = fast_velocity;
+  new_source->angle_cutoff = 0;
+  new_source->mass = 0.01;
+  new_source->fixed = false;
+  new_source->drag = 0;
+  new_source->elasticity = 0;
+  new_source->lifetime = particle_lifetime;
+  new_source->material = &orange_shrapnel; // TODO: change to make different colors (red, black, white, orange?)
+
+
+
+
+// TODO: delete this and DrawSource(...) method in particleview.cpp && particleview.h
+  DrawSource(new_source);
+
+
+
+  for (int i = 0; i < num_particles_to_generate; i++)
+  {
+    if (i > num_particles_to_generate / 2.0)
+      new_source->material = &red_shrapnel;
+
+    // calculate point of emanation
+    double z = RandomNumber() * 2 * radius - radius;
+    double phi = RandomNumber() * 2 * PI;
+    double d = sqrt(radius * radius - z * z);
+    double px = center.X() + d * cos(phi);
+    double py = center.Y() + d * sin(phi);
+    double pz = center.Z() + z;
+    R3Point point_emanate(px, py, pz);
+
+    // calculate direction of emanation
+    R3Vector N = (point_emanate - center); // surface normal
+    N.Normalize();
+    R3Vector direction_emanate = (N.X() == 0 && N.Y() == 0) ?
+        R3Vector(1.0, 0.0, 0.0) : R3Vector(N.Y(), -N.X(), 0.0); // vector on tangent plane (handle edge cases)
+    double t1 = RandomNumber() * 2 * PI;
+    double t2 = RandomNumber() * sin(new_source->angle_cutoff);
+    direction_emanate.Rotate(N, t1);
+    R3Vector cross = direction_emanate;
+    cross.Cross(N);
+    direction_emanate.Rotate(cross, acos(t2));
+    direction_emanate.Normalize();
+
+    // generate a particle
+    double rand1 = RandomNumber();
+    double rand2 = RandomNumber();
+    new_source->velocity = fast_velocity * rand1 * rand1 * rand1 * rand1 * rand1;
+    new_source->lifetime = particle_lifetime * rand2 * rand2 * rand2;
+    R3Particle * new_particle = new R3Particle(point_emanate, direction_emanate, new_source);
+    scene->particles.push_back(new_particle);
+  }
+  //  }
+
+  delete new_source;
+  delete sphere;
+  delete shape;
 }
 
 void R3Aircraft::
@@ -239,20 +385,9 @@ Respawn(void)
 }
 
 
-void R3Aircraft::
-AssertValid(void)
-{
-  assert(mesh != NULL);
-  assert(mass >= 0);
-  assert(drag >= 0);
-  assert(thrust_magnitude >= 0);
-  assert(max_thrust >= 0);
-//  assert(hitpoints > 0); // TODO
-
-  if (hard_mode == 0) // invariant only holds on easy mode (see writeup for more details)
-    assert(velocity.X() >= 0);
-}
-
+//////////////////////////////////////////////////
+// Intelligent aircraft movement
+//////////////////////////////////////////////////
 
 void R3Aircraft::
 AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
@@ -274,13 +409,6 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
 
   //  cout << theta_rotated << "\t" << phi_rotated << endl;
   //  cout << (int) dist_to_enemy << endl;
-
-
-
-  // TODO: play with these:
-  const double AI_RADIUS_SHOOTING_RANGE = 0.130899694;                 // 7.5 degrees in radians
-  const double AI_RADIUS_MOVING_RANGE = AI_RADIUS_SHOOTING_RANGE / 50.0;  // the smaller this is, the better the AI is/ TODO: change with hard mode?
-  const double AI_DISTANCE_HI_LO_THRUST = 75.0; // probably somewhere between 75 and 100 is best
 
   // shoot if aimed properly
   if (abs(theta_rotated) < AI_RADIUS_SHOOTING_RANGE && abs(phi_rotated - PI/2.0) < AI_RADIUS_SHOOTING_RANGE)
@@ -327,88 +455,54 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
 
 
 
-  // TODO: delete visualization later!
-  // Draw x, y, z for each aircraft
-  // Draw meshes under transformation
-  glDisable(GL_LIGHTING);
-  glLineWidth(3);
-  glBegin(GL_LINES);
-
-  R3Aircraft *aircraft = this;
-  R3Vector origin = aircraft->Modeling_To_World(R3Vector(0, 0, 0));
-  R3Vector x_vec = aircraft->Modeling_To_World(R3Vector(1, 0, 0));
-  R3Vector y_vec = aircraft->Modeling_To_World(R3Vector(0, 1, 0));
-  R3Vector z_vec = aircraft->Modeling_To_World(R3Vector(0, 0, 1));
-  R3Vector enemy_vec_modeling1 = dist_to_enemy * R3Vector(sin(phi_xyz) * cos(theta_xyz), sin(phi_rotated) * sin(theta_xyz), cos(phi_xyz));
-  R3Vector enemy_vec1 = aircraft->Modeling_To_World(enemy_vec_modeling1);
-
-  R3Vector enemy_vec_modeling2 = dist_to_enemy * R3Vector(sin(phi_rotated) * cos(theta_rotated), sin(phi_rotated) * sin(theta_rotated), cos(phi_xyz));
-  enemy_vec_modeling2.Transform(this->T);
-  R3Vector enemy_vec2 = aircraft->Modeling_To_World(enemy_vec_modeling2);
-
-  // draw x in RED
-  glColor3d(1, 0, 0);
-  glVertex3f(origin.X(), origin.Y(), origin.Z());
-  glVertex3f(x_vec.X(), x_vec.Y(), x_vec.Z());
-  // draw y in GREEN
-  glColor3d(0, 1, 0);
-  glVertex3f(origin.X(), origin.Y(), origin.Z());
-  glVertex3f(y_vec.X(), y_vec.Y(), y_vec.Z());
-  // draw z in BLUE
-  glColor3d(0, 0, 1);
-  glVertex3f(origin.X(), origin.Y(), origin.Z());
-  glVertex3f(z_vec.X(), z_vec.Y(), z_vec.Z());
-
-//  // draw enemy_vec1 in PINK
-//  glColor3d(1, 0, 1);
+//  // TODO: delete visualization later!
+//  // Draw x, y, z for each aircraft
+//  // Draw meshes under transformation
+//  glDisable(GL_LIGHTING);
+//  glLineWidth(3);
+//  glBegin(GL_LINES);
+//
+//  R3Aircraft *aircraft = this;
+//  R3Vector origin = aircraft->Modeling_To_World(R3Vector(0, 0, 0));
+//  R3Vector x_vec = aircraft->Modeling_To_World(R3Vector(1, 0, 0));
+//  R3Vector y_vec = aircraft->Modeling_To_World(R3Vector(0, 1, 0));
+//  R3Vector z_vec = aircraft->Modeling_To_World(R3Vector(0, 0, 1));
+//
+//  R3Vector enemy_vec_modeling2 = dist_to_enemy * R3Vector(sin(phi_rotated) * cos(theta_rotated), sin(phi_rotated) * sin(theta_rotated), cos(phi_rotated));
+//  enemy_vec_modeling2.Transform(this->T);
+//  R3Vector enemy_vec2 = aircraft->Modeling_To_World(enemy_vec_modeling2);
+//
+//  // draw x in RED
+//  glColor3d(1, 0, 0);
 //  glVertex3f(origin.X(), origin.Y(), origin.Z());
-//  glVertex3f(enemy_vec1.X(), enemy_vec1.Y(), enemy_vec1.Z());
-
-  // draw enemy_vec2 in YELLOW
-   glColor3d(1, 1, 0);
-   glVertex3f(origin.X(), origin.Y(), origin.Z());
-   glVertex3f(enemy_vec2.X(), enemy_vec2.Y(), enemy_vec2.Z());
-   glEnd();
-
-
-
-
-  
-
-//  // PLAYER-CONTROLLED AIRCRAFT
-//  if (i == 0)
-//  {
-//    if (pitch_up)
-//      aircraft->PitchUp(delta_time);
-//    if (pitch_down)
-//      aircraft->PitchDown(delta_time);
-//    if (roll_left)
-//      aircraft->RollLeft(delta_time);
-//    if (roll_right)
-//      aircraft->RollRight(delta_time);
-//    if (thrust_forward)
-//      aircraft->ThrustForward(delta_time);
-//    if (brake_backward)
-//      aircraft->BrakeBackward(delta_time);
-//    if (firing_bullets)
-//    {
-//      double mult_rate = aircraft->firing_rate * delta_time;
-//      if (mult_rate >= 1)
-//        FireBullet(scene, aircraft, 0);
-//      else if (RandomNumber() < mult_rate)
-//        FireBullet(scene, aircraft, 0);
-//    }
-//  }
-
+//  glVertex3f(x_vec.X(), x_vec.Y(), x_vec.Z());
+//  // draw y in GREEN
+//  glColor3d(0, 1, 0);
+//  glVertex3f(origin.X(), origin.Y(), origin.Z());
+//  glVertex3f(y_vec.X(), y_vec.Y(), y_vec.Z());
+//  // draw z in BLUE
+//  glColor3d(0, 0, 1);
+//  glVertex3f(origin.X(), origin.Y(), origin.Z());
+//  glVertex3f(z_vec.X(), z_vec.Y(), z_vec.Z());
+//
+////  // draw enemy_vec1 in PINK
+////  glColor3d(1, 0, 1);
+////  glVertex3f(origin.X(), origin.Y(), origin.Z());
+////  glVertex3f(enemy_vec1.X(), enemy_vec1.Y(), enemy_vec1.Z());
+//
+//  // draw enemy_vec2 in YELLOW
+//   glColor3d(1, 1, 0);
+//   glVertex3f(origin.X(), origin.Y(), origin.Z());
+//   glVertex3f(enemy_vec2.X(), enemy_vec2.Y(), enemy_vec2.Z());
+//   glEnd();
 }
 
-
+/////////////////////////////////////////////////////////////////////////////////////////
+// Updating (moving) and rendering aircrafts
+//////////////////////////////////////////////////////////////////////////////////////////
 
 void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int integration_type)
 {
-  // TODO: actually take into account drag, gravity, etc.
-  // TODO: add collisions, as in UpdateParticles() in particle.cpp (already implemented there) -- if collision, just blow up!!
-
   for (int i = 0; i < scene->NAircrafts(); i++)
   {
     R3Aircraft *aircraft = scene->Aircraft(i);
@@ -484,17 +578,8 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     aircraft->sources[1]->rate = fmax(5, AIRCRAFT_EXHAUST_RATE_MAX * aircraft->thrust_magnitude / aircraft->max_thrust);
 
 
-    // UPDATE VELOCITY with acceleration (simple Euler integration) // TODO: combine into 1 line
-    R3Vector net_force(0, 0, 0);
-
-    // account for thrust
-    R3Vector thrust(aircraft->thrust_magnitude, 0, 0);
-    net_force += thrust;
-
-    // account for drag
-    R3Vector drag = -aircraft->velocity * aircraft->drag;
-    net_force += drag;
-
+    // UPDATE VELOCITY with acceleration (simple Euler integration)
+    R3Vector net_force = R3Vector(aircraft->thrust_magnitude, 0, 0) - aircraft->drag * aircraft->velocity;
     R3Vector acceleration = net_force / aircraft->mass;
     aircraft->velocity += acceleration * delta_time;
 
@@ -504,7 +589,6 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
 //      cout << "TERMINAL!" << endl;
 
 
-    // quick assert to make sure we didn't make any no-no's
     aircraft->AssertValid();
   }
 }
@@ -577,48 +661,4 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
 //    const R3Point& position = aircraft->T * R3Point(0, 0, 0);
 //    glVertex3d(position[0], position[1], position[2]);
 //  }
-
-
-//    // Trails (implemented for one point)
-//
-//    // remember the positions of the particles for the last K time steps
-//    const int K_TRAIL_SIZE = 50; // hardcoded, but can be changed easily
-//    static deque<vector<R3Point> > deque(0);
-//
-//    // store latest positions
-//    vector<R3Point> most_recent_positions(scene->NParticles());
-//    for (int i = 0; i < scene->NParticles(); i++)
-//      most_recent_positions[i] = scene->Particle(i)->position;
-//    deque.push_front(most_recent_positions);
-//
-//    // remove positions if queue overflowing
-//    if (deque.size() > K_TRAIL_SIZE)
-//      deque.pop_back();
-//
-//    // draw trails
-//    glBegin(GL_LINES);
-//    for (int j = 0; j < deque.size() - 1; j++) {
-//      // interpolate between black and (0.0, 0.0, 1.0) blue for color of line,
-//      // with the end of the trail closer to black because it is fading out
-//
-//      R3Rgb white(1.0, 1.0, 1.0, 1.0);
-//      R3Rgb black(0.0, 0.0, 0.0, 1.0);
-//
-//      double c = (double) j / (double) K_TRAIL_SIZE;
-//      R3Rgb interpolated_color = white * (1 - c) + c * black;
-//
-//      vector<R3Point> vec_after = deque[j];
-//      vector<R3Point> vec_before = deque[j + 1];
-//      int num_particles = min(vec_after.size(), vec_before.size());
-//
-//      glColor3d(interpolated_color.Red(), interpolated_color.Green(), interpolated_color.Blue());
-//      glLineWidth(2);
-//      for (int i = 0; i < num_particles; i++)
-//      {
-//        glVertex3d(vec_after[i].X(), vec_after[i].Y(), vec_after[i].Z());
-//        glVertex3d(vec_before[i].X(), vec_before[i].Y(), vec_before[i].Z());
-//      }
-//    }
-//
-//    glEnd();
 }

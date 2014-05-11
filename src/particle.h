@@ -16,13 +16,8 @@ enum {
 
 // Particle system functions
 void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int integration_type);
-void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int integration_type);
 void GenerateParticles(R3Scene *scene, double current_time, double delta_time);
 void RenderParticles(R3Scene *scene, double current_time, double delta_time);
-void RenderAircrafts(R3Scene *scene, double current_time, double delta_time);
-
-void HitAircraft(R3Scene *scene, R3Aircraft *aircraft);
-
 
 
 // Intersection computations
