@@ -54,7 +54,12 @@ R3Aircraft::R3Aircraft(void) :
   thrust_magnitude(-1),
   max_thrust(-1),
   firing_rate(-1),
-  hitpoints(-1)
+  hitpoints(-1),
+  respawn_velocity(R3zero_vector),
+  respawn_T(R3identity_matrix),
+  respawn_thrust_magnitude(-1),
+  respawn_hitpoints(-1)
+
 {
   sources.resize(2);
 }
@@ -67,7 +72,7 @@ void FireBullet(R3Scene *scene, R3Aircraft *aircraft, int aircraft_id)
   double pi = 3.14159265;
   double angle_cutoff = .01;
 
-  R3Vector bullet_origin_modeling (10, 0, 0);
+  R3Vector bullet_origin_modeling (3, 0, 0);
   R3Vector bullet_origin_world = aircraft->Modeling_To_World(bullet_origin_modeling);
 
   // TODO add bullet spread
@@ -202,12 +207,19 @@ void HitAircraft(R3Scene *scene, R3Aircraft *aircraft)
     if (aircraft == scene->Aircraft(0))
     {
       cout << "GAME OVER. YOU LOSE. " << endl; // TODO
+      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
+      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
+      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
+      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
+      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
+      cout << "GAME OVER. YOU LOSE. " << endl; // TODO
     }
 
     // else, it is an AI plane
     else
     {
-      cout << "PLANE DEAD" << endl;
+      cout << "PLANE DESTROYED" << endl;
+      cout << "attaway big boy" << endl;
       aircraft->Respawn();
     }
   }
@@ -239,6 +251,94 @@ AssertValid(void)
 }
 
 
+void R3Aircraft::
+AI_decision(R3Aircraft *enemy, double delta_time)
+{
+//  // modeling coordinates -> world coordinates for both planes
+//  R3Point aircraft_position = this->Modeling_To_World(R3Vector(0, 0, 0)).Point();
+//  R3Point enemy_position = enemy->Modeling_To_World(R3Vector(0, 0, 0)).Point();
+//
+//  // TODO: delete
+//  // convert cartesian coordinates (to_enemy) to spherical coordinates: (x,y,z) -> (dist, theta, phi)
+//  R3Vector vector_to_enemy_xyz = enemy_position - aircraft_position;
+//  double dist_to_enemy = vector_to_enemy_xyz.Length();
+//  double phi_xyz = atan2(sqrt(vector_to_enemy_xyz.X() * vector_to_enemy_xyz.X() + vector_to_enemy_xyz.Y() * vector_to_enemy_xyz.Y()), vector_to_enemy_xyz.Z());
+//  double theta_xyz = atan2(vector_to_enemy_xyz.Y(), vector_to_enemy_xyz.X());
+//
+//  // convert cartesian coordinates (to_enemy) to spherical coordinates: rotated(x,y,z) -> (dist, theta, phi)
+//  R3Vector vector_to_enemy_rotated = vector_to_enemy_xyz;
+//  vector_to_enemy_rotated.Transform(this->T.Transpose());
+//  double dist_to_enemy = vector_to_enemy_xyz.Length();
+//  double phi_xyz = atan2(sqrt(vector_to_enemy_xyz.X() * vector_to_enemy_xyz.X() + vector_to_enemy_xyz.Y() * vector_to_enemy_xyz.Y()), vector_to_enemy_xyz.Z());
+//  double theta_xyz = atan2(vector_to_enemy_xyz.Y(), vector_to_enemy_xyz.X());
+//
+//  // TODO: delete visualization later!
+//  // Draw x, y, z for each aircraft
+//  // Draw meshes under transformation
+//  glDisable(GL_LIGHTING);
+//  glLineWidth(3);
+//  glBegin(GL_LINES);
+//
+//  R3Aircraft *aircraft = this;
+//  R3Vector origin = aircraft->Modeling_To_World(R3Vector(0, 0, 0));
+//  R3Vector x_vec = aircraft->Modeling_To_World(R3Vector(1, 0, 0));
+//  R3Vector y_vec = aircraft->Modeling_To_World(R3Vector(0, 1, 0));
+//  R3Vector z_vec = aircraft->Modeling_To_World(R3Vector(0, 0, 1));
+//  R3Vector enemy_vec_modeling = dist_to_enemy * R3Vector(sin(phi_xyz) * cos(theta_xyz), sin(theta_xyz) * sin(phi_xyz), cos(phi_xyz));
+//  R3Vector enemy_vec = aircraft->Modeling_To_World(enemy_vec_modeling);
+//  // draw x in RED
+//  glColor3d(1, 0, 0);
+//  glVertex3f(origin.X(), origin.Y(), origin.Z());
+//  glVertex3f(x_vec.X(), x_vec.Y(), x_vec.Z());
+//  // draw y in GREEN
+//  glColor3d(0, 1, 0);
+//  glVertex3f(origin.X(), origin.Y(), origin.Z());
+//  glVertex3f(y_vec.X(), y_vec.Y(), y_vec.Z());
+//  // draw z in BLUE
+//  glColor3d(0, 0, 1);
+//  glVertex3f(origin.X(), origin.Y(), origin.Z());
+//  glVertex3f(z_vec.X(), z_vec.Y(), z_vec.Z());
+//
+//  // draw enemy_vec in PINK
+//  glColor3d(1, 0, 1);
+//  glVertex3f(origin.X(), origin.Y(), origin.Z());
+//  glVertex3f(enemy_vec.X(), enemy_vec.Y(), enemy_vec.Z());
+//
+//  glEnd();
+
+
+
+
+
+//  // PLAYER-CONTROLLED AIRCRAFT
+//  if (i == 0)
+//  {
+//    if (pitch_up)
+//      aircraft->PitchUp(delta_time);
+//    if (pitch_down)
+//      aircraft->PitchDown(delta_time);
+//    if (roll_left)
+//      aircraft->RollLeft(delta_time);
+//    if (roll_right)
+//      aircraft->RollRight(delta_time);
+//    if (thrust_forward)
+//      aircraft->ThrustForward(delta_time);
+//    if (brake_backward)
+//      aircraft->BrakeBackward(delta_time);
+//    if (firing_bullets)
+//    {
+//      double mult_rate = aircraft->firing_rate * delta_time;
+//      if (mult_rate >= 1)
+//        FireBullet(scene, aircraft, 0);
+//      else if (RandomNumber() < mult_rate)
+//        FireBullet(scene, aircraft, 0);
+//    }
+//  }
+
+}
+
+
+
 void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int integration_type)
 {
   // TODO: actually take into account drag, gravity, etc.
@@ -248,7 +348,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
   {
     R3Aircraft *aircraft = scene->Aircraft(i);
 
-    // PLAYER CONTROLS for the first aircraft
+    // PLAYER-CONTROLLED AIRCRAFT
     if (i == 0)
     {
       if (pitch_up)
@@ -273,6 +373,15 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
       }
     }
 
+    // AI-CONTROLLED AIRCRAFT
+    else
+    {
+      // TODO: if make teams for dogfights, actually find the closest_enemy (easy).
+      R3Aircraft *closest_enemy = scene->Aircraft(0);
+
+      aircraft->AI_decision(closest_enemy, delta_time);
+    }
+
     // UPDATE POSITION with velocity (simple Euler integration)
     R3Vector change_position_modeling = aircraft->velocity * delta_time;
 
@@ -281,9 +390,6 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     R3Vector change_position_world = change_position_modeling;
     change_position_world.Transform(aircraft->T);
     R3Ray ray(prev_position.Point(), change_position_world);
-
-    // KYLE: I discovered the problem with intersections. Current mesh intersection code can only handle triangle faces.
-    // TODO: It should be pretty easy to make it handle rectangle faces as well. Or we could make Daway's code generate triangle meshes.
 
     R3Intersection closest_intersection = ComputeIntersection(scene, scene->Root(), ray);
     if (closest_intersection.IsHit())

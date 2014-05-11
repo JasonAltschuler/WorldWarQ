@@ -1,0 +1,66 @@
+# Player-controlled aircraft
+aircraft
+  -1
+  aircraft1219_edited.off
+  50 5000 400
+  1 0 0
+  1 0.3 1 8 10 3
+  
+
+# AI aircraft
+aircraft
+-1
+aircraft1219_edited.off
+75 5200 400
+1 0 0
+1 0.3 1 8 10 3
+
+
+# AI aircraft
+aircraft
+-1
+aircraft1219_edited.off
+50 4800 400
+1 0 0
+1 0.3 1 8 10 3
+
+
+
+# AI aircraft
+aircraft
+-1
+aircraft1219_edited.off
+35 4900 400
+1 0 0
+1 0.3 1 8 10 3
+
+
+# AI aircraft
+aircraft
+-1
+aircraft1219_edited.off
+60 5000 350
+1 0 0
+1 0.3 1 8 10 3
+
+
+# AI aircraft
+aircraft
+-1
+aircraft1219_edited.off
+70 49000 450
+1 0 0
+1 0.3 1 8 10 3
+
+
+# AI aircraft
+aircraft
+-1
+aircraft1219_edited.off
+61 5050 420
+1 0 0
+1 0.3 1 8 10 3
+
+mesh
+-1
+128_tri3.off

@@ -1,4 +1,7 @@
-# bomber
+# the enemy aircraft is right in front of the player-controlled aircraft.
+# good for debugging bullet-plane intersections and respawning.
+
+# Player-controlled aircraft
 aircraft
   -1
   aircraft1219_edited.off
@@ -6,14 +9,14 @@ aircraft
   1 0 0
   1 0.3 1 8 10 3
   
-  
-  #
-  aircraft
-  -1
-  aircraft1219_edited.off
-  75 5000 400
-  1 0 0
-  1 0.3 1 8 10 3
+# AI aircraft
+aircraft
+-1
+aircraft1219_edited.off
+75 5000 400
+1 0 0
+1 0.3 1 8 10 3
+
 
 mesh
 -1

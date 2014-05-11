@@ -31,6 +31,11 @@ struct R3Aircraft {
   int respawn_hitpoints; // equivalently: max_hitpoints
 
 
+  // ------------------------- Methods for aircraft movements ------------------------- //
+
+  // Moves the aircrafts not controlled by player #AI2gud
+  void AI_decision(R3Aircraft *enemy, double delta_time);
+
   // move the plane
   void PitchUp(double delta_time);
   void PitchDown(double delta_time);
@@ -39,12 +44,16 @@ struct R3Aircraft {
   void ThrustForward(double delta_time);
   void BrakeBackward(double delta_time);
 
-  // get X, Y, and Z vectors (in modeling coordinates) when transformed to world coordinates
-  R3Vector Modeling_To_World(R3Vector vector_modeling_coordinates);
-
   // respawn if aircraft is destroyed
   void Respawn(void);
 
+
+  // ---------------------------- Helper methods ---------------------------- //
+
+  // get X, Y, and Z vectors (in modeling coordinates) when transformed to world coordinates
+  R3Vector Modeling_To_World(R3Vector vector_modeling_coordinates);
+
+  // checks this aircraft
   void AssertValid(void);
 };
 

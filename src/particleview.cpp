@@ -483,6 +483,47 @@ void LoadCamera(R3Camera *camera)
      current_camera_position.SetY(camera_position[1]);
      current_camera_position.SetZ(camera_position[2]);
    }
+
+  // 3rd person view (looking backwards)
+  else if (camera_view == 5)
+  {
+    R3Aircraft * player_aircraft = scene->aircrafts[0];
+    R3Vector displacement_vec(5, 0, 0.4);
+    displacement_vec.Transform(player_aircraft->T);
+    R3Vector camera_position = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0)); // centroid of aircraft
+    camera_position += displacement_vec;
+
+
+    R3Vector t (1, 0, 0);
+    t.Transform(player_aircraft->T);
+    R3Vector u (0, 0, 1);
+    u.Transform(player_aircraft->T);
+    R3Vector r (0, -1, 0);
+    r.Transform(player_aircraft->T);
+
+    assert(t.IsNormalized());
+    assert(u.IsNormalized());
+    assert(r.IsNormalized());
+
+    //    t.Normalize();
+    //    u.Normalize();
+    //    r.Normalize();
+
+    GLdouble camera_matrix[16] = { r[0], u[0], t[0], 0, r[1], u[1], t[1], 0, r[2], u[2], t[2], 0, 0, 0, 0, 1 };
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glMultMatrixd(camera_matrix);
+    glTranslated(-(camera_position[0]), -(camera_position[1]), -(camera_position[2]));
+
+    current_camera_position.SetX(camera_position[0]);
+    current_camera_position.SetY(camera_position[1]);
+    current_camera_position.SetZ(camera_position[2]);
+   }
+
+
+
+
+
   else {
     fprintf(stderr, "Invalid view");
     exit(1);
@@ -1515,24 +1556,28 @@ void GLUTKeyboard(unsigned char key, int x, int y)
     break;
 
   case '1':
-     camera_view = 1;
-     break;
+    camera_view = 1;
+    break;
 
   case '2':
-     camera_view = 2;
-     break;
+    camera_view = 2;
+    break;
 
   case '3':
-     camera_view = 3;
-     break;
+    camera_view = 3;
+    break;
 
   case '4':
-     camera_view = 4;
-     break;
+    camera_view = 4;
+    break;
+
+  case '5':
+    camera_view = 5;
+    break;
 
 
-//  case 'Q':
-//  case 'q':
+    //  case 'Q':
+    //  case 'q':
   case 27: // ESCAPE
     quit = 1;
     break;

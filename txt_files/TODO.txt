@@ -29,7 +29,12 @@ At the end: remove some of the R3Aircraft.AssertValid() and R3Intersection.Asser
 
 /// =================== completed tasks below ================ ///
 
-
+// Done on Saturday, the 10th
+Added alternative viewpoint: look backwards (toggle with '5') -- useful for debugging AI
+Added aircraft5.scn, aircraft6.scn, aircraft7.scn for debugging (read descriptions at top of files for more)
+Implemented HP for airplanes (parameter in scene files)
+Implemented bullet collision with airplanes
+Able to load more than 1 plane in the scene at a time
 
 // Done on Friday, the 9th
 Added skybox   
