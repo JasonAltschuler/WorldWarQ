@@ -124,6 +124,7 @@ typedef enum
     SNOW,
     DIRT,
     OCEAN,
+    DESERT,
     NUM_TEXTURES
 } R3Texture;
 
@@ -713,16 +714,24 @@ void DrawGround(R3Scene *scene)
         //        if (dirt_weight < 0) dirt_weight = 0;
         //        cout << dirt_weight << endl;
         dirt_weight = 1-dirt_weight;
+        dirt_weight += .4;
 
         //        dirt_weight = 1;
 
         //        glEnable(GL_BLEND);
         //        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        //        glDisable(GL_LIGHTING);
+                glDisable(GL_LIGHTING);
 
         if (face->vertices.size() == 3)
         {
-            LoadMaterial(texture_materials[DIRT]);
+
+            // load different textures depending on map
+            if (scene->skybox_type == 0)
+                LoadMaterial(texture_materials[DIRT]);
+            else if (scene->skybox_type == 1)
+                LoadMaterial(texture_materials[DESERT]);
+            else if (scene->skybox_type == 2)
+                LoadMaterial(texture_materials[OCEAN]);
             //            glColor4f(1.0f, 1.0f, 1.0f, dirt_weight);
             glColor4f(dirt_weight, dirt_weight, dirt_weight, 1);
 
@@ -1293,7 +1302,7 @@ void GLUTRedraw(void)
         texture_materials[DIRT] = dirt; // sufficiently large s.t. won't be same as any of the scene file materials
 
 
-        // DIRT
+        // OCEAN
         R3Material* ocean = new R3Material();
         ocean->ka = R3Rgb(0.0, 0.0, 0.0, 0.0);
         ocean->kd = R3Rgb(0.2, 0.2, 0.2, 0.0);
@@ -1308,6 +1317,22 @@ void GLUTRedraw(void)
         ocean->texture = new R2Image();
         ocean->texture->Read("../textures/ocean.jpg");
         texture_materials[OCEAN] = ocean; // sufficiently large s.t. won't be same as any of the scene file materials
+
+        // DESERT
+        R3Material* desert = new R3Material();
+        dirt->ka = R3Rgb(0.0, 0.0, 0.0, 0.0);
+        dirt->kd = R3Rgb(0.2, 0.2, 0.2, 0.0);
+        dirt->ks = R3Rgb(0.2, 0.2, 0.2, 0.0);
+        dirt->kt = R3Rgb(0.0, 0.0, 0.0, 0.0);
+        dirt->emission = R3Rgb(0, 0, 0, 0);
+        dirt->shininess = 10;
+        dirt->indexofrefraction = 1;
+        dirt->id = 103;
+
+        // Read texture image
+        dirt->texture = new R2Image();
+        dirt->texture->Read("../textures/desert2.jpg");
+        texture_materials[DESERT] = desert; // sufficiently large s.t. won't be same as any of the scene file materials
     }
 
     // Initialize OpenGL drawing modes
@@ -2157,7 +2182,7 @@ void initSkyBox(int skybox_type)
     // skyboxes taken from these sites:
     // http://www.redsorceress.com/skybox.html
 
-    if (skybox_type == 1)
+    if (skybox_type == 10)
     {
         skybox[SKY_FRONT] = loadTexBMP("bmp/txStormydays_front.bmp");
         skybox[SKY_RIGHT] = loadTexBMP("bmp/txStormydays_right.bmp");
@@ -2165,7 +2190,7 @@ void initSkyBox(int skybox_type)
         skybox[SKY_BACK] = loadTexBMP("bmp/txStormydays_back.bmp");
         skybox[SKY_UP] = loadTexBMP("bmp/txStormydays_up.bmp");
         skybox[SKY_DOWN] = loadTexBMP("bmp/txStormydays_down.bmp");
-    } else if (skybox_type == 2)
+    } else if (skybox_type == 0)
     {
         skybox[SKY_FRONT] = loadTexBMP("bmp/front.bmp");
         skybox[SKY_RIGHT] = loadTexBMP("bmp/right.bmp");
@@ -2173,13 +2198,21 @@ void initSkyBox(int skybox_type)
         skybox[SKY_BACK] = loadTexBMP("bmp/back.bmp");
         skybox[SKY_UP] = loadTexBMP("bmp/up.bmp");
         skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
-    } else if (skybox_type == 0)
+    } else if (skybox_type == 1)
     {
         skybox[SKY_FRONT] = loadTexBMP("bmp/desert_back.bmp");
         skybox[SKY_RIGHT] = loadTexBMP("bmp/desert_right.bmp");
         skybox[SKY_LEFT] = loadTexBMP("bmp/desert_left.bmp");
         skybox[SKY_BACK] = loadTexBMP("bmp/desert_front.bmp");
         skybox[SKY_UP] = loadTexBMP("bmp/desert_top.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+    } else if (skybox_type == 2)
+    {
+        skybox[SKY_FRONT] = loadTexBMP("bmp/lostatseaday_back.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("bmp/lostatseaday_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("bmp/lostatseaday_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("bmp/lostatseaday_front.bmp");
+        skybox[SKY_UP] = loadTexBMP("bmp/lostatseaday_top.bmp");
         skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
     }
 }
