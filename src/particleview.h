@@ -18,6 +18,10 @@ extern int firing_bullets;
 // mode for hard or not
 extern int hard_mode;
 
+// keep track of number deaths / kills for heads-up display
+extern int num_deaths;
+extern int num_kills;
+
 // source properties for aircraft engines
 const double AIRCRAFT_SOURCE_RADIUS = 0.003;
 const double AIRCRAFT_SOURCE_BACK_NEG = -0.3;

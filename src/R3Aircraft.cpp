@@ -37,15 +37,21 @@ static const double BULLET_VELOCITY = 100.0;
 
 static const double AIRCRAFT_EXHAUST_RATE_MAX = 100.0;
 
+static const double FREEZE_TIME = 2.0;
+
 
 // TODO: play with these?
-const double AI_RADIUS_SHOOTING_RANGE = 0.130899694;                 // 7.5 degrees in radians
-const double AI_RADIUS_MOVING_RANGE = AI_RADIUS_SHOOTING_RANGE / 50.0;  // the smaller this is, the better the AI is/ TODO: change with hard mode?
-const double AI_DISTANCE_HI_LO_THRUST = 75.0; // probably somewhere between 75 and 100 is best
+static const double AI_RADIUS_SHOOTING_RANGE = 0.130899694;                 // 7.5 degrees in radians
+static const double AI_RADIUS_MOVING_RANGE = AI_RADIUS_SHOOTING_RANGE / 50.0;  // the smaller this is, the better the AI is/ TODO: change with hard mode?
+static const double AI_DISTANCE_HI_LO_THRUST = 75.0; // probably somewhere between 75 and 100 is best
 
 
-static int num_deaths = 0;
-static int num_kills = 0;
+////////////////////////////////////////////////////////////
+// TRACK NUMBER OF KILLS / DEATHS FOR HEADS-UP DISPLAY
+////////////////////////////////////////////////////////////
+
+int num_deaths = 0;
+int num_kills = 0;
 
 ////////////////////////////////////////////////////////////
 // Random Number Generator
@@ -81,11 +87,12 @@ R3Aircraft::R3Aircraft(void) :
   max_thrust(-1),
   firing_rate(-1),
   hitpoints(-1),
+  freeze_time(-1),
+  time_since_last_fired(0.0),
   respawn_velocity(R3zero_vector),
   respawn_T(R3identity_matrix),
   respawn_thrust_magnitude(-1),
-  respawn_hitpoints(-1),
-  is_fixed(false)
+  respawn_hitpoints(-1)
 
 {
   sources.resize(2);
@@ -115,6 +122,8 @@ AssertValid(void)
 void R3Aircraft::
 FireBullet(R3Scene *scene)
 {
+  time_since_last_fired = 0.0;
+
   // make sound for firing bullet
   engine->play2D("../wav/shot.wav");
 
@@ -270,8 +279,7 @@ HitAircraft(R3Scene *scene)
 
       bool should_explode = true;
       bool should_respawn = false;
-      bool is_player_controlled_aircraft = true;
-      this->Destroy(scene, should_explode, should_respawn, is_player_controlled_aircraft);
+      this->Destroy(scene, should_explode, should_respawn);
     }
 
     // else, it is an AI plane
@@ -282,17 +290,16 @@ HitAircraft(R3Scene *scene)
       cout << "num_kills = " << num_kills << endl;
       bool should_explode = true;
       bool should_respawn = true;
-      bool is_player_controlled_aircraft = false;
-      this->Destroy(scene, should_explode, should_respawn, is_player_controlled_aircraft);
+      this->Destroy(scene, should_explode, should_respawn);
     }
   }
 }
 
 void R3Aircraft::
-Destroy(R3Scene *scene, bool should_explode, bool should_respawn, bool is_player_controlled_aircraft)
+Destroy(R3Scene *scene, bool should_explode, bool should_respawn)
 {
   if (should_explode)
-    this->Explode(scene, is_player_controlled_aircraft);
+    this->Explode(scene, false);
 
   if (should_respawn)
     this->Respawn();
@@ -302,16 +309,16 @@ Destroy(R3Scene *scene, bool should_explode, bool should_respawn, bool is_player
 
 
 void R3Aircraft::
-Explode(R3Scene *scene, bool is_player_controlled_aircraft)
+Explode(R3Scene *scene, bool is_nonbullet_explosion)
 {
   engine->play2D("../wav/explosion.wav");
 
   // set up materials only once
-  static bool is_material_intialized = false;
+  static bool is_material_initialized = false;
   static R3Material orange_shrapnel, red_shrapnel, black_shrapnel;
-  if (!is_material_intialized)
+  if (!is_material_initialized)
   {
-    is_material_intialized = true;
+    is_material_initialized = true;
 
     // set up orange shrapnel
     orange_shrapnel.ka.Reset(0.2,0.2,0.2,1);
@@ -349,6 +356,7 @@ Explode(R3Scene *scene, bool is_player_controlled_aircraft)
 
 
   const int num_particles_to_generate = 1000;
+  int particles_to_generate = num_particles_to_generate * (is_nonbullet_explosion ? 5 : 1);
   const double radius = 1;
   const double fast_velocity = 30;
   const double particle_lifetime = 0.25;
@@ -371,16 +379,14 @@ Explode(R3Scene *scene, bool is_player_controlled_aircraft)
   new_source->material = &orange_shrapnel; // TODO: change to make different colors (red, black, white, orange?)
 
 
-
-
 // TODO: delete this and DrawSource(...) method in particleview.cpp && particleview.h
   DrawSource(new_source);
 
 
-  int one_third = (int) num_particles_to_generate / 3.0;
+  int one_third = (int) particles_to_generate / 3.0;
   int two_third = one_third * 2;
 
-  for (int i = 0; i < num_particles_to_generate; i++)
+  for (int i = 0; i < particles_to_generate; i++)
   {
     if (i > one_third && i < two_third)
       new_source->material = &red_shrapnel;
@@ -422,13 +428,6 @@ Explode(R3Scene *scene, bool is_player_controlled_aircraft)
   delete new_source;
   delete sphere;
   delete shape;
-
-
-  if (is_player_controlled_aircraft)
-  {
-    this->is_fixed = true;
-  }
-
 }
 
 void R3Aircraft::
@@ -469,7 +468,12 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
 
   // shoot if aimed properly
   if (abs(theta_rotated) < AI_RADIUS_SHOOTING_RANGE && abs(phi_rotated - PI/2.0) < AI_RADIUS_SHOOTING_RANGE)
-    this->FireBullet(scene);
+  {
+    // make sure doesn't fire too rapidly
+    time_since_last_fired += delta_time;
+    if (time_since_last_fired > (1.0 / firing_rate))
+      FireBullet(scene);
+  }
 
   // ROLL LEFT OR RIGHT TO AIM
   if (abs(theta_rotated) > AI_RADIUS_MOVING_RANGE)
@@ -566,6 +570,16 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     // PLAYER-CONTROLLED AIRCRAFT
     if (i == 0)
     {
+      // if you suck and your aircraft blows up
+      if (aircraft->freeze_time > 0)
+      {
+        aircraft->freeze_time -= delta_time;
+        if (aircraft->freeze_time <= 0)
+          aircraft->Respawn();
+        continue;
+      }
+
+      // listen to player keyboard controls
       if (pitch_up)
         aircraft->PitchUp(delta_time);
       if (pitch_down)
@@ -580,10 +594,9 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
         aircraft->BrakeBackward(delta_time);
       if (firing_bullets)
       {
-        double mult_rate = aircraft->firing_rate * delta_time;
-        if (mult_rate >= 1)
-          aircraft->FireBullet(scene);
-        else if (RandomNumber() < mult_rate)
+        // make firing rate more constant --> sounds more like machine gun
+        aircraft->time_since_last_fired += delta_time;
+        if (aircraft->time_since_last_fired > (1.0 / aircraft->firing_rate))
           aircraft->FireBullet(scene);
       }
     }
@@ -605,18 +618,75 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     R3Vector change_position_world = change_position_modeling;
     change_position_world.Transform(aircraft->T);
     R3Ray ray(prev_position.Point(), change_position_world);
+    R3Particle *fake_bullet = new R3Particle();
+    fake_bullet->aircraft_fired_from = aircraft;
 
-    R3Intersection scene_intersection = ComputeIntersection(scene, scene->Root(), ray);
-    // TODO: add a check here for aircraft - aircraft intersections
+    R3Intersection scene_intersection;
+    R3Intersection airplane_intersection;
+    if (scene->Aircraft(0)->freeze_time > 0)
+    {
+      scene_intersection.SetMiss();
+      airplane_intersection.SetMiss();
+    }
+    else
+    {
+      scene_intersection = ComputeIntersection(scene, scene->Root(), ray);
+      airplane_intersection = ComputeIntersectionWithAircrafts(scene, ray, fake_bullet);
+    }
+    scene_intersection.AssertValid();
+    airplane_intersection.AssertValid();
+
+    delete fake_bullet;
+
     if (scene_intersection.IsHit() && scene_intersection.distance < change_position_world.Length())
     {
-      cout << "COLLISION!!! " << endl;
+      // freeze aircraft if player-controlled aircraft blows up --> see the explosion before respawn
+      bool is_collision_scene = false;
 
-      // TODO: want to be able to see the explosion... respawn after 1 second or something?
-      aircraft->Explode(scene, true);
+      // if player-controlled aircraft
+      if (aircraft == scene->Aircraft(0))
+      {
+        aircraft->freeze_time = FREEZE_TIME;
+        num_deaths++;
+        is_collision_scene = true;
+      }
+
+      // if AI-controlled aircraft
+      else
+      {
+        is_collision_scene = false;
+      }
+
+      aircraft->Explode(scene, is_collision_scene);
       return;
-      //        aircraft->Respawn();
     }
+
+    if (airplane_intersection.IsHit() && airplane_intersection.distance < change_position_world.Length())
+    {
+      R3Aircraft *other_aircraft = airplane_intersection.aircraft;
+      assert(other_aircraft != aircraft);
+
+      // if player-controlled aircraft
+      if (aircraft == scene->Aircraft(0) || other_aircraft == scene->Aircraft(0))
+      {
+        aircraft->freeze_time = FREEZE_TIME;
+        num_deaths++;
+        num_kills++;
+      }
+
+      // explode both aircrafts
+      other_aircraft->Explode(scene, true);
+      aircraft->Explode(scene, true);
+
+      // make the AI controlled aircraft respawn
+      if (aircraft == scene->Aircraft(0))
+        other_aircraft->Respawn();
+      else
+        aircraft->Respawn();
+
+      return;
+    }
+
 
     aircraft->T.Translate(change_position_modeling);
 
@@ -671,8 +741,12 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
     if (aircraft->material) LoadMaterial(aircraft->material);
 
     // Draw shape
-    if (aircraft->mesh) aircraft->mesh->Draw();
-    else { fprintf(stderr, "problem drawing mesh!"); exit(1); }
+    // don't draw if user is destroyed
+    if (i != 0 || aircraft->freeze_time <= 0)
+    {
+      if (aircraft->mesh) aircraft->mesh->Draw();
+      else { fprintf(stderr, "problem drawing mesh!"); exit(1); }
+    }
 
     glPopMatrix();
   }

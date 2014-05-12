@@ -5,10 +5,6 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 
 
-Make player respawn
-Make aircraft explode when destroyed by bullets, when crash into mesh, and when crash into other planes
-
-
 capture video for realistic and non realistic thrust/turn (easy vs. hard mode). perhaps after trails
 
 
@@ -32,6 +28,10 @@ At the end: remove some of the R3Aircraft.AssertValid() and R3Intersection.Asser
 /// =================== completed tasks below ================ ///
 
 // Done on Sunday, the 11th
+Make aircraft explode when destroyed by bullets, when crash into mesh, and when crash into other planes
+made bullets more constant (more realistic for machine guns)
+added kills / deaths to HUD
+added textures
 add sound effects when firing bullets.
 Make trails interpolate between material_color and black, not white and black
 Change color of explosion

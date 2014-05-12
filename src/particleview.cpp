@@ -1401,25 +1401,44 @@ void GLUTRedraw(void)
        glEnd();
    }
 
+
+
+
+   glBindTexture(GL_TEXTURE_2D, 0);
+
    // draw thrust string
-   glColor3f(1, 0, 0);
+   glColor3f(1, 1, 1);
    int percentage_thrust = scene->Aircraft(0)->thrust_magnitude/scene->Aircraft(0)->max_thrust*100;
    char buffer[50];
    sprintf(buffer, "Thrust: %d%%", percentage_thrust);
    GLUTDrawText(R3Point(7, 15, 0), buffer);
 
    // draw velocity string
-   glColor3f(1, 0, 0);
+   glColor3f(1, 1, 1);
    double velocity = scene->Aircraft(0)->velocity.Length() * METERS_PER_UNIT;
    sprintf(buffer, "Velocity: %.2f m/s", velocity);
    GLUTDrawText(R3Point(7, 30, 0), buffer);
 
    // draw altitude string
-    glColor3f(1, 0, 0);
+    glColor3f(1, 1, 1);
     R3Vector altitude_vec = scene->Aircraft(0)->Modeling_To_World(R3Vector(0, 0, 0));
     double altitude = altitude_vec.Z();
     sprintf(buffer, "Altitude: %.2f m", altitude);
     GLUTDrawText(R3Point(7, 45, 0), buffer);
+
+    // draw kills string
+    glColor3f(1, 0, 0);
+    sprintf(buffer, "Kills: %d", num_kills);
+    GLUTDrawText(R3Point(433, 15, 0), buffer);
+
+    // draw deaths string
+    glColor3f(1, 0, 0);
+    sprintf(buffer, "Deaths: %d", num_deaths);
+    GLUTDrawText(R3Point(424, 30, 0), buffer);
+
+
+
+
 
    // Making sure we can render 3d again
    glMatrixMode(GL_PROJECTION);

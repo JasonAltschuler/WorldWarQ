@@ -426,19 +426,23 @@ void GenerateParticles(R3Scene *scene, double current_time, double delta_time)
   // Generate particles for exhaust for each airplane's engines (sources)
   for (int i = 0; i < scene->NAircrafts(); i++)
   {
-    vector<R3ParticleSource *> sources = scene->Aircraft(i)->sources;
-    for (int j = 0; j < sources.size(); j++)
+    if (i != 0 || scene->Aircraft(0)->freeze_time <= 0)
     {
-      R3ParticleSource * source = sources[j];
 
-      // calculate number of particles to generate (see https://piazza.com/class/hqsinyn8h2i6h2?cid=252)
-      double mult_rate = source->rate * delta_time;
-      int num_to_generate = floor(mult_rate);
-      if (RandomNumber() < (mult_rate - num_to_generate))
-        num_to_generate++;
+      vector<R3ParticleSource *> sources = scene->Aircraft(i)->sources;
+      for (int j = 0; j < sources.size(); j++)
+      {
+        R3ParticleSource * source = sources[j];
 
-      for (int k = 0; k < num_to_generate; k++)
-        GenerateParticle(scene, source);
+        // calculate number of particles to generate (see https://piazza.com/class/hqsinyn8h2i6h2?cid=252)
+        double mult_rate = source->rate * delta_time;
+        int num_to_generate = floor(mult_rate);
+        if (RandomNumber() < (mult_rate - num_to_generate))
+          num_to_generate++;
+
+        for (int k = 0; k < num_to_generate; k++)
+          GenerateParticle(scene, source);
+      }
     }
   }
 
