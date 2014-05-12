@@ -72,9 +72,11 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
   // Trails (implemented for one point)
 
   // remember the positions of the particles for the last K time steps
-  const int K_TRAIL_SIZE = 30; // hardcoded, but can be changed easily
+  const int K_TRAIL_SIZE = 10; // hardcoded, but can be changed easily
 
-  glBegin(GL_POINTS);
+  //  glBegin(GL_POINTS);
+  //      glLineWidth(2);
+//  glBegin(GL_LINES);
   for (int i = 0; i < scene->NParticles(); i++)
   {
     // update trails
@@ -86,19 +88,36 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
 
     // draw trails
     R3Rgb material_color = particle->material->kd;
-    for (int j = 0; j < trail.size(); j++)
+
+    static bool bool_printed = false;
+    if (!bool_printed)
+    {
+      bool_printed = true;
+      assert(particle->is_bullet);
+
+//      cout << particle->material->
+    }
+
+
+
+    for (int j = 0; j < trail.size() - 1; j++)
     {
       double c = (double) j / (double) trail.size();
-      R3Rgb interpolated_color = material_color * c;
+      R3Rgb interpolated_color = material_color * (1 - c);
+      interpolated_color.Clamp();
 
+      glBegin(GL_LINES);
       glColor3d(interpolated_color.Red(), interpolated_color.Green(), interpolated_color.Blue());
-      glLineWidth(2);
-
       glVertex3d(trail[j].X(), trail[j].Y(), trail[j].Z());
+      glVertex3d(trail[j+1].X(), trail[j+1].Y(), trail[j+1].Z());
+      glEnd();
+
+
+//      glVertex3d(trail[j].X(), trail[j].Y(), trail[j].Z());
     }
 
   }
-  glEnd();
+//  glEnd();
 
 
 //  for (int j = 0; j < deque.size() - 1; j++) {
@@ -444,7 +463,7 @@ void GenerateParticles(R3Scene *scene, double current_time, double delta_time)
           num_to_generate++;
 
         for (int k = 0; k < num_to_generate; k++)
-          GenerateParticle(scene, source);
+          GenerateParticle(scene, source); // TODO: finishup here....
       }
     }
   }
@@ -694,10 +713,20 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
       // make sure intersection is actually an intersection
       if (closest_intersection.IsHit())
       {
-        double t = ray.T(new_position);
-        double t_collision = ray.T(closest_intersection.position);
-        if (t_collision < 0 || t_collision > t)
+        if (scene->Aircraft(0)->freeze_time >= 0)
+        {
+          // don't care about collision if frozen / animation time
+          assert(closest_intersection.aircraft == scene->Aircraft(0));
           closest_intersection.SetMiss();
+        }
+
+        else
+        {
+          double t = ray.T(new_position);
+          double t_collision = ray.T(closest_intersection.position);
+          if (t_collision < 0 || t_collision > t)
+            closest_intersection.SetMiss();
+        }
       }
 
       if (!closest_intersection.IsHit())

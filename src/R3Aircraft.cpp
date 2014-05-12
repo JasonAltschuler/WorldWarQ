@@ -210,10 +210,10 @@ ThrustForward(double delta_time)
 }
 
 void R3Aircraft::
-BrakeBackward(double delta_time)
+BrakeBackward(double delta_time, bool is_AI)
 {
   double delta_thrust = max_thrust * delta_time / SECONDS_TO_MAX_THRUST;
-  thrust_magnitude = max(thrust_magnitude - delta_thrust, 0.0); // always non-negative
+  thrust_magnitude = max(thrust_magnitude - delta_thrust, max_thrust / 10.0); // always non-negative
   AssertValid();
 }
 
@@ -521,7 +521,11 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
     // make sure doesn't fire too rapidly
     time_since_last_fired += delta_time;
     if (time_since_last_fired > (1.0 / firing_rate))
-      FireBullet(scene);
+    {
+      // don't fire when player-controlled aircraft is frozen / animation time
+      if (scene->Aircraft(0)->freeze_time < 0)
+        FireBullet(scene);
+    }
   }
 
   // ROLL LEFT OR RIGHT TO AIM
@@ -558,7 +562,7 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
     if (abs(dist_to_enemy) > AI_DISTANCE_HI_LO_THRUST)
       ThrustForward(delta_time);
     else
-      BrakeBackward(delta_time);
+      BrakeBackward(delta_time, true);
   }
 
 
@@ -620,10 +624,10 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     if (i == 0)
     {
       // if you suck and your aircraft blows up
-      if (aircraft->freeze_time > 0)
+      if (aircraft->freeze_time >= 0)
       {
         aircraft->freeze_time -= delta_time;
-        if (aircraft->freeze_time <= 0)
+        if (aircraft->freeze_time < 0)
           aircraft->Respawn();
         continue;
       }
@@ -640,7 +644,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
       if (thrust_forward)
         aircraft->ThrustForward(delta_time);
       if (brake_backward)
-        aircraft->BrakeBackward(delta_time);
+        aircraft->BrakeBackward(delta_time, false);
       if (firing_bullets)
       {
         // make firing rate more constant --> sounds more like machine gun
@@ -704,6 +708,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
       else
       {
         is_collision_scene = false;
+        aircraft->Respawn();
       }
 
       aircraft->Explode(scene, is_collision_scene);

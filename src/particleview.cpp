@@ -1424,9 +1424,9 @@ void GLUTRedraw(void)
     // draw point at center of radar
 //     glEnable(GL_POINT_SMOOTH);
 //     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-     glColor4f(1, 0, 0, 1);
-//     glPointSize(5);
-//     glBegin(GL_POINTS);
+
+     glColor4f(0, 0, 1, 1);
+     glPointSize(5);
      glBegin(GL_POLYGON);
      glVertex2f(left + map_width/2, top + map_height/2);
      glVertex2f(left + map_width/2 - 5, top + map_height/2 + 5);
@@ -1435,21 +1435,65 @@ void GLUTRedraw(void)
 
      // calculate relative positions of enemies:
      // first, translate everything to plane's coordinate system
-     // then, get rid of Z
+     // then, get rid of the most unimportant dimension
      // then scale
      // then draw
 
      // max units away a plane can be to be visible on minimap
-     double max_dist = 100;
+     double max_dist = 5;
 
+     glColor4f(1, 0, 0, 1);
      for (int i = 1; i < scene->NAircrafts(); i++)
      {
-         R3Aircraft *aircraft = scene->Aircraft(i);
-         // define north as
+       R3Aircraft *player_aircraft = scene->Aircraft(0);
+       R3Aircraft *AI_aircraft = scene->Aircraft(i);
+
+       // get position of player and AI in world
+       R3Vector AI_center_world(0, 0, 0);
+       AI_center_world = AI_aircraft->Modeling_To_World(AI_center_world);
+
+       R3Vector player_center_world(0, 0, 0);
+       player_center_world = player_aircraft->Modeling_To_World(player_center_world);
+
+       // subtract vectors to put AI into player's modeling coordinates
+       R3Vector to_enemy_modeling = AI_center_world - player_center_world;
 
 
+       // rotated AI based on player's rotation
+       to_enemy_modeling.Transform(player_aircraft->T.Transpose()); // TODO: transpose?
+
+       // eliminate z vector in this rotated coordinate system
+       to_enemy_modeling.SetZ(0);
+
+       // rescale for minimap size
+       to_enemy_modeling /= max_dist;
+
+
+       // figure out which way AI is pointing with respect to player aircraft's direction
+       R3Vector AI_direction_modeling = AI_aircraft->velocity;
+       AI_direction_modeling.Transform(AI_aircraft->T);
+       AI_direction_modeling.Transform(player_aircraft->T.Transpose());
+
+       AI_direction_modeling.SetZ(0);
+       AI_direction_modeling.Normalize();
+
+       R3Vector AI_direction_perp_modeling = AI_direction_modeling;
+       AI_direction_perp_modeling.Cross(R3Vector(0, 0, 1));
+
+//       glBegin(GL_POINTS);
+       glBegin(GL_POLYGON);
+       glVertex2f(left + map_width/2 - to_enemy_modeling.Y(), top + map_height/2 - to_enemy_modeling.X());
+
+       R3Vector back_center = -5 * AI_direction_modeling + to_enemy_modeling;
+       R3Point back_left = (back_center - 5 * AI_direction_perp_modeling).Point();
+       R3Point back_right = (back_center + 5 * AI_direction_perp_modeling).Point();
+
+//       glVertex2f(left + map_width/2 - back_center.Y(), top + map_height/2 - back_center.X());
+
+       glVertex2f(left + map_width/2 - back_left.Y(), top + map_height/2 - back_left.X());
+       glVertex2f(left + map_width/2 - back_right.Y(), top + map_height/2 - back_right.X());
+       glEnd();
      }
-
 
     // draw Minimap background radar
     glColor4f(.5, .5, .5, .5);
@@ -2232,12 +2276,6 @@ main(int argc, char **argv)
     // Return success
     return 0;
 }
-
-
-
-
-
-
 
 
 
