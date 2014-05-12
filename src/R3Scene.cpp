@@ -805,8 +805,6 @@ Read(const char *filename, R3Node *node)
       bbox.Union(mesh->bbox);
 
 
-
-
       //
 //
 //      // Create shape

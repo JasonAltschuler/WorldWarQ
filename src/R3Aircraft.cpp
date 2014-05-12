@@ -455,6 +455,7 @@ Explode(R3Scene *scene, bool is_collision_scene)
   delete shape;
 
 
+  // sound for explosion
 #ifdef __APPLE__
   // 2D sound
   //  engine->play2D("../wav/explosion.wav");
@@ -819,6 +820,67 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
 
     aircraft->AssertValid();
   }
+
+
+
+#ifdef __APPLE__
+  // 3D BACKGROUND SOUNDS FOR AIRPLANES -- set up once then update based on posiitons
+  static bool background_sound_init = false;
+  static vector<irrklang::ISound*> background_sounds;
+
+
+  // get position and direction of listener (player-controlled aircraft)
+  R3Aircraft *player_aircraft = scene->Aircraft(0);
+  R3Vector pos_player_aircraft(0, 0, 0);
+  pos_player_aircraft = player_aircraft->Modeling_To_World(pos_player_aircraft);
+  R3Vector dir_player_aircraft(1, 0, 0);
+  dir_player_aircraft.Transform(player_aircraft->T);
+
+
+  // initialize background sounds if not done so already (only done once!)
+  if (!background_sound_init)
+  {
+    background_sound_init = true;
+    background_sounds.resize(scene->NAircrafts());
+
+    for (int i = 0; i < scene->NAircrafts(); i++)
+    {
+      // make background sound
+      // 3D sound!!
+      R3Aircraft *other_aircraft = scene->Aircraft(i);
+      R3Vector pos_other_aircraft(0, 0, 0);
+      pos_other_aircraft = other_aircraft->Modeling_To_World(pos_other_aircraft);
+
+      engine->setListenerPosition(irrklang::vec3df(pos_player_aircraft.X(), pos_player_aircraft.Y(), pos_player_aircraft.Z()),
+          irrklang::vec3df(dir_player_aircraft.X(), dir_player_aircraft.Y(), dir_player_aircraft.Z()));
+
+      bool should_loop = true;
+      irrklang::ISound* background_sound = engine->play3D("../wav/background_sound.wav", irrklang::vec3df(pos_other_aircraft.X(),
+          pos_other_aircraft.Y(), pos_other_aircraft.Z()), should_loop, false, true);
+
+      if (background_sound)
+        background_sound->setMinDistance(25.0f);
+
+      background_sounds[i] = background_sound;
+    }
+  }
+
+  // if background_sounds already initialized --> update based on new positions of aircrafts
+  else
+  {
+
+
+    engine->setListenerPosition(irrklang::vec3df(pos_player_aircraft.X(), pos_player_aircraft.Y(), pos_player_aircraft.Z()),
+                                     irrklang::vec3df(dir_player_aircraft.X(), dir_player_aircraft.Y(), dir_player_aircraft.Z()));
+
+//    if (music)
+//      music->setPosition(pos3d);
+
+
+  }
+#endif
+
+
 }
 
 
