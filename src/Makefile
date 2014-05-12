@@ -27,6 +27,25 @@ else
 endif
 
 
+# SELECT APPROPRIATE IRRKLANG LIBRARIES FOR DIFFERENT PLATFORMS                       
+ifeq ($(OS),Windows_NT)                                                  
+    IRRLIB =
+    IRRLIBPATH =
+    RMIRR =
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        IRRLIB = irrklang/libIrrKlang.so
+        IRRLIBPATH = /usr/local/lib/
+        RMIRR = /usr/local/lib/libIrrKlang.so
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        IRRLIB = irrklang/libirrklang.dylib
+        IRRLIBPATH = /usr/local/lib/
+        RMIRR = /usr/local/lib/libirrklang.dylib
+    endif
+endif
+
 
 #
 # GNU Make: targets that don't build files
@@ -44,7 +63,7 @@ endif
 #
 
 OBJS=particleview.o particle.o R3Scene.o R3Aircraft.o
-LIBS=R3/libR3.a R2/libR2.a jpeg/libjpeg.a fglut/libfglut.a ../irrKlang/bin/macosx-gcc/libirrklang.dylib
+LIBS=R3/libR3.a R2/libR2.a jpeg/libjpeg.a fglut/libfglut.a
 
 all: particleview
 
@@ -62,7 +81,16 @@ fglut/libfglut.a:
 
 particleview: $(OBJS) $(LIBS) 
 	    rm -f $@ 
-	    $(CXX) $(CXXFLAGS) $^ -lm -o $@ $(GLLIBS)
+	    $(CXX) $(CXXFLAGS) $^ -lm -o $@ $(GLLIBS) $(IRRLIB)
+
+
+setup:
+	cp $(IRRLIB) $(IRRLIBPATH)
+
+unsetup:
+	rm -i $(RMIRR)
+
+
 	    
 clean:
 	    rm -f *.o particleview

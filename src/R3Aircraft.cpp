@@ -9,15 +9,20 @@
 #include <unistd.h>
 
 // sounds
+#ifdef _WIN64
+   //define something for Windows (64-bit)
+#elif _WIN32
+   //define something for Windows (32-bit)
+#elif __APPLE__
 #include <../irrKlang/include/irrKlang.h>
-
+static ISoundEngine *engine = createIrrKlangDevice();
 using namespace irrklang;
+#endif
 //#pragma comment(lib, "irrKlang/lib/irrKlang.lib") // link with irrKlang.dll
 
 //#pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
 
 //
-static ISoundEngine *engine = createIrrKlangDevice();
 
 ////////////////////////////////////////////////////////////
 // Constants
@@ -125,8 +130,9 @@ FireBullet(R3Scene *scene)
   time_since_last_fired = 0.0;
 
   // make sound for firing bullet
+#ifdef __APPLE__
   engine->play2D("../wav/shot.wav");
-
+#endif
 //  BULLET_VELOCITY
 
   double pi = 3.14159265;
@@ -311,8 +317,9 @@ Destroy(R3Scene *scene, bool should_explode, bool should_respawn)
 void R3Aircraft::
 Explode(R3Scene *scene, bool is_nonbullet_explosion)
 {
+   #ifdef __APPLE__
   engine->play2D("../wav/explosion.wav");
-
+    #endif
   // set up materials only once
   static bool is_material_initialized = false;
   static R3Material orange_shrapnel, red_shrapnel, black_shrapnel;
