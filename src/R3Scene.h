@@ -248,6 +248,7 @@ struct R3Scene {
   R3Box bbox;
   R3Rgb background;
   R3Rgb ambient;
+  int skybox_type;
 };
 
 

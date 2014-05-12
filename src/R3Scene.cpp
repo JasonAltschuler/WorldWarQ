@@ -14,7 +14,8 @@ R3Scene(void)
   : gravity(0,0,0),
     bbox(R3null_box),
     background(0,0,0,1),
-    ambient(0,0,0,1)
+    ambient(0,0,0,1),
+    skybox_type(0)
 {
   // Setup default camera
   camera.eye = R3zero_point;

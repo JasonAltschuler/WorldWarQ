@@ -230,36 +230,36 @@ void LoadMaterial(R3Material *material)
     double opacity = 1 - material->kt.Luminance();
 
     // Load ambient
-//    c[0] = material->ka[0];
-//    c[1] = material->ka[1];
-//    c[2] = material->ka[2];
-//    c[3] = opacity;
-//    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, c);
-//
-//    // Load diffuse
-//    c[0] = material->kd[0];
-//    c[1] = material->kd[1];
-//    c[2] = material->kd[2];
-//    c[3] = opacity;
-//    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, c);
-//
-//    // Load specular
-//    c[0] = material->ks[0];
-//    c[1] = material->ks[1];
-//    c[2] = material->ks[2];
-//    c[3] = opacity;
-//    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c);
-//
-//    // Load emission
-//    c[0] = material->emission.Red();
-//    c[1] = material->emission.Green();
-//    c[2] = material->emission.Blue();
-//    c[3] = opacity;
-//    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, c);
-//
-//    // Load shininess
-//    c[0] = material->shininess;
-//    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, c[0]);
+    //    c[0] = material->ka[0];
+    //    c[1] = material->ka[1];
+    //    c[2] = material->ka[2];
+    //    c[3] = opacity;
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, c);
+    //
+    //    // Load diffuse
+    //    c[0] = material->kd[0];
+    //    c[1] = material->kd[1];
+    //    c[2] = material->kd[2];
+    //    c[3] = opacity;
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, c);
+    //
+    //    // Load specular
+    //    c[0] = material->ks[0];
+    //    c[1] = material->ks[1];
+    //    c[2] = material->ks[2];
+    //    c[3] = opacity;
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c);
+    //
+    //    // Load emission
+    //    c[0] = material->emission.Red();
+    //    c[1] = material->emission.Green();
+    //    c[2] = material->emission.Blue();
+    //    c[3] = opacity;
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, c);
+    //
+    //    // Load shininess
+    //    c[0] = material->shininess;
+    //    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, c[0]);
 
     // Load texture
     if (material->texture) {
@@ -301,17 +301,17 @@ void LoadMaterial(R3Material *material)
         glDisable(GL_TEXTURE_2D);
     }
 
-//    // Enable blending for transparent surfaces
-//    if (opacity < 1) {
-//        glDepthMask(false);
-//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//        glEnable(GL_BLEND);
-//    }
-//    else {
-//        glDisable(GL_BLEND);
-//        glBlendFunc(GL_ONE, GL_ZERO);
-//        glDepthMask(true);
-//    }
+    //    // Enable blending for transparent surfaces
+    //    if (opacity < 1) {
+    //        glDepthMask(false);
+    //        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //        glEnable(GL_BLEND);
+    //    }
+    //    else {
+    //        glDisable(GL_BLEND);
+    //        glBlendFunc(GL_ONE, GL_ZERO);
+    //        glDepthMask(true);
+    //    }
 }
 
 
@@ -682,8 +682,8 @@ void DrawGround(R3Scene *scene)
         }
     }
 
-//    cout << "min: " << min_height << endl;
-//    cout << "max: " << max_height << endl;
+    //    cout << "min: " << min_height << endl;
+    //    cout << "max: " << max_height << endl;
 
     for (int f = 0; f < mesh->NFaces(); f++)
     {
@@ -709,21 +709,21 @@ void DrawGround(R3Scene *scene)
         // interpolate how far we are between them
 
         float dirt_weight = (average_height - min_height) / (max_height-min_height);
-//        dirt_weight -= .6;
-//        if (dirt_weight < 0) dirt_weight = 0;
-//        cout << dirt_weight << endl;
+        //        dirt_weight -= .6;
+        //        if (dirt_weight < 0) dirt_weight = 0;
+        //        cout << dirt_weight << endl;
         dirt_weight = 1-dirt_weight;
 
-//        dirt_weight = 1;
+        //        dirt_weight = 1;
 
-//        glEnable(GL_BLEND);
-//        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//        glDisable(GL_LIGHTING);
+        //        glEnable(GL_BLEND);
+        //        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //        glDisable(GL_LIGHTING);
 
         if (face->vertices.size() == 3)
         {
             LoadMaterial(texture_materials[DIRT]);
-//            glColor4f(1.0f, 1.0f, 1.0f, dirt_weight);
+            //            glColor4f(1.0f, 1.0f, 1.0f, dirt_weight);
             glColor4f(dirt_weight, dirt_weight, dirt_weight, 1);
 
             glBegin(GL_POLYGON);
@@ -748,34 +748,34 @@ void DrawGround(R3Scene *scene)
             glEnd();
         }
 
-//        if (face->vertices.size() == 3)
-//        {
-//            cout << "running here" << endl;
-//            LoadMaterial(texture_materials[DIRT]);
-//            glColor4f(1.0f, 1.0f, 1.0f, 1.0f-dirt_weight);
-//
-//            glBegin(GL_POLYGON);
-//
-//            // vertex 1
-//            R3MeshVertex *vertex = face->vertices[0];
-//            const R3Point& p1 = vertex->position;
-//            glTexCoord2f(0,0);
-//            glVertex3d(p1[0], p1[1], p1[2]);
-//
-//            // vertex 2
-//            vertex = face->vertices[1];
-//            const R3Point& p2 = vertex->position;
-//            glTexCoord2f(0,1);
-//            glVertex3d(p2[0], p2[1], p2[2]);// vertex 1
-//
-//            // vertex 3
-//            vertex = face->vertices[2];
-//            const R3Point& p3 = vertex->position;
-//            glTexCoord2f(1,1);
-//            glVertex3d(p3[0], p3[1], p3[2]);
-//        }
+        //        if (face->vertices.size() == 3)
+        //        {
+        //            cout << "running here" << endl;
+        //            LoadMaterial(texture_materials[DIRT]);
+        //            glColor4f(1.0f, 1.0f, 1.0f, 1.0f-dirt_weight);
+        //
+        //            glBegin(GL_POLYGON);
+        //
+        //            // vertex 1
+        //            R3MeshVertex *vertex = face->vertices[0];
+        //            const R3Point& p1 = vertex->position;
+        //            glTexCoord2f(0,0);
+        //            glVertex3d(p1[0], p1[1], p1[2]);
+        //
+        //            // vertex 2
+        //            vertex = face->vertices[1];
+        //            const R3Point& p2 = vertex->position;
+        //            glTexCoord2f(0,1);
+        //            glVertex3d(p2[0], p2[1], p2[2]);// vertex 1
+        //
+        //            // vertex 3
+        //            vertex = face->vertices[2];
+        //            const R3Point& p3 = vertex->position;
+        //            glTexCoord2f(1,1);
+        //            glVertex3d(p3[0], p3[1], p3[2]);
+        //        }
 
-//        glDisable(GL_BLEND);
+        //        glDisable(GL_BLEND);
         glEnable(GL_LIGHTING);
         glEnd();
     }
@@ -1312,8 +1312,8 @@ void GLUTRedraw(void)
 
     // Initialize OpenGL drawing modes
     glEnable(GL_LIGHTING);
-//    glDisable(GL_BLEND);
-//    glBlendFunc(GL_ONE, GL_ZERO);
+    //    glDisable(GL_BLEND);
+    //    glBlendFunc(GL_ONE, GL_ZERO);
 
     // enable blending
     glEnable(GL_BLEND);
@@ -1411,7 +1411,7 @@ void GLUTRedraw(void)
         glEnd();
     }
 
-//    glEnable(GL_BLEND);
+    //    glEnable(GL_BLEND);
     int map_width = 200;
     int map_height = map_width;
 
@@ -1422,78 +1422,78 @@ void GLUTRedraw(void)
     int bottom = map_height;
 
     // draw point at center of radar
-//     glEnable(GL_POINT_SMOOTH);
-//     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+    //     glEnable(GL_POINT_SMOOTH);
+    //     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
 
-     glColor4f(0, 0, 1, 1);
-     glPointSize(5);
-     glBegin(GL_POLYGON);
-     glVertex2f(left + map_width/2, top + map_height/2);
-     glVertex2f(left + map_width/2 - 5, top + map_height/2 + 5);
-     glVertex2f(left + map_width/2 + 5, top + map_height/2 + 5);
-     glEnd();
+    glColor4f(0, 0, 1, 1);
+    glPointSize(5);
+    glBegin(GL_POLYGON);
+    glVertex2f(left + map_width/2, top + map_height/2);
+    glVertex2f(left + map_width/2 - 5, top + map_height/2 + 5);
+    glVertex2f(left + map_width/2 + 5, top + map_height/2 + 5);
+    glEnd();
 
-     // calculate relative positions of enemies:
-     // first, translate everything to plane's coordinate system
-     // then, get rid of the most unimportant dimension
-     // then scale
-     // then draw
+    // calculate relative positions of enemies:
+    // first, translate everything to plane's coordinate system
+    // then, get rid of the most unimportant dimension
+    // then scale
+    // then draw
 
-     // max units away a plane can be to be visible on minimap
-     double max_dist = 5;
+    // max units away a plane can be to be visible on minimap
+    double max_dist = 5;
 
-     glColor4f(1, 0, 0, 1);
-     for (int i = 1; i < scene->NAircrafts(); i++)
-     {
-       R3Aircraft *player_aircraft = scene->Aircraft(0);
-       R3Aircraft *AI_aircraft = scene->Aircraft(i);
+    glColor4f(1, 0, 0, 1);
+    for (int i = 1; i < scene->NAircrafts(); i++)
+    {
+        R3Aircraft *player_aircraft = scene->Aircraft(0);
+        R3Aircraft *AI_aircraft = scene->Aircraft(i);
 
-       // get position of player and AI in world
-       R3Vector AI_center_world(0, 0, 0);
-       AI_center_world = AI_aircraft->Modeling_To_World(AI_center_world);
+        // get position of player and AI in world
+        R3Vector AI_center_world(0, 0, 0);
+        AI_center_world = AI_aircraft->Modeling_To_World(AI_center_world);
 
-       R3Vector player_center_world(0, 0, 0);
-       player_center_world = player_aircraft->Modeling_To_World(player_center_world);
+        R3Vector player_center_world(0, 0, 0);
+        player_center_world = player_aircraft->Modeling_To_World(player_center_world);
 
-       // subtract vectors to put AI into player's modeling coordinates
-       R3Vector to_enemy_modeling = AI_center_world - player_center_world;
-
-
-       // rotated AI based on player's rotation
-       to_enemy_modeling.Transform(player_aircraft->T.Transpose()); // TODO: transpose?
-
-       // eliminate z vector in this rotated coordinate system
-       to_enemy_modeling.SetZ(0);
-
-       // rescale for minimap size
-       to_enemy_modeling /= max_dist;
+        // subtract vectors to put AI into player's modeling coordinates
+        R3Vector to_enemy_modeling = AI_center_world - player_center_world;
 
 
-       // figure out which way AI is pointing with respect to player aircraft's direction
-       R3Vector AI_direction_modeling = AI_aircraft->velocity;
-       AI_direction_modeling.Transform(AI_aircraft->T);
-       AI_direction_modeling.Transform(player_aircraft->T.Transpose());
+        // rotated AI based on player's rotation
+        to_enemy_modeling.Transform(player_aircraft->T.Transpose()); // TODO: transpose?
 
-       AI_direction_modeling.SetZ(0);
-       AI_direction_modeling.Normalize();
+        // eliminate z vector in this rotated coordinate system
+        to_enemy_modeling.SetZ(0);
 
-       R3Vector AI_direction_perp_modeling = AI_direction_modeling;
-       AI_direction_perp_modeling.Cross(R3Vector(0, 0, 1));
+        // rescale for minimap size
+        to_enemy_modeling /= max_dist;
 
-//       glBegin(GL_POINTS);
-       glBegin(GL_POLYGON);
-       glVertex2f(left + map_width/2 - to_enemy_modeling.Y(), top + map_height/2 - to_enemy_modeling.X());
 
-       R3Vector back_center = -5 * AI_direction_modeling + to_enemy_modeling;
-       R3Point back_left = (back_center - 5 * AI_direction_perp_modeling).Point();
-       R3Point back_right = (back_center + 5 * AI_direction_perp_modeling).Point();
+        // figure out which way AI is pointing with respect to player aircraft's direction
+        R3Vector AI_direction_modeling = AI_aircraft->velocity;
+        AI_direction_modeling.Transform(AI_aircraft->T);
+        AI_direction_modeling.Transform(player_aircraft->T.Transpose());
 
-//       glVertex2f(left + map_width/2 - back_center.Y(), top + map_height/2 - back_center.X());
+        AI_direction_modeling.SetZ(0);
+        AI_direction_modeling.Normalize();
 
-       glVertex2f(left + map_width/2 - back_left.Y(), top + map_height/2 - back_left.X());
-       glVertex2f(left + map_width/2 - back_right.Y(), top + map_height/2 - back_right.X());
-       glEnd();
-     }
+        R3Vector AI_direction_perp_modeling = AI_direction_modeling;
+        AI_direction_perp_modeling.Cross(R3Vector(0, 0, 1));
+
+        //       glBegin(GL_POINTS);
+        glBegin(GL_POLYGON);
+        glVertex2f(left + map_width/2 - to_enemy_modeling.Y(), top + map_height/2 - to_enemy_modeling.X());
+
+        R3Vector back_center = -5 * AI_direction_modeling + to_enemy_modeling;
+        R3Point back_left = (back_center - 5 * AI_direction_perp_modeling).Point();
+        R3Point back_right = (back_center + 5 * AI_direction_perp_modeling).Point();
+
+        //       glVertex2f(left + map_width/2 - back_center.Y(), top + map_height/2 - back_center.X());
+
+        glVertex2f(left + map_width/2 - back_left.Y(), top + map_height/2 - back_left.X());
+        glVertex2f(left + map_width/2 - back_right.Y(), top + map_height/2 - back_right.X());
+        glEnd();
+    }
 
     // draw Minimap background radar
     glColor4f(.5, .5, .5, .5);
@@ -2022,7 +2022,7 @@ void GLUTInit(int *argc, char **argv)
 
 
     // try full screen
-//    glutFullScreen();
+    //    glutFullScreen();
 
 
     // Initialize GLUT callback functions
@@ -2034,9 +2034,6 @@ void GLUTInit(int *argc, char **argv)
     glutSpecialFunc(GLUTSpecial);
     glutMouseFunc(GLUTMouse);
     glutMotionFunc(GLUTMotion);
-
-    // Initialize skybox
-    initSkyBox();
 
     // Initialize graphics modes
     glEnable(GL_NORMALIZE);
@@ -2153,22 +2150,38 @@ unsigned int loadTexBMP(char* file)
     return texture;
 }
 
-void initSkyBox()
+void initSkyBox(int skybox_type)
 {
     //    cout << "initializeing" << endl;
-    skybox[SKY_FRONT] = loadTexBMP("bmp/txStormydays_front.bmp");
-    skybox[SKY_RIGHT] = loadTexBMP("bmp/txStormydays_right.bmp");
-    skybox[SKY_LEFT] = loadTexBMP("bmp/txStormydays_left.bmp");
-    skybox[SKY_BACK] = loadTexBMP("bmp/txStormydays_back.bmp");
-    skybox[SKY_UP] = loadTexBMP("bmp/txStormydays_up.bmp");
-    skybox[SKY_DOWN] = loadTexBMP("bmp/txStormydays_down.bmp");
 
-    skybox[SKY_FRONT] = loadTexBMP("bmp/front.bmp");
-    skybox[SKY_RIGHT] = loadTexBMP("bmp/right.bmp");
-    skybox[SKY_LEFT] = loadTexBMP("bmp/left.bmp");
-    skybox[SKY_BACK] = loadTexBMP("bmp/back.bmp");
-    skybox[SKY_UP] = loadTexBMP("bmp/up.bmp");
-    skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+    // skyboxes taken from these sites:
+    // http://www.redsorceress.com/skybox.html
+
+    if (skybox_type == 1)
+    {
+        skybox[SKY_FRONT] = loadTexBMP("bmp/txStormydays_front.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("bmp/txStormydays_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("bmp/txStormydays_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("bmp/txStormydays_back.bmp");
+        skybox[SKY_UP] = loadTexBMP("bmp/txStormydays_up.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("bmp/txStormydays_down.bmp");
+    } else if (skybox_type == 0)
+    {
+        skybox[SKY_FRONT] = loadTexBMP("bmp/front.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("bmp/right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("bmp/left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("bmp/back.bmp");
+        skybox[SKY_UP] = loadTexBMP("bmp/up.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+    } else if (skybox_type == 2)
+    {
+        skybox[SKY_FRONT] = loadTexBMP("bmp/front.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("bmp/right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("bmp/left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("bmp/back.bmp");
+        skybox[SKY_UP] = loadTexBMP("bmp/up.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+    }
 }
 
 
@@ -2269,6 +2282,9 @@ main(int argc, char **argv)
     // Read scene
     scene = ReadScene(input_scene_name);
     if (!scene) exit(-1);
+
+    // Initialize skybox
+    initSkyBox(scene->skybox_type);
 
     // Run GLUT interface
     GLUTMainLoop();
