@@ -87,23 +87,13 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
       trail.pop_back();
 
     // draw trails
-    R3Rgb material_color = particle->material->kd;
-
-    static bool bool_printed = false;
-    if (!bool_printed)
-    {
-      bool_printed = true;
-      assert(particle->is_bullet);
-
-//      cout << particle->material->
-    }
-
-
+    R3Rgb material_color(1, 0.6, 0, 1);
+    R3Rgb white(1.0, 1.0, 1.0, 1.0);
 
     for (int j = 0; j < trail.size() - 1; j++)
     {
       double c = (double) j / (double) trail.size();
-      R3Rgb interpolated_color = material_color * (1 - c);
+      R3Rgb interpolated_color = material_color * (1 - c) + c * white;
       interpolated_color.Clamp();
 
       glBegin(GL_LINES);
