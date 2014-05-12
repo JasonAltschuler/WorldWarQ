@@ -116,7 +116,7 @@ def makegrid(n, filename):
 
         #added by kyle: scale factor:
 	scale = 100
-	heightscale = 20
+	heightscale = 50
         
 	# vertex coordinates
 	for a in range(0, n):

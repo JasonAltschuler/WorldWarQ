@@ -1,0 +1,28 @@
+# the enemy aircraft is right in front of the player-controlled aircraft.
+# good for debugging bullet-plane intersections and respawning.
+
+# Player-controlled aircraft
+aircraft
+  -1
+  aircraft1219_edited.off
+  50 5000 400
+  1 0 0
+  1 0.3 1 8 10 10
+  
+
+mesh
+-1
+128_tri3.off
+
+
+
+
+#128_high.off
+
+
+
+#128x100.off
+
+
+
+

@@ -24,6 +24,7 @@ struct R3Aircraft {
   vector<R3ParticleSource *> sources;
   double firing_rate;
   int hitpoints; // alive if positive (so should always be positive)
+  bool is_fixed;
 
   // remember original fields for when aircraft is destroyed and respawns
   R3Vector respawn_velocity;
@@ -48,8 +49,8 @@ struct R3Aircraft {
 
   // actions for if aircraft is destroyed (bullets hit or crash into mesh)
   void HitAircraft(R3Scene *scene);
-  void Destroy(R3Scene *scene, bool should_explode, bool should_respawn);
-  void Explode(R3Scene *scene);
+  void Destroy(R3Scene *scene, bool should_explode, bool should_respawn, bool is_player_controlled_aircraft);
+  void Explode(R3Scene *scene, bool is_player_controlled_aircraft);
   void Respawn(void);
 
 

@@ -11,7 +11,7 @@ Make aircraft explode when destroyed by bullets, when crash into mesh, and when 
 
 capture video for realistic and non realistic thrust/turn (easy vs. hard mode). perhaps after trails
 
-add sound effects when firing bullets.
+
 note: you may need to modify the code that uses randomnumbers to shoot at the proper rate.
       we want the stream of bullets to be constant, so the gun sound will be good.
 
@@ -32,6 +32,7 @@ At the end: remove some of the R3Aircraft.AssertValid() and R3Intersection.Asser
 /// =================== completed tasks below ================ ///
 
 // Done on Sunday, the 11th
+add sound effects when firing bullets.
 Make trails interpolate between material_color and black, not white and black
 Change color of explosion
 

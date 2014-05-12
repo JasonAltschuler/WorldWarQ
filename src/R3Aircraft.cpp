@@ -29,7 +29,7 @@ static ISoundEngine *engine = createIrrKlangDevice();
 // TODO: have different thetas for rolling left/right or up/down
 //static const double THETA = 0.00174532925; // .1 degree in radians
 //static const double THETA = 0.872664625; // 50 degree in radians
-static const double THETA = 0.4363323125; // 25degrees in radians
+static const double THETA = 0.4363323125; // 25 degrees in radians
 
 static const double SECONDS_TO_MAX_THRUST = 2.0; // TODO: play around with this
 
@@ -38,11 +38,14 @@ static const double BULLET_VELOCITY = 100.0;
 static const double AIRCRAFT_EXHAUST_RATE_MAX = 100.0;
 
 
-
 // TODO: play with these?
 const double AI_RADIUS_SHOOTING_RANGE = 0.130899694;                 // 7.5 degrees in radians
 const double AI_RADIUS_MOVING_RANGE = AI_RADIUS_SHOOTING_RANGE / 50.0;  // the smaller this is, the better the AI is/ TODO: change with hard mode?
 const double AI_DISTANCE_HI_LO_THRUST = 75.0; // probably somewhere between 75 and 100 is best
+
+
+static int num_deaths = 0;
+static int num_kills = 0;
 
 ////////////////////////////////////////////////////////////
 // Random Number Generator
@@ -81,7 +84,8 @@ R3Aircraft::R3Aircraft(void) :
   respawn_velocity(R3zero_vector),
   respawn_T(R3identity_matrix),
   respawn_thrust_magnitude(-1),
-  respawn_hitpoints(-1)
+  respawn_hitpoints(-1),
+  is_fixed(false)
 
 {
   sources.resize(2);
@@ -112,11 +116,6 @@ void R3Aircraft::
 FireBullet(R3Scene *scene)
 {
   // make sound for firing bullet
-  if (!engine)
-  {
-    fprintf(stderr, "Error starting up sound engine");
-    exit(1);
-  }
   engine->play2D("../wav/shot.wav");
 
 //  BULLET_VELOCITY
@@ -265,26 +264,35 @@ HitAircraft(R3Scene *scene)
     if (this == scene->Aircraft(0))
     {
       cout << "GAME OVER. YOU LOSE. " << endl << endl << endl; // TODO
+      num_deaths++;
+      cout << "num_deaths = " << num_deaths << endl;
       this->hitpoints = respawn_hitpoints;
+
+      bool should_explode = true;
+      bool should_respawn = false;
+      bool is_player_controlled_aircraft = true;
+      this->Destroy(scene, should_explode, should_respawn, is_player_controlled_aircraft);
     }
 
     // else, it is an AI plane
     else
     {
       cout << "PLANE DESTROYED" << endl;
-      cout << "attaway big boy" << endl;
+      num_kills++;
+      cout << "num_kills = " << num_kills << endl;
       bool should_explode = true;
       bool should_respawn = true;
-      this->Destroy(scene, should_explode, should_respawn);
+      bool is_player_controlled_aircraft = false;
+      this->Destroy(scene, should_explode, should_respawn, is_player_controlled_aircraft);
     }
   }
 }
 
 void R3Aircraft::
-Destroy(R3Scene *scene, bool should_explode, bool should_respawn)
+Destroy(R3Scene *scene, bool should_explode, bool should_respawn, bool is_player_controlled_aircraft)
 {
   if (should_explode)
-    this->Explode(scene);
+    this->Explode(scene, is_player_controlled_aircraft);
 
   if (should_respawn)
     this->Respawn();
@@ -294,8 +302,10 @@ Destroy(R3Scene *scene, bool should_explode, bool should_respawn)
 
 
 void R3Aircraft::
-Explode(R3Scene *scene)
+Explode(R3Scene *scene, bool is_player_controlled_aircraft)
 {
+  engine->play2D("../wav/explosion.wav");
+
   // set up materials only once
   static bool is_material_intialized = false;
   static R3Material orange_shrapnel, red_shrapnel, black_shrapnel;
@@ -338,8 +348,6 @@ Explode(R3Scene *scene)
   }
 
 
-
-  // TODO: play with these
   const int num_particles_to_generate = 1000;
   const double radius = 1;
   const double fast_velocity = 30;
@@ -414,6 +422,13 @@ Explode(R3Scene *scene)
   delete new_source;
   delete sphere;
   delete shape;
+
+
+  if (is_player_controlled_aircraft)
+  {
+    this->is_fixed = true;
+  }
+
 }
 
 void R3Aircraft::
@@ -454,8 +469,7 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
 
   // shoot if aimed properly
   if (abs(theta_rotated) < AI_RADIUS_SHOOTING_RANGE && abs(phi_rotated - PI/2.0) < AI_RADIUS_SHOOTING_RANGE)
-    this->FireBullet(scene); // TODO: AI is actually way too good... maybe make it only shoot with probability 1/2 or something?
-
+    this->FireBullet(scene);
 
   // ROLL LEFT OR RIGHT TO AIM
   if (abs(theta_rotated) > AI_RADIUS_MOVING_RANGE)
@@ -599,7 +613,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
       cout << "COLLISION!!! " << endl;
 
       // TODO: want to be able to see the explosion... respawn after 1 second or something?
-      aircraft->Explode(scene);
+      aircraft->Explode(scene, true);
       return;
       //        aircraft->Respawn();
     }

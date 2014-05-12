@@ -35,6 +35,8 @@ static const float DEG2RAD = 3.14159/180;
 
 static int skybox[6];
 
+// rock, grass, snow, and dirt
+static R3Material **texture_materials = new R3Material*[5];
 
 
 ////////////////////////////////////////////////////////////
@@ -110,6 +112,20 @@ enum {
   QUIT_COMMAND,
 };
 
+
+
+// TEXTURE VARIABLES
+
+
+typedef enum
+{
+  ROCK,
+  GRASS,
+  SNOW,
+  DIRT,
+  OCEAN,
+  NUM_TEXTURES
+} R3Texture;
 
 
 ////////////////////////////////////////////////////////////
@@ -632,6 +648,119 @@ void LoadLights(R3Scene *scene)
 }
 
 
+void DrawGround(R3Scene *scene)
+{
+  const double CLIFF_DROPOFF_THRESHOLD = 150;
+  const double SNOW_HEIGHT_THRESHOLD = 200;
+  const double DIRT_HEIGHT_THRESHOLD = 100;
+
+  // under assumption that scene only has one node: the ground mesh
+  assert(scene->root->children.size() > 0);
+  R3Node *ground_node = scene->root->children[0];
+  assert(ground_node != NULL);
+  assert(ground_node->shape->type == R3_MESH_SHAPE);
+  R3Mesh *mesh = ground_node->shape->mesh;
+
+  // Push transformation onto stack
+  glPushMatrix();
+  LoadMatrix(&ground_node->transformation);
+
+
+  for (int f = 0; f < mesh->NFaces(); f++)
+  {
+    // Draw each face separately, so that we can texture map on each face
+    R3MeshFace *face = mesh->faces[f];
+    vector<R3MeshVertex *> face_vertices = face->vertices;
+    assert(face_vertices.size() == 3); // generated map should be a triangular mesh
+
+    // map textures based on max_dist_between_vertices and average_height for a face
+    double max_dist_between_vertices = 0;
+    double average_height = 0;
+    for (int v1 = 0; v1 < face_vertices.size(); v1++) {
+      average_height += face_vertices[v1]->position.Z();
+      for (int v2 = v1 + 1; v2 < face_vertices.size(); v2++) {
+        double dist = (face_vertices[v1]->position - face_vertices[v2]->position).Length();
+        if (dist > max_dist_between_vertices)
+          max_dist_between_vertices = dist;
+      }
+    }
+    average_height /= 3.0;
+
+//    // load the necessary material
+//    if (max_dist_between_vertices > CLIFF_DROPOFF_THRESHOLD)
+//    {
+////      cout << "rock" << endl;
+//      LoadMaterial(texture_materials[ROCK]);
+//    }
+//    else if (average_height > SNOW_HEIGHT_THRESHOLD)
+//    {
+////      cout << "snow" << endl;
+//      LoadMaterial(texture_materials[SNOW]);
+//    }
+//    else if (average_height > DIRT_HEIGHT_THRESHOLD)
+//    {
+////      cout << "dirt" << endl;
+      LoadMaterial(texture_materials[0]);
+//    }
+//    else
+//    {
+////      cout << "grass" << endl;
+//      LoadMaterial(texture_materials[GRASS]);
+//    }
+
+
+
+    GLboolean lighting = glIsEnabled(GL_LIGHTING); // TODO: should disable/enable lighting?
+    glDisable(GL_LIGHTING);
+    if (face->vertices.size() == 3)
+    {
+      glBegin(GL_POLYGON);
+
+      // vertex 1
+      R3MeshVertex *vertex = face->vertices[0];
+      const R3Point& p1 = vertex->position;
+      glTexCoord2f(0,0);
+      glVertex3d(p1[0], p1[1], p1[2]);
+
+      // vertex 2
+      vertex = face->vertices[1];
+      const R3Point& p2 = vertex->position;
+      glTexCoord2f(0,1);
+      glVertex3d(p2[0], p2[1], p2[2]);// vertex 1
+
+      // vertex 3
+      vertex = face->vertices[2];
+      const R3Point& p3 = vertex->position;
+      glTexCoord2f(1,1);
+      glVertex3d(p3[0], p3[1], p3[2]);
+    }
+
+    if (lighting) glEnable(GL_LIGHTING);
+    glEnd();
+
+
+
+//    // draw the face with openGL
+//    GLboolean lighting = glIsEnabled(GL_LIGHTING); // TODO: should disable/enable lighting?
+//    glDisable(GL_LIGHTING);
+//
+//    glBegin(GL_POLYGON);
+//    const R3Vector& normal = face->plane.Normal();
+//    glNormal3d(normal[0], normal[1], normal[2]);
+//    for (unsigned int j = 0; j < face->vertices.size(); j++) {
+//      R3MeshVertex *vertex = face->vertices[j];
+//      const R3Point& p = vertex->position;
+//      glVertex3d(p[0], p[1], p[2]);
+//    }
+//
+//    if (lighting) glEnable(GL_LIGHTING);
+//    glEnd();
+  }
+
+  // restore previous transformation
+  glPopMatrix();
+}
+
 
 void DrawNode(R3Scene *scene, R3Node *node)
 {
@@ -643,7 +772,7 @@ void DrawNode(R3Scene *scene, R3Node *node)
   if (node->material) LoadMaterial(node->material);
 
   // Draw shape
-  if (node->shape) DrawShape(node->shape);
+   if (node->shape) DrawShape(node->shape);
 
   // Draw children nodes
   for (int i = 0; i < (int) node->children.size(); i++) 
@@ -780,8 +909,11 @@ void DrawCamera(R3Scene *scene)
 
 void DrawScene(R3Scene *scene) 
 {
-  // Draw nodes recursively
-  DrawNode(scene, scene->root);
+// Draw nodes recursively
+//  DrawNode(scene, scene->root);
+
+  DrawGround(scene);
+
 
 
   //  TODO: delete later? also, note quite working...
@@ -1088,10 +1220,95 @@ void GLUTResize(int w, int h)
   glutPostRedisplay();
 }
 
-
-
 void GLUTRedraw(void)
 {
+  static bool is_texture_materials_initialized = false;
+  if (!is_texture_materials_initialized)
+  {
+    is_texture_materials_initialized = true;
+
+    // ROCK
+    R3Material* rock = new R3Material();
+    rock->ka = R3Rgb(0.0, 0.0, 0.0, 0.0);
+    rock->kd = R3Rgb(0.2, 0.2, 0.2, 0.0);
+    rock->ks = R3Rgb(0.2, 0.2, 0.2, 0.0);
+    rock->kt = R3Rgb(0.0, 0.0, 0.0, 0.0);
+    rock->emission = R3Rgb(0, 0, 0, 0);
+    rock->shininess = 10;
+    rock->indexofrefraction = 1;
+    rock->id = 100; // sufficiently large s.t. won't be same as any of the scene file materials
+
+    // Read texture image
+    rock->texture = new R2Image();
+    rock->texture->Read("../textures/rock.jpg");
+    texture_materials[ROCK] = rock;
+
+    // GRASS
+    R3Material* grass = new R3Material();
+    grass->ka = R3Rgb(0.0, 0.0, 0.0, 0.0);
+    grass->kd = R3Rgb(0.2, 0.2, 0.2, 0.0);
+    grass->ks = R3Rgb(0.2, 0.2, 0.2, 0.0);
+    grass->kt = R3Rgb(0.0, 0.0, 0.0, 0.0);
+    grass->emission = R3Rgb(0, 0, 0, 0);
+    grass->shininess = 10;
+    grass->indexofrefraction = 1;
+    grass->id = 101; // sufficiently large s.t. won't be same as any of the scene file materials
+
+    // Read texture image
+    grass->texture = new R2Image();
+    grass->texture->Read("../textures/grass.jpg");
+    texture_materials[GRASS] = grass;
+
+    // SNOW
+    R3Material* snow = new R3Material();
+    snow->ka = R3Rgb(0.0, 0.0, 0.0, 0.0);
+    snow->kd = R3Rgb(0.2, 0.2, 0.2, 0.0);
+    snow->ks = R3Rgb(0.2, 0.2, 0.2, 0.0);
+    snow->kt = R3Rgb(0.0, 0.0, 0.0, 0.0);
+    snow->emission = R3Rgb(0, 0, 0, 0);
+    snow->shininess = 10;
+    snow->indexofrefraction = 1;
+    snow->id = 102; // sufficiently large s.t. won't be same as any of the scene file materials
+
+    // Read texture image
+    snow->texture = new R2Image();
+    snow->texture->Read("../textures/snow.jpg");
+    texture_materials[SNOW] = snow;
+
+    // DIRT
+    R3Material* dirt = new R3Material();
+    dirt->ka = R3Rgb(0.0, 0.0, 0.0, 0.0);
+    dirt->kd = R3Rgb(0.2, 0.2, 0.2, 0.0);
+    dirt->ks = R3Rgb(0.2, 0.2, 0.2, 0.0);
+    dirt->kt = R3Rgb(0.0, 0.0, 0.0, 0.0);
+    dirt->emission = R3Rgb(0, 0, 0, 0);
+    dirt->shininess = 10;
+    dirt->indexofrefraction = 1;
+    dirt->id = 103;
+
+    // Read texture image
+    dirt->texture = new R2Image();
+    dirt->texture->Read("../textures/dirt.jpg");
+    texture_materials[DIRT] = dirt; // sufficiently large s.t. won't be same as any of the scene file materials
+
+
+    // DIRT
+    R3Material* ocean = new R3Material();
+    ocean->ka = R3Rgb(0.0, 0.0, 0.0, 0.0);
+    ocean->kd = R3Rgb(0.2, 0.2, 0.2, 0.0);
+    ocean->ks = R3Rgb(0.2, 0.2, 0.2, 0.0);
+    ocean->kt = R3Rgb(0.0, 0.0, 0.0, 0.0);
+    ocean->emission = R3Rgb(0, 0, 0, 0);
+    ocean->shininess = 10;
+    ocean->indexofrefraction = 1;
+    ocean->id = 103;
+
+    // Read texture image
+    ocean->texture = new R2Image();
+    ocean->texture->Read("../textures/ocean.jpg");
+    texture_materials[OCEAN] = ocean; // sufficiently large s.t. won't be same as any of the scene file materials
+  }
+
   // Initialize OpenGL drawing modes
   glEnable(GL_LIGHTING);
   glDisable(GL_BLEND);
