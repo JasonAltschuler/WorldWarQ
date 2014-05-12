@@ -40,7 +40,7 @@ else
         RMIRR = /usr/local/lib/libIrrKlang.so
     endif
     ifeq ($(UNAME_S),Darwin)
-        IRRLIB = irrklang/libirrklang.dylib
+        IRRLIB = ../irrKlang/bin/macosx-gcc/libirrklang.dylib
         IRRLIBPATH = /usr/local/lib/
         RMIRR = /usr/local/lib/libirrklang.dylib
     endif

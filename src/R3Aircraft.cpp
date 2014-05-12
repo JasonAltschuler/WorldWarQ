@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+
+
 // sounds
 #ifdef _WIN64
    //define something for Windows (64-bit)
@@ -15,8 +17,7 @@
    //define something for Windows (32-bit)
 #elif __APPLE__
 #include <../irrKlang/include/irrKlang.h>
-static ISoundEngine *engine = createIrrKlangDevice();
-using namespace irrklang;
+static irrklang::ISoundEngine *engine = irrklang::createIrrKlangDevice();
 #endif
 //#pragma comment(lib, "irrKlang/lib/irrKlang.lib") // link with irrKlang.dll
 
