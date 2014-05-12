@@ -191,11 +191,14 @@ FireBullet(R3Scene *scene)
   engine->setListenerPosition(irrklang::vec3df(pos_player_aircraft.X(), pos_player_aircraft.Y(), pos_player_aircraft.Z()),
         irrklang::vec3df(dir_player_aircraft.X(), dir_player_aircraft.Y(), dir_player_aircraft.Z()));
 
-  irrklang::ISound* music = engine->play3D("../wav/shot.wav", irrklang::vec3df(bullet_origin_world.X(),
+  irrklang::ISound* bullet_sound = engine->play3D("../wav/shot.wav", irrklang::vec3df(bullet_origin_world.X(),
       bullet_origin_world.Y(), bullet_origin_world.Z()), false, false, true);
 
-  if (music)
-    music->setMinDistance(25.0f);
+  if (bullet_sound)
+    bullet_sound->setMinDistance(25.0f);
+
+  bullet_sound->setVolume(0.5);
+
 
 #endif
 }
@@ -822,11 +825,10 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
   }
 
 
-
 #ifdef __APPLE__
-  // 3D BACKGROUND SOUNDS FOR AIRPLANES -- set up once then update based on posiitons
-  static bool background_sound_init = false;
-  static vector<irrklang::ISound*> background_sounds;
+  // 3D THRUST SOUNDS FOR AIRPLANES -- set up once then update based on positions
+  static bool thrust_sounds_init = false;
+  static vector<irrklang::ISound*> thrust_sounds;
 
 
   // get position and direction of listener (player-controlled aircraft)
@@ -836,47 +838,60 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
   R3Vector dir_player_aircraft(1, 0, 0);
   dir_player_aircraft.Transform(player_aircraft->T);
 
+  // update position and direction of listener (player-controlled aircraft)
+  engine->setListenerPosition(irrklang::vec3df(pos_player_aircraft.X(), pos_player_aircraft.Y(), pos_player_aircraft.Z()),
+           irrklang::vec3df(dir_player_aircraft.X(), dir_player_aircraft.Y(), dir_player_aircraft.Z()));
 
-  // initialize background sounds if not done so already (only done once!)
-  if (!background_sound_init)
+  // initialize thrust sounds if not done so already (only done once!)
+  if (!thrust_sounds_init)
   {
-    background_sound_init = true;
-    background_sounds.resize(scene->NAircrafts());
+    thrust_sounds_init = true;
+    thrust_sounds.resize(scene->NAircrafts());
 
     for (int i = 0; i < scene->NAircrafts(); i++)
     {
-      // make background sound
-      // 3D sound!!
+      // make 3D thrust sound for each aircraft
       R3Aircraft *other_aircraft = scene->Aircraft(i);
       R3Vector pos_other_aircraft(0, 0, 0);
       pos_other_aircraft = other_aircraft->Modeling_To_World(pos_other_aircraft);
 
-      engine->setListenerPosition(irrklang::vec3df(pos_player_aircraft.X(), pos_player_aircraft.Y(), pos_player_aircraft.Z()),
-          irrklang::vec3df(dir_player_aircraft.X(), dir_player_aircraft.Y(), dir_player_aircraft.Z()));
-
       bool should_loop = true;
-      irrklang::ISound* background_sound = engine->play3D("../wav/background_sound.wav", irrklang::vec3df(pos_other_aircraft.X(),
+      irrklang::ISound* thrust_sound = engine->play3D("../wav/thrust.wav", irrklang::vec3df(pos_other_aircraft.X(),
           pos_other_aircraft.Y(), pos_other_aircraft.Z()), should_loop, false, true);
 
-      if (background_sound)
-        background_sound->setMinDistance(25.0f);
+      if (!thrust_sound)
+      {
+        fprintf(stderr, "Problem creating thrust sound with irrklang");
+        exit(1);
+      }
 
-      background_sounds[i] = background_sound;
+      // set up sound parameters
+      thrust_sound->setMinDistance(25.0f);
+      thrust_sound->setVolume(other_aircraft->thrust_magnitude / other_aircraft->max_thrust);
+      thrust_sounds[i] = thrust_sound;
     }
   }
 
   // if background_sounds already initialized --> update based on new positions of aircrafts
   else
   {
+    // TODO: delete?
+    assert(scene->NAircrafts() == thrust_sounds.size());
+//    int num_sounds = fmin(scene->NAircrafts(), thrust_sounds.size());
+
+    for (int i = 0; i < scene->NAircrafts(); i++)
+    {
+      R3Aircraft *other_aircraft = scene->Aircraft(i);
+      R3Vector pos_other_aircraft(0, 0, 0);
+      pos_other_aircraft = other_aircraft->Modeling_To_World(pos_other_aircraft);
+
+      // change volume based on thrust level
+      thrust_sounds[i]->setVolume(other_aircraft->thrust_magnitude / other_aircraft->max_thrust);
 
 
-    engine->setListenerPosition(irrklang::vec3df(pos_player_aircraft.X(), pos_player_aircraft.Y(), pos_player_aircraft.Z()),
-                                     irrklang::vec3df(dir_player_aircraft.X(), dir_player_aircraft.Y(), dir_player_aircraft.Z()));
-
-//    if (music)
-//      music->setPosition(pos3d);
-
-
+      // update posiiton of sound source (3D sound!)
+      thrust_sounds[i]->setPosition(irrklang::vec3df(pos_other_aircraft.X(), pos_other_aircraft.Y(), pos_other_aircraft.Z()));
+    }
   }
 #endif
 
