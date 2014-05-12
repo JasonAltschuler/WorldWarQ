@@ -88,8 +88,8 @@ int hard_mode = 0; // default to easy
 // GLUT variables 
 
 static int GLUTwindow = 0;
-static int GLUTwindow_height = 512;
-static int GLUTwindow_width = 512;
+static int GLUTwindow_height = 1000;
+static int GLUTwindow_width = 1000;
 static int GLUTmouse[2] = { 0, 0 };
 static int GLUTbutton[3] = { 0, 0, 0 };
 static int GLUTmodifiers = 0;
@@ -1414,6 +1414,8 @@ void GLUTRedraw(void)
     glLoadIdentity();
     glDisable(GL_CULL_FACE);
     glClear(GL_DEPTH_BUFFER_BIT);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
 
     // draw crosshair
     // code from https://www.opengl.org/discussion_boards/showthread.php/167955-drawing-a-smooth-circle
@@ -1439,10 +1441,47 @@ void GLUTRedraw(void)
         glEnd();
     }
 
+//    glEnable(GL_BLEND);
+    int map_width = 200;
+    int map_height = map_width;
+
+    // minimap coordinates:
+    int left = GLUTwindow_width-map_width;
+    int right = GLUTwindow_width;
+    int top = 0;
+    int bottom = map_height;
+
+    // draw point at center of radar
+     glEnable(GL_POINT_SMOOTH);
+     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+     glColor4f(1, 0, 0, 1);
+     glPointSize(10);
+     glBegin(GL_POINTS);
+     glVertex2f(left + map_width/2, top + map_height/2);
+     glEnd();
+
+     // calculate relative positions of enemies:
+     // first, translate everything to plane's coordinate system
+     // then, get rid of Z
+     // then scale
+     // then draw
+     for (int i = 1; i < scene->NAircrafts(); i++)
+     {
+         R3Aircraft *aircraft = scene->Aircraft(i);
+
+     }
 
 
+    // draw Minimap background radar
+    glColor4f(.5, .5, .5, .5);
+    glBegin(GL_QUADS);
+    glVertex2f(right, top);
+    glVertex2f(right, bottom);
+    glVertex2f(left, bottom);
+    glVertex2f(left, top);
+    glEnd();
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+
 
     // draw thrust string
     glColor3f(1, 1, 1);
@@ -1465,14 +1504,14 @@ void GLUTRedraw(void)
     GLUTDrawText(R3Point(7, 45, 0), buffer);
 
     // draw kills string
-    glColor3f(1, 0, 0);
+    glColor3f(1, .5, 0);
     sprintf(buffer, "Kills: %d", num_kills);
-    GLUTDrawText(R3Point(433, 15, 0), buffer);
+    GLUTDrawText(R3Point(7, GLUTwindow_height-40, 0), buffer);
 
     // draw deaths string
-    glColor3f(1, 0, 0);
+    glColor3f(1, .5, 0);
     sprintf(buffer, "Deaths: %d", num_deaths);
-    GLUTDrawText(R3Point(424, 30, 0), buffer);
+    GLUTDrawText(R3Point(7, GLUTwindow_height-20, 0), buffer);
 
 
 
@@ -1953,10 +1992,15 @@ void GLUTInit(int *argc, char **argv)
 {
     // Open window
     glutInit(argc, argv);
-    glutInitWindowPosition(100, 100);
+    glutInitWindowPosition(0, 0);
     glutInitWindowSize(GLUTwindow_width, GLUTwindow_height);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); // | GLUT_STENCIL
-    GLUTwindow = glutCreateWindow("OpenGL Viewer");
+    GLUTwindow = glutCreateWindow("Sky battle");
+
+
+    // try full screen
+//    glutFullScreen();
+
 
     // Initialize GLUT callback functions
     glutIdleFunc(GLUTIdle);
