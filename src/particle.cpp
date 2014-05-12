@@ -706,8 +706,8 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
         if (scene->Aircraft(0)->freeze_time >= 0)
         {
           // don't care about collision if frozen / animation time
-          assert(closest_intersection.aircraft == scene->Aircraft(0));
-          closest_intersection.SetMiss();
+          if (closest_intersection.aircraft == scene->Aircraft(0))
+            closest_intersection.SetMiss();
         }
 
         else
