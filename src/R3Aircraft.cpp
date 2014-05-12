@@ -285,7 +285,7 @@ HitAircraft(R3Scene *scene)
       this->hitpoints = respawn_hitpoints;
 
       bool should_explode = true;
-      bool should_respawn = false;
+      bool should_respawn = true;
       this->Destroy(scene, should_explode, should_respawn);
     }
 
