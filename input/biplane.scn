@@ -4,7 +4,7 @@
 # Player-controlled aircraft
 aircraft
   -1
-  off/biplane.off
+  aircraft1219_edited.off
   50 5000 400
   1 0 0
   1 0.3 1 8 10 10

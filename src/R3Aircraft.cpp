@@ -224,8 +224,9 @@ BrakeBackward(double delta_time, bool is_AI)
 void R3Aircraft::
 PitchUp(double delta_time)
 {
-  const double COS_THETA = cos(THETA * delta_time);
-  const double SIN_THETA = sin(THETA * delta_time);
+    // use mass to slow turn rate
+  const double COS_THETA = cos(THETA/mass * delta_time);
+  const double SIN_THETA = sin(THETA/mass * delta_time);
 
   R3Matrix mat(COS_THETA, 0, -SIN_THETA, 0,
                0, 1, 0, 0,
@@ -240,8 +241,8 @@ PitchUp(double delta_time)
 void R3Aircraft::
 PitchDown(double delta_time)
 {
-  const double COS_THETA = cos(THETA * delta_time);
-  const double SIN_THETA = sin(THETA * delta_time);
+  const double COS_THETA = cos(THETA/mass * delta_time);
+  const double SIN_THETA = sin(THETA/mass * delta_time);
 
   R3Matrix mat(COS_THETA, 0, SIN_THETA, 0,
                0, 1, 0, 0,
@@ -256,8 +257,8 @@ PitchDown(double delta_time)
 void R3Aircraft::
 RollLeft(double delta_time)
 {
-  const double COS_THETA = cos(2 * THETA * delta_time);
-  const double SIN_THETA = sin(2 * THETA * delta_time);
+  const double COS_THETA = cos(2 * THETA/mass * delta_time);
+  const double SIN_THETA = sin(2 * THETA/mass * delta_time);
 
   R3Matrix mat(1, 0, 0, 0,
                0, COS_THETA, SIN_THETA, 0,
@@ -270,12 +271,11 @@ RollLeft(double delta_time)
 }
 
 
-
 void R3Aircraft::
 RollRight(double delta_time)
 {
-  const double COS_THETA = cos(2 * THETA * delta_time);
-  const double SIN_THETA = sin(2 * THETA * delta_time);
+  const double COS_THETA = cos(2 * THETA/mass * delta_time);
+  const double SIN_THETA = sin(2 * THETA/mass * delta_time);
 
   R3Matrix mat(1, 0, 0, 0,
                0, COS_THETA, -SIN_THETA, 0,

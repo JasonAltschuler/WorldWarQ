@@ -1493,6 +1493,10 @@ void GLUTRedraw(void)
         // rescale for minimap size
         to_enemy_modeling /= max_dist;
 
+        to_enemy_modeling.SetX(fmin(to_enemy_modeling.X(), map_height/2));
+        to_enemy_modeling.SetY(fmin(to_enemy_modeling.Y(), map_width/2));
+        to_enemy_modeling.SetX(fmax(to_enemy_modeling.X(), -map_height/2));
+        to_enemy_modeling.SetY(fmax(to_enemy_modeling.Y(), -map_width/2));
 
         // figure out which way AI is pointing with respect to player aircraft's direction
         R3Vector AI_direction_modeling = AI_aircraft->velocity;
