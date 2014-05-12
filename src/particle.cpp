@@ -15,6 +15,9 @@
 
 #define PI 3.14159
 
+// force constants
+static const R3Vector GRAVITY_VECTOR(0.0, 0.0, -9.80665);
+
 
 ////////////////////////////////////////////////////////////
 // Random Number Generator
@@ -715,10 +718,14 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
     }
 
 
-    // only executed for schrapnel from aircraft explosions: don't check for intersections with scene here
+    // only executed for shrapnel from aircraft explosions: don't check for intersections with scene here
     else
     {
+      // note: we can do this without a buffer, and still be a valid integration technique
+      // that updates the system all at once because we are not calculating inter-particle
+      // forces, such as gravitational attraction, etc.
       particle->position += particle->velocity * delta_time;
+      particle->velocity += GRAVITY_VECTOR * delta_time;
     }
   }
 

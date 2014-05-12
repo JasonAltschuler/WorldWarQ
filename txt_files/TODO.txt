@@ -3,10 +3,12 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 /// =================== TODO ================ ///
 
+
 Add more sounds
-3D sound
+
 
 Make flying more realistic
+Explosions have gravity (on particles)
 
 
 screen maximized and look good
@@ -14,7 +16,7 @@ screen maximized and look good
 (UI: Add radar/minimap?) 
 leading crosshair for targeting
 
-Terrain: Landscape auto-creation and texture mapping
+
 
 
 At the end: remove some of the R3Aircraft.AssertValid() and R3Intersection.AssertValid() calls to speed up
@@ -28,6 +30,8 @@ capture video for realistic and non realistic thrust/turn (easy vs. hard mode). 
 /// =================== completed tasks below ================ ///
 
 // Done on Sunday, the 11th
+3D sound
+Terrain: Landscape auto-creation and texture mapping
 note: you may need to modify the code that uses randomnumbers to shoot at the proper rate.
       we want the stream of bullets to be constant, so the gun sound will be good.
 Make aircraft explode when destroyed by bullets, when crash into mesh, and when crash into other planes

@@ -49,7 +49,8 @@ static const double FREEZE_TIME = 2.0;
 // TODO: play with these?
 static const double AI_RADIUS_SHOOTING_RANGE = 0.130899694;                 // 7.5 degrees in radians
 static const double AI_RADIUS_MOVING_RANGE = AI_RADIUS_SHOOTING_RANGE / 50.0;  // the smaller this is, the better the AI is/ TODO: change with hard mode?
-static const double AI_DISTANCE_HI_LO_THRUST = 75.0; // probably somewhere between 75 and 100 is best
+static const double AI_DISTANCE_HI_LO_THRUST = 250.0; // probably somewhere between 75 and 100 is best
+
 
 
 ////////////////////////////////////////////////////////////
@@ -116,8 +117,8 @@ AssertValid(void)
   assert(max_thrust >= 0);
 //  assert(hitpoints > 0); // TODO
 
-  if (hard_mode == 0) // invariant only holds on easy mode (see writeup for more details)
-    assert(velocity.X() >= 0);
+//  if (hard_mode == 0) // invariant only holds on easy mode (see writeup for more details)
+//    assert(velocity.X() >= 0);
 }
 
 
@@ -304,8 +305,9 @@ HitAircraft(R3Scene *scene)
       cout << "num_deaths = " << num_deaths << endl;
       this->hitpoints = respawn_hitpoints;
 
+      this->freeze_time = FREEZE_TIME;
       bool should_explode = true;
-      bool should_respawn = true;
+      bool should_respawn = false;
       this->Destroy(scene, should_explode, should_respawn);
     }
 
@@ -755,7 +757,51 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
 
     // UPDATE VELOCITY with acceleration (simple Euler integration)
     R3Vector net_force = R3Vector(aircraft->thrust_magnitude, 0, 0) - aircraft->drag * aircraft->velocity;
+
+//    // account for lift if on hard mode
+//    if (hard_mode)
+//    {
+//      // Source: https://www.grc.nasa.gov/www/k-12/WindTunnel/Activities/lift_formula.html
+//      // An aircraft's lift capabilities can be measured from the following formula:
+//      // L = (1/2) d v^2 s CL
+//      // L = Lift, which must equal the airplane's weight in pounds
+//      // d = density of the air. This will change due to altitude. These values can be found in a I.C.A.O. Standard Atmosphere Table.
+//      // v = velocity of an aircraft expressed in feet per second
+//      // s = the wing area of an aircraft in square feet
+//      // CL = Coefficient of lift , which is determined by the type of airfoil and angle of attack.
+//
+//      // note that for us, we have LIFT_CONSTANT ==defined== d * s * CL
+//
+//      const double LIFT_CONSTANT = 3.0;
+//
+//
+//      double velocity_magnitude = aircraft->velocity.Length();
+//      R3Vector velocity_world = aircraft->velocity;
+//      velocity_world.Transform(aircraft->T);
+//      velocity_world.Normalize();
+//
+//      R3Vector vec_forward(1, 0, 0);
+//      vec_forward.Transform(aircraft->T);
+//
+//      double v = (aircraft->velocity.Dot(R3Vector(1, 0, 0)));
+//
+//
+//      cout << v << endl;
+//
+//      double lift_magnitude = v * v * LIFT_CONSTANT / 2.0;
+//      R3Vector lift_force(0, 0, lift_magnitude);
+//      lift_force.Transform(aircraft->T);
+//      net_force += lift_force;
+//    }
+
     R3Vector acceleration = net_force / aircraft->mass;
+
+//    // account for gravity if on hard mode
+//    if (hard_mode)
+//    {
+//      acceleration += GRAVITY_VECTOR;
+//    }
+
     aircraft->velocity += acceleration * delta_time;
 
 //    // TODO: delete later
