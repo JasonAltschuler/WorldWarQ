@@ -496,6 +496,8 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
   double theta_rotated = atan2(vector_to_enemy_rotated.Y(), vector_to_enemy_rotated.X());
 
 
+  cout << phi_rotated << "\t" << theta_rotated << endl;
+
   // shoot if aimed properly
   if (abs(theta_rotated) < AI_RADIUS_SHOOTING_RANGE && abs(phi_rotated - PI/2.0) < AI_RADIUS_SHOOTING_RANGE)
   {
@@ -513,7 +515,7 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
   if (abs(theta_rotated) > AI_RADIUS_MOVING_RANGE)
   {
     // boundary case: if enemy is directly behind AI
-    if (abs(theta_rotated - PI) < AI_RADIUS_MOVING_RANGE)
+    if (abs(theta_rotated - PI) < 1.0 || abs(theta_rotated + PI) < 1.0)
       PitchUp(delta_time);
 
     // else, not directly behind: so just make small adjustments to aim
@@ -540,10 +542,10 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
   // SPEED UP OR SLOW DOWN BASED ON HOW FAR AWAY THE ENEMY IS
   if (abs(dist_to_enemy - AI_DISTANCE_HI_LO_THRUST) > AI_DISTANCE_HI_LO_THRUST)
   {
-    if (abs(dist_to_enemy) > AI_DISTANCE_HI_LO_THRUST)
-      ThrustForward(delta_time);
-    else
+    if (abs(dist_to_enemy) < AI_DISTANCE_HI_LO_THRUST || abs(theta_rotated - PI) < AI_RADIUS_MOVING_RANGE)
       BrakeBackward(delta_time);
+    else
+      ThrustForward(delta_time);
   }
 
 
