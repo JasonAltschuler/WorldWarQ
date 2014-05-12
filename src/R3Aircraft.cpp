@@ -382,11 +382,13 @@ Explode(R3Scene *scene, bool is_collision_scene)
   }
 
 
-  const int num_particles_to_generate = 1000;
+  const int num_particles_to_generate = 500;
   int particles_to_generate = num_particles_to_generate * (is_collision_scene ? 5 : 1);
   const double radius = 1;
-  const double fast_velocity = 30;
-  const double particle_lifetime = 0.25;
+  const double fast_velocity = 15;
+//  const double particle_lifetime = 0.25;
+  const double particle_lifetime = 1;
+
 
   R3ParticleSource * new_source = new R3ParticleSource();
   R3Point center = Modeling_To_World(R3Vector(0, 0, 0)).Point();
@@ -442,7 +444,7 @@ Explode(R3Scene *scene, bool is_collision_scene)
     double rand1 = RandomNumber();
     double rand2 = RandomNumber();
     new_source->velocity = fast_velocity * rand1 * rand1 * rand1 * rand1 * rand1;
-    new_source->lifetime = particle_lifetime * rand2 * rand2 * rand2;
+    new_source->lifetime = particle_lifetime * rand2;
     R3Particle * new_particle = new R3Particle(point_emanate, direction_emanate, new_source);
     scene->particles.push_back(new_particle);
   }

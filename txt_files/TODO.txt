@@ -3,19 +3,33 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 /// =================== TODO ================ ///
 
+Jason:
+Resolve TODOs
+Add more sounds (for thrust)
+Make more scenes for playing
+Work on writeup / presentation
 
-Add more sounds
-
-
-Make flying more realistic
-Explosions have gravity (on particles)
-
-
+Kyle:
+Add minimap
 screen maximized and look good
+Fix camera view
 
-(UI: Add radar/minimap?) 
+Daway:
+Make gifs
+Start presentation
+Work on writeup
+
+
+
+
+
+
+/// =================== TODO IF EXTRA TIME ================ ///
+
+
 leading crosshair for targeting
 
+Make flying more realistic
 
 
 
@@ -30,6 +44,7 @@ capture video for realistic and non realistic thrust/turn (easy vs. hard mode). 
 /// =================== completed tasks below ================ ///
 
 // Done on Sunday, the 11th
+Explosions have gravity (on particles)
 3D sound
 Terrain: Landscape auto-creation and texture mapping
 note: you may need to modify the code that uses randomnumbers to shoot at the proper rate.

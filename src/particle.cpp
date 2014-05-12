@@ -16,7 +16,7 @@
 #define PI 3.14159
 
 // force constants
-static const R3Vector GRAVITY_VECTOR(0.0, 0.0, -9.80665);
+static const R3Vector GRAVITY_VECTOR(0.0, 0.0, -2.8); // 9.8 m/s readjusted to modeling system
 
 
 ////////////////////////////////////////////////////////////
