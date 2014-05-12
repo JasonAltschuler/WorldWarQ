@@ -1320,18 +1320,18 @@ void GLUTRedraw(void)
 
         // DESERT
         R3Material* desert = new R3Material();
-        dirt->ka = R3Rgb(0.0, 0.0, 0.0, 0.0);
-        dirt->kd = R3Rgb(0.2, 0.2, 0.2, 0.0);
-        dirt->ks = R3Rgb(0.2, 0.2, 0.2, 0.0);
-        dirt->kt = R3Rgb(0.0, 0.0, 0.0, 0.0);
-        dirt->emission = R3Rgb(0, 0, 0, 0);
-        dirt->shininess = 10;
-        dirt->indexofrefraction = 1;
-        dirt->id = 103;
+        desert->ka = R3Rgb(0.0, 0.0, 0.0, 0.0);
+        desert->kd = R3Rgb(0.2, 0.2, 0.2, 0.0);
+        desert->ks = R3Rgb(0.2, 0.2, 0.2, 0.0);
+        desert->kt = R3Rgb(0.0, 0.0, 0.0, 0.0);
+        desert->emission = R3Rgb(0, 0, 0, 0);
+        desert->shininess = 10;
+        desert->indexofrefraction = 1;
+        desert->id = 103;
 
         // Read texture image
-        dirt->texture = new R2Image();
-        dirt->texture->Read("../textures/desert2.jpg");
+        desert->texture = new R2Image();
+        desert->texture->Read("../textures/desert2.jpg");
         texture_materials[DESERT] = desert; // sufficiently large s.t. won't be same as any of the scene file materials
     }
 
