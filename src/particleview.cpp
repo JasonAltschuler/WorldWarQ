@@ -709,39 +709,23 @@ void DrawGround(R3Scene *scene)
         // interpolate how far we are between them
 
         float dirt_weight = (average_height - min_height) / (max_height-min_height);
-        dirt_weight -= .6;
-        if (dirt_weight < 0) dirt_weight = 0;
+//        dirt_weight -= .6;
+//        if (dirt_weight < 0) dirt_weight = 0;
+//        cout << dirt_weight << endl;
+        dirt_weight = 1-dirt_weight;
 
-//        cout << snow_weight <<
-//        if (average_height > SNOW_HEIGHT_THRESHOLD)
+//        dirt_weight = 1;
 
-            // load the necessary material
-            //    if (max_dist_between_vertices > CLIFF_DROPOFF_THRESHOLD)
-            //    {
-            ////      cout << "rock" << endl;
-            //      LoadMaterial(texture_materials[ROCK]);
-            //    }
-            //    else if (average_height > SNOW_HEIGHT_THRESHOLD)
-            //    {
-            ////      cout << "snow" << endl;
-            //      LoadMaterial(texture_materials[SNOW]);
-            //    }
-            //    else if (average_height > DIRT_HEIGHT_THRESHOLD)
-            //    {
-            ////      cout << "dirt" << endl;
-            //      LoadMaterial(texture_materials[]);
-            //    }
-            //    else
-            //    {
-            ////      cout << "grass" << endl;
-            //      LoadMaterial(texture_materials[GRASS]);
-            //    }
+//        glEnable(GL_BLEND);
+//        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        glDisable(GL_LIGHTING);
 
-        glDisable(GL_LIGHTING);
         if (face->vertices.size() == 3)
         {
             LoadMaterial(texture_materials[DIRT]);
-            glColor4f(1.0f, 1.0f, 1.0f, dirt_weight);
+//            glColor4f(1.0f, 1.0f, 1.0f, dirt_weight);
+            glColor4f(dirt_weight, dirt_weight, dirt_weight, 1);
+
             glBegin(GL_POLYGON);
 
             // vertex 1
@@ -764,51 +748,36 @@ void DrawGround(R3Scene *scene)
             glEnd();
         }
 
-        if (face->vertices.size() == 3)
-        {
-            LoadMaterial(texture_materials[GRASS]);
-            glColor4f(1.0f, 1.0f, 1.0f, 1.0f-dirt_weight);
+//        if (face->vertices.size() == 3)
+//        {
+//            cout << "running here" << endl;
+//            LoadMaterial(texture_materials[DIRT]);
+//            glColor4f(1.0f, 1.0f, 1.0f, 1.0f-dirt_weight);
+//
+//            glBegin(GL_POLYGON);
+//
+//            // vertex 1
+//            R3MeshVertex *vertex = face->vertices[0];
+//            const R3Point& p1 = vertex->position;
+//            glTexCoord2f(0,0);
+//            glVertex3d(p1[0], p1[1], p1[2]);
+//
+//            // vertex 2
+//            vertex = face->vertices[1];
+//            const R3Point& p2 = vertex->position;
+//            glTexCoord2f(0,1);
+//            glVertex3d(p2[0], p2[1], p2[2]);// vertex 1
+//
+//            // vertex 3
+//            vertex = face->vertices[2];
+//            const R3Point& p3 = vertex->position;
+//            glTexCoord2f(1,1);
+//            glVertex3d(p3[0], p3[1], p3[2]);
+//        }
 
-            glBegin(GL_POLYGON);
-
-            // vertex 1
-            R3MeshVertex *vertex = face->vertices[0];
-            const R3Point& p1 = vertex->position;
-            glTexCoord2f(0,0);
-            glVertex3d(p1[0], p1[1], p1[2]);
-
-            // vertex 2
-            vertex = face->vertices[1];
-            const R3Point& p2 = vertex->position;
-            glTexCoord2f(0,1);
-            glVertex3d(p2[0], p2[1], p2[2]);// vertex 1
-
-            // vertex 3
-            vertex = face->vertices[2];
-            const R3Point& p3 = vertex->position;
-            glTexCoord2f(1,1);
-            glVertex3d(p3[0], p3[1], p3[2]);
-        }
-
-        glDisable(GL_BLEND);
+//        glDisable(GL_BLEND);
         glEnable(GL_LIGHTING);
         glEnd();
-
-        //    // draw the face with openGL
-        //    GLboolean lighting = glIsEnabled(GL_LIGHTING); // TODO: should disable/enable lighting?
-        //    glDisable(GL_LIGHTING);
-        //
-        //    glBegin(GL_POLYGON);
-        //    const R3Vector& normal = face->plane.Normal();
-        //    glNormal3d(normal[0], normal[1], normal[2]);
-        //    for (unsigned int j = 0; j < face->vertices.size(); j++) {
-        //      R3MeshVertex *vertex = face->vertices[j];
-        //      const R3Point& p = vertex->position;
-        //      glVertex3d(p[0], p[1], p[2]);
-        //    }
-        //
-        //    if (lighting) glEnable(GL_LIGHTING);
-        //    glEnd();
     }
 
     // restore previous transformation
@@ -1436,6 +1405,7 @@ void GLUTRedraw(void)
         }
         glEnd();
         glPointSize(2);
+        glColor3f(1, 1, 1);
         glBegin(GL_POINTS);
         glVertex2f(circle_x, circle_y);
         glEnd();
@@ -1452,12 +1422,15 @@ void GLUTRedraw(void)
     int bottom = map_height;
 
     // draw point at center of radar
-     glEnable(GL_POINT_SMOOTH);
-     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+//     glEnable(GL_POINT_SMOOTH);
+//     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
      glColor4f(1, 0, 0, 1);
-     glPointSize(10);
-     glBegin(GL_POINTS);
+//     glPointSize(5);
+//     glBegin(GL_POINTS);
+     glBegin(GL_POLYGON);
      glVertex2f(left + map_width/2, top + map_height/2);
+     glVertex2f(left + map_width/2 - 5, top + map_height/2 + 5);
+     glVertex2f(left + map_width/2 + 5, top + map_height/2 + 5);
      glEnd();
 
      // calculate relative positions of enemies:
@@ -1465,9 +1438,15 @@ void GLUTRedraw(void)
      // then, get rid of Z
      // then scale
      // then draw
+
+     // max units away a plane can be to be visible on minimap
+     double max_dist = 100;
+
      for (int i = 1; i < scene->NAircrafts(); i++)
      {
          R3Aircraft *aircraft = scene->Aircraft(i);
+         // define north as
+
 
      }
 
@@ -1504,14 +1483,14 @@ void GLUTRedraw(void)
     GLUTDrawText(R3Point(7, 45, 0), buffer);
 
     // draw kills string
-    glColor3f(1, .5, 0);
+    glColor3f(1, 1, 1);
     sprintf(buffer, "Kills: %d", num_kills);
     GLUTDrawText(R3Point(7, GLUTwindow_height-40, 0), buffer);
 
     // draw deaths string
-    glColor3f(1, .5, 0);
+    glColor3f(1, 1, 1);
     sprintf(buffer, "Deaths: %d", num_deaths);
-    GLUTDrawText(R3Point(7, GLUTwindow_height-20, 0), buffer);
+    GLUTDrawText(R3Point(7, GLUTwindow_height-15, 0), buffer);
 
 
 
