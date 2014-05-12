@@ -130,12 +130,7 @@ FireBullet(R3Scene *scene)
 {
   time_since_last_fired = 0.0;
 
-  // make sound for firing bullet
-#ifdef __APPLE__
-  engine->play2D("../wav/shot.wav");
-#endif
 //  BULLET_VELOCITY
-
   double pi = 3.14159265;
   double angle_cutoff = .01;
 
@@ -177,6 +172,31 @@ FireBullet(R3Scene *scene)
       bullet_material, bullet_springs, bullet_is_bullet, aircraft_fired_from);
 
   scene->particles.push_back(new_bullet);
+
+
+  // make sound for firing bullet
+#ifdef __APPLE__
+  // 2D sound
+  //  engine->play2D("../wav/shot.wav");
+
+  // 3D sound!!
+  R3Aircraft *player_aircraft = scene->Aircraft(0);
+  R3Vector pos_player_aircraft(0, 0, 0);
+  pos_player_aircraft = player_aircraft->Modeling_To_World(pos_player_aircraft);
+
+  R3Vector dir_player_aircraft(1, 0, 0);
+  dir_player_aircraft.Transform(player_aircraft->T);
+
+  engine->setListenerPosition(irrklang::vec3df(pos_player_aircraft.X(), pos_player_aircraft.Y(), pos_player_aircraft.Z()),
+        irrklang::vec3df(dir_player_aircraft.X(), dir_player_aircraft.Y(), dir_player_aircraft.Z()));
+
+  irrklang::ISound* music = engine->play3D("../wav/shot.wav", irrklang::vec3df(bullet_origin_world.X(),
+      bullet_origin_world.Y(), bullet_origin_world.Z()), false, false, true);
+
+  if (music)
+    music->setMinDistance(25.0f);
+
+#endif
 }
 
 
@@ -318,9 +338,6 @@ Destroy(R3Scene *scene, bool should_explode, bool should_respawn)
 void R3Aircraft::
 Explode(R3Scene *scene, bool is_collision_scene)
 {
-   #ifdef __APPLE__
-  engine->play2D("../wav/explosion.wav");
-    #endif
   // set up materials only once
   static bool is_material_initialized = false;
   static R3Material orange_shrapnel, red_shrapnel, black_shrapnel;
@@ -387,10 +404,6 @@ Explode(R3Scene *scene, bool is_collision_scene)
   new_source->material = &orange_shrapnel; // TODO: change to make different colors (red, black, white, orange?)
 
 
-// TODO: delete this and DrawSource(...) method in particleview.cpp && particleview.h
-  DrawSource(new_source);
-
-
   int one_third = (int) particles_to_generate / 3.0;
   int two_third = one_third * 2;
 
@@ -436,6 +449,30 @@ Explode(R3Scene *scene, bool is_collision_scene)
   delete new_source;
   delete sphere;
   delete shape;
+
+
+#ifdef __APPLE__
+  // 2D sound
+  //  engine->play2D("../wav/explosion.wav");
+
+  // 3D sound!!
+  R3Aircraft *player_aircraft = scene->Aircraft(0);
+  R3Vector pos_player_aircraft(0, 0, 0);
+  pos_player_aircraft = player_aircraft->Modeling_To_World(pos_player_aircraft);
+
+  R3Vector dir_player_aircraft(1, 0, 0);
+  dir_player_aircraft.Transform(player_aircraft->T);
+
+  engine->setListenerPosition(irrklang::vec3df(pos_player_aircraft.X(), pos_player_aircraft.Y(), pos_player_aircraft.Z()),
+      irrklang::vec3df(dir_player_aircraft.X(), dir_player_aircraft.Y(), dir_player_aircraft.Z()));
+
+  irrklang::ISound* music = engine->play3D("../wav/explosion.wav", irrklang::vec3df(center.X(),
+      center.Y(), center.Z()), false, false, true);
+
+  if (music)
+    music->setMinDistance(25.0f);
+
+#endif
 }
 
 void R3Aircraft::

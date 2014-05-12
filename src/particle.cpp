@@ -707,7 +707,7 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
       {
         particle->position = new_position;
         particle->velocity = R3zero_vector;
-        particle->lifetime = 10;
+        particle->lifetime = 3;
 
         cout << "HIT" << endl;
         closest_intersection.aircraft->HitAircraft(scene);
