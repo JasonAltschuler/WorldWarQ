@@ -309,7 +309,7 @@ Destroy(R3Scene *scene, bool should_explode, bool should_respawn)
 
 
 void R3Aircraft::
-Explode(R3Scene *scene, bool is_nonbullet_explosion)
+Explode(R3Scene *scene, bool is_collision_scene)
 {
   engine->play2D("../wav/explosion.wav");
 
@@ -356,7 +356,7 @@ Explode(R3Scene *scene, bool is_nonbullet_explosion)
 
 
   const int num_particles_to_generate = 1000;
-  int particles_to_generate = num_particles_to_generate * (is_nonbullet_explosion ? 5 : 1);
+  int particles_to_generate = num_particles_to_generate * (is_collision_scene ? 5 : 1);
   const double radius = 1;
   const double fast_velocity = 30;
   const double particle_lifetime = 0.25;

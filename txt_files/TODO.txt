@@ -3,21 +3,26 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 /// =================== TODO ================ ///
 
+Add more sounds
+3D sound
 
-
-capture video for realistic and non realistic thrust/turn (easy vs. hard mode). perhaps after trails
+Make flying more realistic
 
 
 screen maximized and look good
 
-(UI: Add radar/minimap?)
+(UI: Add radar/minimap?) 
 leading crosshair for targeting
 
-Terrain:
-Landscape auto-creation and texture mapping
+Terrain: Landscape auto-creation and texture mapping
 
 
 At the end: remove some of the R3Aircraft.AssertValid() and R3Intersection.AssertValid() calls to speed up
+
+
+//////  ============== capture videos of ================= ///////
+
+capture video for realistic and non realistic thrust/turn (easy vs. hard mode). perhaps after trails
 
 
 /// =================== completed tasks below ================ ///
