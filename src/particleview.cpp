@@ -2165,14 +2165,6 @@ void initSkyBox(int skybox_type)
         skybox[SKY_BACK] = loadTexBMP("bmp/txStormydays_back.bmp");
         skybox[SKY_UP] = loadTexBMP("bmp/txStormydays_up.bmp");
         skybox[SKY_DOWN] = loadTexBMP("bmp/txStormydays_down.bmp");
-    } else if (skybox_type == 0)
-    {
-        skybox[SKY_FRONT] = loadTexBMP("bmp/front.bmp");
-        skybox[SKY_RIGHT] = loadTexBMP("bmp/right.bmp");
-        skybox[SKY_LEFT] = loadTexBMP("bmp/left.bmp");
-        skybox[SKY_BACK] = loadTexBMP("bmp/back.bmp");
-        skybox[SKY_UP] = loadTexBMP("bmp/up.bmp");
-        skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
     } else if (skybox_type == 2)
     {
         skybox[SKY_FRONT] = loadTexBMP("bmp/front.bmp");
@@ -2180,6 +2172,14 @@ void initSkyBox(int skybox_type)
         skybox[SKY_LEFT] = loadTexBMP("bmp/left.bmp");
         skybox[SKY_BACK] = loadTexBMP("bmp/back.bmp");
         skybox[SKY_UP] = loadTexBMP("bmp/up.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+    } else if (skybox_type == 0)
+    {
+        skybox[SKY_FRONT] = loadTexBMP("bmp/desert_back.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("bmp/desert_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("bmp/desert_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("bmp/desert_front.bmp");
+        skybox[SKY_UP] = loadTexBMP("bmp/desert_top.bmp");
         skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
     }
 }
