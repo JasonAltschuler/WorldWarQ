@@ -15,7 +15,7 @@ R3Scene(void)
     bbox(R3null_box),
     background(0,0,0,1),
     ambient(0,0,0,1),
-    skybox_type(1)
+    skybox_type(0)
 {
   // Setup default camera
   camera.eye = R3zero_point;
@@ -262,6 +262,15 @@ Read(const char *filename, R3Node *node)
     if (cmd[0] == '#') {
       // Comment -- read everything until end of line
       do { cmd[0] = fgetc(fp); } while ((cmd[0] >= 0) && (cmd[0] != '\n'));
+    }
+    else if (!strcmp(cmd, "map_type")) {
+        int type;
+        if (fscanf(fp, "%d",
+              &type) != 1) {
+                fprintf(stderr, "Unable to read particle at command %d in file %s\n", command_number, filename);
+                return 0;
+        }
+        skybox_type = type;
     }
     else if (!strcmp(cmd, "particle")) {
       // Read position and velocity
