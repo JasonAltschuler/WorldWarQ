@@ -1,11 +1,11 @@
 
-#ifndef PARTICLEVIEW_H_
-#define PARTICLEVIEW_H_
+#ifndef WORLD_WAR_Q_H_
+#define WORLD_WAR_Q_H_
 
 #include "R3/R3.h"
 #include "R3Scene.h"
 
-// extern variables set in particleview.cpp by listener and used to update the
+// extern variables set in WorldWarQ.cpp by listener and used to update the
 // player-controlled aircraft in R3Aircraft.cpp
 extern int pitch_up;
 extern int pitch_down;
@@ -35,4 +35,4 @@ void LoadLights(R3Scene *scene);
 void drawSkybox(double D);
 void initSkyBox();
 
-#endif /* PARTICLEVIEW_H_ */
+#endif /* WORLD_WAR_Q_H_ */

@@ -6,7 +6,7 @@
 // INCLUDE FILES
 ////////////////////////////////////////////////////////////
 
-#include "particleview.h"
+#include "WorldWarQ.h"
 #include "R3Aircraft.h"
 #include "R3/R3.h"
 #include "R3Scene.h"
@@ -1950,7 +1950,7 @@ void GLUTInit(int *argc, char **argv)
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(GLUTwindow_width, GLUTwindow_height);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); // | GLUT_STENCIL
-    GLUTwindow = glutCreateWindow("Sky battle");
+    GLUTwindow = glutCreateWindow("WORLD WAR Q");
 
 
     // try full screen

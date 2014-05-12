@@ -62,10 +62,10 @@ endif
 # on its corresponding .cpp), as are many of the compilation rules.
 #
 
-OBJS=particleview.o particle.o R3Scene.o R3Aircraft.o
+OBJS=WorldWarQ.o particle.o R3Scene.o R3Aircraft.o
 LIBS=R3/libR3.a R2/libR2.a jpeg/libjpeg.a fglut/libfglut.a
 
-all: particleview
+all: WorldWarQ 
 
 R3/libR3.a: 
 	    $(MAKE) -C R3
@@ -79,7 +79,7 @@ jpeg/libjpeg.a:
 fglut/libfglut.a: 
 	$(MAKE) -C fglut
 
-particleview: $(OBJS) $(LIBS) 
+WorldWarQ: $(OBJS) $(LIBS) 
 	    rm -f $@ 
 	    $(CXX) $(CXXFLAGS) $^ -lm -o $@ $(GLLIBS) $(IRRLIB)
 
@@ -93,7 +93,7 @@ unsetup:
 
 	    
 clean:
-	    rm -f *.o particleview
+	    rm -f *.o WorldWarQ 
 		$(MAKE) -C R3 clean
 		$(MAKE) -C R2 clean
 		$(MAKE) -C jpeg clean

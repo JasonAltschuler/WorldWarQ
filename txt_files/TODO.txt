@@ -7,11 +7,7 @@ GOOD NAME FOR GAME!!!
   change particleview.cpp to that name
 
 
-
 Jason:
-Resolve TODOs
-
-Fix AI
 Input music
 Make more scenes for playing
 Work on writeup / presentation
@@ -52,6 +48,7 @@ capture video for realistic and non realistic thrust/turn (easy vs. hard mode). 
 /// =================== completed tasks below ================ ///
 
 // Done on Monday, the 12th
+Improved AI
 Multiple skyboxes / textures
 Clip stuff on minimap
 Create minimap
