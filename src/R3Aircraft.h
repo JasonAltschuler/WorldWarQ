@@ -8,7 +8,6 @@ struct R3Scene;
 struct R3Material;
 class R3ParticleSource;
 
-// TODO: add destructor
 struct R3Aircraft {
   R3Aircraft(void);
 
@@ -46,7 +45,7 @@ struct R3Aircraft {
   void RollLeft(double delta_time);
   void RollRight(double delta_time);
   void ThrustForward(double delta_time);
-  void BrakeBackward(double delta_time, bool is_AI);
+  void BrakeBackward(double delta_time);
 
   // actions for if aircraft is destroyed (bullets hit or crash into mesh)
   void HitAircraft(R3Scene *scene);

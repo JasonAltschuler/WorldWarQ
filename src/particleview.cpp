@@ -669,7 +669,6 @@ void DrawGround(R3Scene *scene)
     LoadMatrix(&ground_node->transformation);
 
 
-    // TODO don't do this every frame... stupid.
     double max_height = -100000;
     double min_height = 100000;
     for (int f = 0; f < mesh->NFaces(); f++)
@@ -682,9 +681,6 @@ void DrawGround(R3Scene *scene)
             if (height < min_height) min_height = height;
         }
     }
-
-    //    cout << "min: " << min_height << endl;
-    //    cout << "max: " << max_height << endl;
 
     for (int f = 0; f < mesh->NFaces(); f++)
     {
@@ -941,36 +937,8 @@ void DrawCamera(R3Scene *scene)
 
 void DrawScene(R3Scene *scene) 
 {
-    // Draw nodes recursively
-    //  DrawNode(scene, scene->root);
-
-    DrawGround(scene);
-
-
-
-    //  TODO: delete later? also, note quite working...
-    // Added by Jason: May 10. Shows bounding boxes of airplanes
-    //  GLboolean lighting = glIsEnabled(GL_LIGHTING);
-    //  glDisable(GL_LIGHTING);
-    //  for (int i = 0; i < scene->NAircrafts(); i++)
-    //  {
-    //    R3Aircraft *aircraft = scene->Aircraft(i);
-    //
-    //    // Push transformation onto stack
-    //    glPushMatrix();
-    //    LoadMatrix(&aircraft->T);
-    //
-    //    // Load material
-    //    if (aircraft->material) LoadMaterial(aircraft->material);
-    //
-    //    // Draw shape
-    //    aircraft->mesh->bbox.Outline();
-    //    if (aircraft->mesh) aircraft->mesh->Draw();
-    //    else { fprintf(stderr, "problem drawing bounding aircraft bounding boxes!"); exit(1); }
-    //  }
-    //
-    //  if (lighting) glEnable(GL_LIGHTING);
-
+  // The only node in the scene is now just the ground
+  DrawGround(scene);
 }
 
 
@@ -1053,7 +1021,6 @@ void DrawParticlesAndAircrafts(R3Scene *scene)
 //    DrawShape(source->shape);
 //  }
 //
-//  // TODO: delete later
 //  for (int i = 0; i < scene->NAircrafts(); i++)
 //  {
 //    vector<R3ParticleSource *> sources = scene->Aircraft(i)->sources;
@@ -1069,70 +1036,6 @@ void DrawParticlesAndAircrafts(R3Scene *scene)
 //  if (!lighting) glDisable(GL_LIGHTING);
 //}
 //
-//
-//
-//void DrawParticleSinks(R3Scene *scene)
-//{
-//  // Check if should draw particle sinks
-//  if (!show_particle_sources_and_sinks) return;
-//
-//  // Setup
-//  GLboolean lighting = glIsEnabled(GL_LIGHTING);
-//  glEnable(GL_LIGHTING);
-//
-//  // Define sink material
-//  static R3Material sink_material;
-//  if (sink_material.id != 33) {
-//    sink_material.ka.Reset(0.2,0.2,0.2,1);
-//    sink_material.kd.Reset(1,0,0,1);
-//    sink_material.ks.Reset(1,0,0,1);
-//    sink_material.kt.Reset(0,0,0,1);
-//    sink_material.emission.Reset(0,0,0,1);
-//    sink_material.shininess = 1;
-//    sink_material.indexofrefraction = 1;
-//    sink_material.texture = NULL;
-//    sink_material.texture_index = -1;
-//    sink_material.id = 33;
-//  }
-//
-//  // Draw all particle sinks
-//  glEnable(GL_LIGHTING);
-//  LoadMaterial(&sink_material);
-//  for (int i = 0; i < scene->NParticleSinks(); i++) {
-//    R3ParticleSink *sink = scene->ParticleSink(i);
-//    DrawShape(sink->shape);
-//  }
-//
-//  // Clean up
-//  if (!lighting) glDisable(GL_LIGHTING);
-//}
-//
-//
-//
-//void DrawParticleSprings(R3Scene *scene)
-//{
-//  // Check if should draw particle springs
-//  if (!show_particle_springs) return;
-//
-//  // Setup
-//  GLboolean lighting = glIsEnabled(GL_LIGHTING);
-//  glDisable(GL_LIGHTING);
-//
-//  // Draw all particle sources
-//  glColor3d(0.5, 0.5, 0.5);
-//  glBegin(GL_LINES);
-//  for (unsigned int i = 0; i < scene->particle_springs.size(); i++) {
-//    R3ParticleSpring *spring = scene->particle_springs[i];
-//    const R3Point& p0 = spring->particles[0]->position;
-//    const R3Point& p1 = spring->particles[1]->position;
-//    glVertex3d(p0[0], p0[1], p0[2]);
-//    glVertex3d(p1[0], p1[1], p1[2]);
-//  }
-//  glEnd();
-//
-//  // Clean up
-//  if (lighting) glEnable(GL_LIGHTING);
-//}
 
 
 
@@ -1485,7 +1388,7 @@ void GLUTRedraw(void)
 
 
         // rotated AI based on player's rotation
-        to_enemy_modeling.Transform(player_aircraft->T.Transpose()); // TODO: transpose?
+        to_enemy_modeling.Transform(player_aircraft->T.Transpose());
 
         // eliminate z vector in this rotated coordinate system
         to_enemy_modeling.SetZ(0);
@@ -1902,7 +1805,7 @@ void GLUTKeyboard(unsigned char key, int x, int y)
         show_particle_sources_and_sinks = !show_particle_sources_and_sinks;
         break;
 
-        // TODO: Add documentation
+        // TODO: Add documentation for all commands!!!
     case 'W':
     case 'w':
         pitch_down = 1;

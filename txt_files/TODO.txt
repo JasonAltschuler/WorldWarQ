@@ -3,16 +3,24 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 /// =================== TODO ================ ///
 
+GOOD NAME FOR GAME!!!
+  change particleview.cpp to that name
+
+
+
 Jason:
 Resolve TODOs
-Add more sounds (for thrust)
+
+Fix AI
+Input music
 Make more scenes for playing
 Work on writeup / presentation
 
+
 Kyle:
-Add minimap
-screen maximized and look good
+Heads-up display: DEATH :( and KILL!! and HIT!
 Fix camera view
+Find music
 
 Daway:
 Make gifs
@@ -42,6 +50,17 @@ capture video for realistic and non realistic thrust/turn (easy vs. hard mode). 
 
 
 /// =================== completed tasks below ================ ///
+
+// Done on Monday, the 12th
+Multiple skyboxes / textures
+Clip stuff on minimap
+Create minimap
+AI doesn't shoot when dead. Bullets don't collide when dead 
+Trails as lines for bullets
+screen maximized and look good
+Add more sounds (for thrust)
+
+
 
 // Done on Sunday, the 11th
 Explosions have gravity (on particles)

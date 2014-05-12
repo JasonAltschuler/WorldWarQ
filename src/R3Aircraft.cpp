@@ -10,20 +10,14 @@
 
 
 
-// sounds
-#ifdef _WIN64
-   //define something for Windows (64-bit)
-#elif _WIN32
-   //define something for Windows (32-bit)
-#elif __APPLE__
+// NOTE: USING IRRKLANG SOUND LIBRARY
+// sounds (irrklang only works well on Macs)
+#ifdef __APPLE__
 #include <../irrKlang/include/irrKlang.h>
 static irrklang::ISoundEngine *engine = irrklang::createIrrKlangDevice();
 #endif
-//#pragma comment(lib, "irrKlang/lib/irrKlang.lib") // link with irrKlang.dll
 
-//#pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
 
-//
 
 ////////////////////////////////////////////////////////////
 // Constants
@@ -31,26 +25,29 @@ static irrklang::ISoundEngine *engine = irrklang::createIrrKlangDevice();
 
 #define PI 3.14159
 
-// TODO: make THETA and SEC_TO_MAX_THRUST a command-line input?
-// TODO: have different thetas for rolling left/right or up/down
-//static const double THETA = 0.00174532925; // .1 degree in radians
-//static const double THETA = 0.872664625; // 50 degree in radians
-static const double THETA = 0.4363323125; // 25 degrees in radians
+// 25 degrees in radians
+static const double THETA = 0.4363323125;
 
-static const double SECONDS_TO_MAX_THRUST = 2.0; // TODO: play around with this
+// "0 to 60 in 3.5"
+static const double SECONDS_TO_MAX_THRUST = 2.0;
 
+// we assume bullet has no acceleration on it (although other non-bullet particles have forces)
 static const double BULLET_VELOCITY = 100.0;
 
+// rate for particles coming out of aircraft engine for exhaust
 static const double AIRCRAFT_EXHAUST_RATE_MAX = 100.0;
 
+// how long to stay put for player death (to show animation of explosion, etc.)
 static const double FREEZE_TIME = 2.0;
 
+// 7.5 degrees in radians
+static const double AI_RADIUS_SHOOTING_RANGE = 0.130899694;
 
-// TODO: play with these?
-static const double AI_RADIUS_SHOOTING_RANGE = 0.130899694;                 // 7.5 degrees in radians
-static const double AI_RADIUS_MOVING_RANGE = AI_RADIUS_SHOOTING_RANGE / 50.0;  // the smaller this is, the better the AI is/ TODO: change with hard mode?
-static const double AI_DISTANCE_HI_LO_THRUST = 250.0; // probably somewhere between 75 and 100 is best
+// the smaller this is, the better the AI is
+static const double AI_RADIUS_MOVING_RANGE = AI_RADIUS_SHOOTING_RANGE / 50.0;
 
+// probably around 250 is best
+static const double AI_DISTANCE_HI_LO_THRUST = 250.0;
 
 
 ////////////////////////////////////////////////////////////
@@ -115,10 +112,6 @@ AssertValid(void)
   assert(drag >= 0);
   assert(thrust_magnitude >= 0);
   assert(max_thrust >= 0);
-//  assert(hitpoints > 0); // TODO
-
-//  if (hard_mode == 0) // invariant only holds on easy mode (see writeup for more details)
-//    assert(velocity.X() >= 0);
 }
 
 
@@ -131,14 +124,12 @@ FireBullet(R3Scene *scene)
 {
   time_since_last_fired = 0.0;
 
-//  BULLET_VELOCITY
   double pi = 3.14159265;
   double angle_cutoff = .01;
 
   R3Vector bullet_origin_modeling (3, 0, 0);
   R3Vector bullet_origin_world = Modeling_To_World(bullet_origin_modeling);
 
-  // TODO add bullet spread
   R3Vector N(1, 0, 0);
   R3Vector A = N;
   A.Cross(R3Vector(.2,.1,0));
@@ -177,9 +168,6 @@ FireBullet(R3Scene *scene)
 
   // make sound for firing bullet
 #ifdef __APPLE__
-  // 2D sound
-  //  engine->play2D("../wav/shot.wav");
-
   // 3D sound!!
   R3Aircraft *player_aircraft = scene->Aircraft(0);
   R3Vector pos_player_aircraft(0, 0, 0);
@@ -198,9 +186,8 @@ FireBullet(R3Scene *scene)
     bullet_sound->setMinDistance(25.0f);
 
   bullet_sound->setVolume(0.5);
-
-
 #endif
+
 }
 
 
@@ -213,10 +200,10 @@ ThrustForward(double delta_time)
 }
 
 void R3Aircraft::
-BrakeBackward(double delta_time, bool is_AI)
+BrakeBackward(double delta_time)
 {
   double delta_thrust = max_thrust * delta_time / SECONDS_TO_MAX_THRUST;
-  thrust_magnitude = max(thrust_magnitude - delta_thrust, max_thrust / 10.0); // always non-negative
+  thrust_magnitude = max(thrust_magnitude - delta_thrust, max_thrust / 10.0); // can't go too slow (how lift works bro)
   AssertValid();
 }
 
@@ -303,11 +290,8 @@ HitAircraft(R3Scene *scene)
     // if user-controlled airplane that blows up, you lose!
     if (this == scene->Aircraft(0))
     {
-      cout << "GAME OVER. YOU LOSE. " << endl << endl << endl; // TODO
       num_deaths++;
-      cout << "num_deaths = " << num_deaths << endl;
       this->hitpoints = respawn_hitpoints;
-
       this->freeze_time = FREEZE_TIME;
       bool should_explode = true;
       bool should_respawn = false;
@@ -317,9 +301,7 @@ HitAircraft(R3Scene *scene)
     // else, it is an AI plane
     else
     {
-      cout << "PLANE DESTROYED" << endl;
       num_kills++;
-      cout << "num_kills = " << num_kills << endl;
       bool should_explode = true;
       bool should_respawn = true;
       this->Destroy(scene, should_explode, should_respawn);
@@ -389,7 +371,6 @@ Explode(R3Scene *scene, bool is_collision_scene)
   int particles_to_generate = num_particles_to_generate * (is_collision_scene ? 5 : 1);
   const double radius = 1;
   const double fast_velocity = 15;
-//  const double particle_lifetime = 0.25;
   const double particle_lifetime = 1;
 
 
@@ -408,7 +389,7 @@ Explode(R3Scene *scene, bool is_collision_scene)
   new_source->drag = 0;
   new_source->elasticity = 0;
   new_source->lifetime = particle_lifetime;
-  new_source->material = &orange_shrapnel; // TODO: change to make different colors (red, black, white, orange?)
+  new_source->material = &orange_shrapnel;
 
 
   int one_third = (int) particles_to_generate / 3.0;
@@ -460,9 +441,6 @@ Explode(R3Scene *scene, bool is_collision_scene)
 
   // sound for explosion
 #ifdef __APPLE__
-  // 2D sound
-  //  engine->play2D("../wav/explosion.wav");
-
   // 3D sound!!
   R3Aircraft *player_aircraft = scene->Aircraft(0);
   R3Vector pos_player_aircraft(0, 0, 0);
@@ -482,6 +460,7 @@ Explode(R3Scene *scene, bool is_collision_scene)
 
 #endif
 }
+
 
 void R3Aircraft::
 Respawn(void)
@@ -512,12 +491,10 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
   // convert cartesian coordinates (to_enemy) to spherical coordinates: rotated(x,y,z) -> (dist, theta, phi)
   R3Vector vector_to_enemy_rotated = vector_to_enemy_xyz;
   vector_to_enemy_rotated.Transform(this->T.Transpose());
-  double phi_rotated = atan2(sqrt(vector_to_enemy_rotated.X() * vector_to_enemy_rotated.X() + vector_to_enemy_rotated.Y() * vector_to_enemy_rotated.Y()), vector_to_enemy_rotated.Z());
+  double phi_rotated = atan2(sqrt(vector_to_enemy_rotated.X() *
+      vector_to_enemy_rotated.X() + vector_to_enemy_rotated.Y() * vector_to_enemy_rotated.Y()), vector_to_enemy_rotated.Z());
   double theta_rotated = atan2(vector_to_enemy_rotated.Y(), vector_to_enemy_rotated.X());
 
-
-  //  cout << theta_rotated << "\t" << phi_rotated << endl;
-  //  cout << (int) dist_to_enemy << endl;
 
   // shoot if aimed properly
   if (abs(theta_rotated) < AI_RADIUS_SHOOTING_RANGE && abs(phi_rotated - PI/2.0) < AI_RADIUS_SHOOTING_RANGE)
@@ -561,18 +538,16 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
 
 
   // SPEED UP OR SLOW DOWN BASED ON HOW FAR AWAY THE ENEMY IS
-  if (abs(dist_to_enemy - AI_DISTANCE_HI_LO_THRUST) > 1)
+  if (abs(dist_to_enemy - AI_DISTANCE_HI_LO_THRUST) > AI_DISTANCE_HI_LO_THRUST)
   {
     if (abs(dist_to_enemy) > AI_DISTANCE_HI_LO_THRUST)
       ThrustForward(delta_time);
     else
-      BrakeBackward(delta_time, true);
+      BrakeBackward(delta_time);
   }
 
 
-
-
-//  // TODO: delete visualization later!
+//  // For visualization of modeling coordinates with respect to the aircraft, in the real world
 //  // Draw x, y, z for each aircraft
 //  // Draw meshes under transformation
 //  glDisable(GL_LIGHTING);
@@ -648,7 +623,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
       if (thrust_forward)
         aircraft->ThrustForward(delta_time);
       if (brake_backward)
-        aircraft->BrakeBackward(delta_time, false);
+        aircraft->BrakeBackward(delta_time);
       if (firing_bullets)
       {
         // make firing rate more constant --> sounds more like machine gun
@@ -661,7 +636,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
     // AI-CONTROLLED AIRCRAFT
     else
     {
-      // TODO: if make teams for dogfights, actually find the closest_enemy (easy).
+      // Note: could easily generalize to making teams for dogfights: simply find the closest_enemy (easy).
       R3Aircraft *closest_enemy = scene->Aircraft(0);
 
       aircraft->AI_decision(scene, closest_enemy, delta_time);
@@ -814,13 +789,6 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
 //    }
 
     aircraft->velocity += acceleration * delta_time;
-
-//    // TODO: delete later
-//    cout << "velocity: " << aircraft->velocity.X() << endl;
-//    if ((acceleration.X() / delta_time) < 0.01)
-//      cout << "TERMINAL!" << endl;
-
-
     aircraft->AssertValid();
   }
 
@@ -875,10 +843,6 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
   // if background_sounds already initialized --> update based on new positions of aircrafts
   else
   {
-    // TODO: delete?
-    assert(scene->NAircrafts() == thrust_sounds.size());
-//    int num_sounds = fmin(scene->NAircrafts(), thrust_sounds.size());
-
     for (int i = 0; i < scene->NAircrafts(); i++)
     {
       R3Aircraft *other_aircraft = scene->Aircraft(i);
@@ -895,11 +859,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
   }
 #endif
 
-
 }
-
-
-
 
 
 void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
@@ -928,9 +888,9 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
 
 
 
-  // TODO: delete later (only for visualization)
-  // Draw x, y, z for each aircraft
-  // Draw meshes under transformation
+//  // For visualization of modeling coordinates with respect to the aircraft, in terms of world coordinates
+//  // Draw x, y, z for each aircraft
+//  // Draw meshes under transformation
 //  glDisable(GL_LIGHTING);
 //  glLineWidth(3);
 //  glBegin(GL_LINES);
