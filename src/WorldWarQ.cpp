@@ -231,36 +231,36 @@ void LoadMaterial(R3Material *material)
     double opacity = 1 - material->kt.Luminance();
 
     // Load ambient
-    //    c[0] = material->ka[0];
-    //    c[1] = material->ka[1];
-    //    c[2] = material->ka[2];
-    //    c[3] = opacity;
-    //    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, c);
-    //
-    //    // Load diffuse
-    //    c[0] = material->kd[0];
-    //    c[1] = material->kd[1];
-    //    c[2] = material->kd[2];
-    //    c[3] = opacity;
-    //    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, c);
-    //
-    //    // Load specular
-    //    c[0] = material->ks[0];
-    //    c[1] = material->ks[1];
-    //    c[2] = material->ks[2];
-    //    c[3] = opacity;
-    //    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c);
-    //
-    //    // Load emission
-    //    c[0] = material->emission.Red();
-    //    c[1] = material->emission.Green();
-    //    c[2] = material->emission.Blue();
-    //    c[3] = opacity;
-    //    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, c);
-    //
-    //    // Load shininess
-    //    c[0] = material->shininess;
-    //    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, c[0]);
+    c[0] = material->ka[0];
+    c[1] = material->ka[1];
+    c[2] = material->ka[2];
+    c[3] = opacity;
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, c);
+
+    // Load diffuse
+    c[0] = material->kd[0];
+    c[1] = material->kd[1];
+    c[2] = material->kd[2];
+    c[3] = opacity;
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, c);
+
+    // Load specular
+    c[0] = material->ks[0];
+    c[1] = material->ks[1];
+    c[2] = material->ks[2];
+    c[3] = opacity;
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c);
+
+    // Load emission
+    c[0] = material->emission.Red();
+    c[1] = material->emission.Green();
+    c[2] = material->emission.Blue();
+    c[3] = opacity;
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, c);
+
+    // Load shininess
+    c[0] = material->shininess;
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, c[0]);
 
     // Load texture
     if (material->texture) {
@@ -716,7 +716,7 @@ void DrawGround(R3Scene *scene)
 
         //        glEnable(GL_BLEND);
         //        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                glDisable(GL_LIGHTING);
+        glDisable(GL_LIGHTING);
 
         if (face->vertices.size() == 3)
         {
@@ -937,8 +937,8 @@ void DrawCamera(R3Scene *scene)
 
 void DrawScene(R3Scene *scene) 
 {
-  // The only node in the scene is now just the ground
-  DrawGround(scene);
+    // The only node in the scene is now just the ground
+    DrawGround(scene);
 }
 
 
@@ -982,7 +982,6 @@ void DrawParticlesAndAircrafts(R3Scene *scene)
     // Render particles
     if (show_particles) RenderParticles(scene, current_time - time_lost_taking_videos, delta_time);
     RenderAircrafts(scene, current_time - time_lost_taking_videos, delta_time);
-
 
     // Remember previous time
     previous_time = current_time;
@@ -1316,7 +1315,7 @@ void GLUTRedraw(void)
 
     // draw crosshair
     // code from https://www.opengl.org/discussion_boards/showthread.php/167955-drawing-a-smooth-circle
-    if (camera_view == 2 || camera_view == 3) {
+    if ((camera_view == 2 || camera_view == 3) && scene->Aircraft(0)->freeze_time < 0) {
         glBegin(GL_LINE_LOOP);
         glColor3f(1, 1, 1);
         int circle_x = GLUTwindow_width/2;
@@ -1468,7 +1467,12 @@ void GLUTRedraw(void)
     sprintf(buffer, "Deaths: %d", num_deaths);
     GLUTDrawText(R3Point(7, GLUTwindow_height-15, 0), buffer);
 
-
+    // draw YOU DIED string
+    if (scene->Aircraft(0)->freeze_time >= 0) {
+        glColor3f(1, 1, 1);
+        sprintf(buffer, "Respawning in %d", (int) scene->Aircraft(0)->freeze_time + 1);
+        GLUTDrawText(R3Point(GLUTwindow_width/2-50, GLUTwindow_height/2, 0), buffer);
+    }
 
 
 

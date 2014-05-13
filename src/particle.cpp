@@ -414,7 +414,7 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
         particle->velocity = R3zero_vector;
         particle->lifetime = 3;
 
-        cout << "HIT" << endl; // TODO: KYLE, MAKE HEADSUP DISPLAY FOR HIT
+//        cout << "HIT" << endl; // TODO: KYLE, MAKE HEADSUP DISPLAY FOR HIT
         closest_intersection.aircraft->HitAircraft(scene);
       }
     }

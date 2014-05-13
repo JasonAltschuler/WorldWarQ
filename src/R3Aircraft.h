@@ -25,7 +25,7 @@ struct R3Aircraft {
   int hitpoints; // alive if positive (so should always be positive)
   double freeze_time; // if <= 0 --> not frozen
   double time_since_last_fired;
-
+  bool is_hit;
   // remember original fields for when aircraft is destroyed and respawns
   R3Vector respawn_velocity;
   R3Matrix respawn_T;

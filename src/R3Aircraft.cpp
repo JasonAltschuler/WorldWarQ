@@ -38,7 +38,7 @@ static const double BULLET_VELOCITY = 100.0;
 static const double AIRCRAFT_EXHAUST_RATE_MAX = 100.0;
 
 // how long to stay put for player death (to show animation of explosion, etc.)
-static const double FREEZE_TIME = 2.0;
+static const double FREEZE_TIME = 3.0;
 
 // 7.5 degrees in radians
 static const double AI_RADIUS_SHOOTING_RANGE = 0.130899694;
@@ -96,8 +96,8 @@ R3Aircraft::R3Aircraft(void) :
   respawn_velocity(R3zero_vector),
   respawn_T(R3identity_matrix),
   respawn_thrust_magnitude(-1),
-  respawn_hitpoints(-1)
-
+  respawn_hitpoints(-1),
+  is_hit(false)
 {
   sources.resize(2);
 }
@@ -283,6 +283,7 @@ void R3Aircraft::
 HitAircraft(R3Scene *scene)
 {
   hitpoints--;
+  is_hit = true;
 
   // plane dies if hitpoints <= 0
   if (hitpoints <= 0)
@@ -496,7 +497,7 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
   double theta_rotated = atan2(vector_to_enemy_rotated.Y(), vector_to_enemy_rotated.X());
 
 
-  cout << phi_rotated << "\t" << theta_rotated << endl;
+//  cout << phi_rotated << "\t" << theta_rotated << endl;
 
   // shoot if aimed properly
   if (abs(theta_rotated) < AI_RADIUS_SHOOTING_RANGE && abs(phi_rotated - PI/2.0) < AI_RADIUS_SHOOTING_RANGE)
@@ -875,7 +876,17 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
     LoadMatrix(&aircraft->T);
 
     // Load material
-    if (aircraft->material) LoadMaterial(aircraft->material);
+    R3Rgb kd_backup(aircraft->material->kd);
+    if (aircraft->material) {
+        // if hit, flash white
+        if (aircraft->is_hit) {
+//           cout << "print" << endl;
+           aircraft->material->ks.SetRed(1);
+           aircraft->material->ks.SetBlue(1);
+           aircraft->material->ks.SetGreen(1);
+        }
+        LoadMaterial(aircraft->material);
+    }
 
     // Draw shape
     // don't draw if user is destroyed
@@ -883,6 +894,14 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
     {
       if (aircraft->mesh) aircraft->mesh->Draw();
       else { fprintf(stderr, "problem drawing mesh!"); exit(1); }
+    }
+
+    // Restore material
+    if (aircraft->is_hit) {
+        aircraft->is_hit = false;
+        aircraft->material->ks.SetRed(kd_backup.Red());
+        aircraft->material->ks.SetBlue(kd_backup.Blue());
+        aircraft->material->ks.SetGreen(kd_backup.Green());
     }
 
     glPopMatrix();

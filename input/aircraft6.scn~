@@ -1,0 +1,26 @@
+# the enemy aircraft is behind in front of the player-controlled aircraft.
+# good for debugging AI decisions / movement
+
+material  1 1 1  1 1 1    1 0 0   1 0 0  1 0 0  10 1 0
+
+
+# Player-controlled aircraft
+aircraft
+  0
+  aircraft1219_edited.off
+  75 5000 400
+  1 0 0
+  1 0.3 1 8 10 6
+  
+# AI aircraft
+aircraft
+  -1
+  aircraft1219_edited.off
+  50 5000 400
+  1 0 0
+  1 0.3 1 5 10 3
+
+
+mesh
+-1
+128_tri3.off
