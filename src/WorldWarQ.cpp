@@ -378,11 +378,11 @@ void LoadCamera(R3Camera *camera)
 
         /// ----
 
-        glPointSize(5);
-        glBegin(GL_POINTS);
-        glColor3d(1, 0, 0);
-        glVertex3d(camera_position[0], camera_position[1], camera_position[2]);
-        glEnd();
+//        glPointSize(5);
+//        glBegin(GL_POINTS);
+//        glColor3d(1, 0, 0);
+//        glVertex3d(camera_position[0], camera_position[1], camera_position[2]);
+//        glEnd();
 
         current_camera_position.SetX(camera_position[0]);
         current_camera_position.SetY(camera_position[1]);
@@ -1347,8 +1347,8 @@ void GLUTRedraw(void)
         int circle_y = GLUTwindow_height/2 + 7;
 
         double radius = 10;
-        //      if (camera_view == 3)
-        //          radius = 20;
+        if (camera_view == 3)
+            radius = 12;
 
         for (int i = 0; i < 360; i++)
         {
@@ -1363,7 +1363,6 @@ void GLUTRedraw(void)
         glEnd();
     }
 
-    //    glEnable(GL_BLEND);
     int map_width = 200;
     int map_height = map_width;
 
@@ -1374,9 +1373,6 @@ void GLUTRedraw(void)
     int bottom = map_height;
 
     // draw point at center of radar
-    //     glEnable(GL_POINT_SMOOTH);
-    //     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-
     glColor4f(0, 0, 1, 1);
     glPointSize(5);
     glBegin(GL_POLYGON);
@@ -2200,6 +2196,24 @@ void initSkyBox(int skybox_type)
         skybox[SKY_BACK] = loadTexBMP("bmp/alpine_front.bmp");
         skybox[SKY_UP] = loadTexBMP("bmp/alpine_top.bmp");
         skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+    }
+    else if (skybox_type == 4)
+    {
+        skybox[SKY_FRONT] = loadTexBMP("bmp/jajspace2_back.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("bmp/jajspace2_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("bmp/jajspace2_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("bmp/jajspace2_front.bmp");
+        skybox[SKY_UP] = loadTexBMP("bmp/jajspace2_top.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("bmp/jajspace2_top.bmp");
+    }
+    else if (skybox_type = 69)
+    {
+        skybox[SKY_FRONT] = loadTexBMP("bmp/bluefreeze_back.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("bmp/bluefreeze_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("bmp/bluefreeze_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("bmp/bluefreeze_front.bmp");
+        skybox[SKY_UP] = loadTexBMP("bmp/bluefreeze_top.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("bmp/bluefreeze_top.bmp");
     }
 }
 

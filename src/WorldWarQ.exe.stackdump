@@ -1,3 +1,3 @@
 Stack trace:
 Frame     Function  Args
-assertion "face_vertices.size() == 3" failed: file "WorldWarQ.cpp", line 695, function: void DrawGround(R3Scene*)
+assertion "scene->root->children.size() > 0" failed: file "WorldWarQ.cpp", line 682, function: void DrawGround(R3Scene*)
