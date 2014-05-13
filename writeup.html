@@ -226,13 +226,12 @@ TODO: create video of plane turning and moving around in each view.
     <TD vAlign=top align=left colspan="3">
     We implemented 5 different views, toggleable by the keys: 1, 2, 3, 4, and 5. <br> <br>
     
-    <li><b> '1': Bird's eye view: </b> this is the basic fixed camera view. (Camera position needs adjusting per scene).
+    <li><b> '1': Bird's eye view: </b> from above looking down on the aircraft. Can rotate with mouse.
     <li><b> '2': 1st person view: </b> from above and behind the aircraft. Different from '3' in that can see the 
     aircaft below you. Has crosshairs; good for aiming.
     <li><b> '3': 1st person view: </b> from nose of aircraft. Has crosshairs; good for aiming. <br>
-    <li><b> '4': 3rd person view: </b> from above and behind the aircraft. Adjusts well when aircraft
-    speeds up / slows down or rotates up/down/left/right. <br>
-    <li><b> '5': Rear view: </b> looking behind, from above and in front of aircraft.
+    <li><b> '4': 3rd person view: </b> from above and behind the aircraft, but is not at a fixed angle. Adjusts well when aircraft speeds up / slows down or maneuvers left/right/up/down. <br>
+    <li><b> '5': Rear view: </b> looking behind, from above and in front of aircraft. Useful when enemies are behind you.
     
     <br><br>
     Implementation: see the method "LoadCamera(... )" in WorldWarQ.cpp and the
@@ -261,9 +260,14 @@ TODO: create video of heads-up display
     <TD vAlign=top align=left colspan="3">
     We implemented the following features for our heads-up display: <br> <br>
     
-    <li><b> Minimap: </b> on top right of screen. <br>
-    <li><b> Static crosshairs: </b> in viewpoints 2 and 3 where bullets fire. <br>
-    <li><b> Current velocity, thrust level, and altitude: </b> on top left of the screen. <br>
+    <li><b> Minimap: </b> on top right of screen. Displays relative location of all aircraft on map. 
+        Also displays direction of each aircraft with a triangle. Player is blue, enemies are red.
+        Enemies out of the minimap range will be clipped to minimap edges. 
+        To implement this, for each enemy aircraft, we calculated displacement in world coordinates from player aircraft.
+        Transform this displacement into player aircraft modeling coordinates. Finally, remove least important dimension. Finding direction of enemy planes is similar, but involves additional transformations.
+    <br>
+    <li><b> Static crosshairs: </b> in viewpoints 2 and 3. Useful for aiming. <br>
+    <li><b> Current velocity, thrust percentage, and altitude: </b> on top left of the screen. <br>
     <li><b> Number of kills and deaths: </b> on bottom left of screen <br>
     <li><b> "Respawning in ___ seconds": </b> counts down after you die <br>
     
@@ -293,8 +297,7 @@ TODO: create video of heads-up display
   </TR>
   <TR>
     <TD vAlign=top align=left colspan="3">
-  We used procedural modelling to generate our terrain. We implemented a version of the diamond-square algorithm. First we used a python script to generate a flat NxN triangle mesh, where N is validated to be a power of 2. From there random heights are generated for the four corners. These four corners are used to interpolate a height value for the center of the mesh, onto which a random value is added. Then the midpoint heights between the four corners are calculated by averaging the two closest corner heights. No random value is added to these midpoint heights.
-  The algorithm then proceeds recursively through the four quadrants created by the corners, midpoints, and center until every vertex in the mesh has a height.
+  We used procedural modeling to generate our terrain. We implemented a version of the diamond-square algorithm. First we used a Python script to generate a flat NxN triangle mesh, where N is a power of 2. From there random heights are generated for the four corners. These four corners are used to interpolate a height value for the center of the mesh, onto which a random value is added. Then the midpoint heights between the four corners are calculated by averaging the two closest corner heights. The algorithm then proceeds recursively through the four quadrants created by the corners, midpoints, and center until every vertex in the mesh has a height. This process generates a terrain with random heights.
     </TD>
   </TR>
 </TABLE>
@@ -325,14 +328,15 @@ TODO: create video of heads-up display
     
     <li><b> Bullet hits aircraft: </b> aircraft's hitpoints decrease. If hitpoints == 0, explode and respawn. 
     Flash the aircraft red if hit. <br>
-    <li><b> Aircraft hits aircraft: </b> both aircrafts explode and rspawn. <br>
-    <li><b> Aircraft hits scene graph (ground): </b> aircraft explodes and respawns. <br><br>
+    <li><b> Aircraft hits aircraft: </b> both aircrafts explode and respawn. <br>
+    <li><b> Aircraft hits ground: </b> aircraft explodes and respawns. <br><br>
     
     Note: the only node in the scene graph is the ground mesh. Everything else is maintained
     separately. <br>
-    Note: we don't implement bullet hits scene to speed the game up. This is an "acceptable hack"
-    because once the bullet hits the scene, it goes through it and is no longer visible to the player. 
-    Also, the bullets have lifetimes of 10 seconds, so will be deleted soon.
+    Note: we don't implement bullet-ground collisions, because with large ground meshes this is expensive. 
+    This is an "acceptable hack"
+    because once the bullet hits the ground, it goes through it and is no longer visible to the player. 
+    Also, bullets have lifetimes of 10 seconds.
     
     <br><br>
     Implementation: see particle.cpp and R3Aircraft.cpp. The collision view is ~2/3 taken from 
@@ -365,13 +369,18 @@ TODO: create video of heads-up display
     <TD vAlign=top align=left colspan="3">
     
    The following objects use simulated dynamics: <br> <br>
-    
-    <li><b> "Hard mode" for aircrafts: </b> ------- TODO KYLE. <br>
-    <li><b> "Easy mode" for aircrafts: </b> pitch up/down and left/right. <br>
+
+    We simulate flight by applying a thrust force in the direction the aircraft is facing, and a drag force in the opposite direction. At any constant thrust, the aircraft will eventually reach terminal velocity. The aircraft is controlled by rolling left and right, and pitching up and down.
+    There are two modes of simulating aircraft flight dynamics: 
+    <li><b> "Easy mode": </b> ensures aircraft's velocity is in the same direction as the aircraft points. This gives the player more control. <br>   
+    <li><b> "Hard mode": </b> This implementation is more realistic, and does not ensure velocity is in the direction the aircraft points. This means the aircraft can "drift" if it makes a sharp turn, making control more difficult. <br>
     <li><b> Explosion particles: </b> update with integration techniques from Assignment 4.
     Updates velocity and acceleration with gravity. <br>
     <li><b> Bullet particles: </b> update with integration techniques from Assignment 4.
-    Assume no forces on them for ease of aiming / gameplay. <br>
+    Assume no forces on them for efficiency and ease of aiming / gameplay. <br>
+    
+    <br>
+    Note: no inter-particle forces are used because masses are negligible.
     
     <br><br>
     Implementation: see particle.cpp and R3Aircraft.cpp

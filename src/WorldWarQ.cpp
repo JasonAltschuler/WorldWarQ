@@ -1479,7 +1479,41 @@ void GLUTRedraw(void)
         GLUTDrawText(R3Point(GLUTwindow_width/2-50, GLUTwindow_height/2, 0), buffer);
     }
 
+    // draw health bar at bottom
+    int bar_length = 300;
+    int bar_height = 20;
+    int bar_left = GLUTwindow_width/3;
+    int bar_top = 0;
+    int bar_right = bar_left+bar_length;
+    int bar_bottom = bar_height;
 
+    double percentage = scene->Aircraft(0)->hitpoints * 1.0/scene->Aircraft(0)->respawn_hitpoints;
+    if (scene->Aircraft(0)->freeze_time >= 0) {
+        percentage = 0;
+    }
+
+    int bar_middle = (int) (percentage * bar_length + bar_left);
+
+    // draw first green bar
+
+    glColor3f(0, .4, 0);
+    glBegin(GL_QUADS);
+    glVertex2f(bar_middle, bar_top);
+    glVertex2f(bar_middle, bar_bottom);
+    glVertex2f(bar_left, bar_bottom);
+    glVertex2f(bar_left, bar_top);
+    glEnd();
+
+    // draw second bar
+//    if (percentage < 1){
+        glColor3f(.4, 0, 0);
+        glBegin(GL_QUADS);
+        glVertex2f(bar_right, bar_top);
+        glVertex2f(bar_right, bar_bottom);
+        glVertex2f(bar_middle, bar_bottom);
+        glVertex2f(bar_middle, bar_top);
+        glEnd();
+//    }
 
     // Making sure we can render 3d again
     glMatrixMode(GL_PROJECTION);
