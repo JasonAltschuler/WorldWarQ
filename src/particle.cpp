@@ -461,8 +461,8 @@ R3Intersection ComputeIntersectionWithAircrafts(R3Scene* scene, R3Ray ray, R3Par
     new_ray.InverseTransform(aircraft->T);
 
     // speed intersection check up by just intersecting with a box
-        R3Intersection aircraft_intersection = IntersectRayWithMesh(new_ray, aircraft->mesh, NULL);
-//    R3Intersection aircraft_intersection = IntersectRayWithBox(new_ray, &aircraft->mesh->bbox, NULL);
+//        R3Intersection aircraft_intersection = IntersectRayWithMesh(new_ray, aircraft->mesh, NULL);
+    R3Intersection aircraft_intersection = IntersectRayWithBox(new_ray, &aircraft->mesh->bbox, NULL);
     if (aircraft_intersection.IsHit())
       aircraft_intersection.aircraft = aircraft;
     aircraft_intersection.AssertValid();
