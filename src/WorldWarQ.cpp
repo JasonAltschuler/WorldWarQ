@@ -23,6 +23,23 @@
 #define SKY_UP 4
 #define SKY_DOWN 5
 
+
+////////////////////////////////////////////////////////////
+// Random Number Generator
+////////////////////////////////////////////////////////////
+
+static double
+RandomNumber(void)
+{
+#if defined(_WIN32)
+  int r1 = rand();
+  double r2 = ((double) rand()) / ((double) (RAND_MAX + 1));
+  return (r1 + r2) / ((double) (RAND_MAX + 1));
+#else
+  return drand48();
+#endif
+}
+
 ////////////////////////////////////////////////////////////
 // GLOBAL CONSTANTS
 ////////////////////////////////////////////////////////////
@@ -732,6 +749,12 @@ void DrawGround(R3Scene *scene)
                 LoadMaterial(texture_materials[DESERT]);
             else if (scene->skybox_type == 2)
                 LoadMaterial(texture_materials[OCEAN]);
+            else if (scene->skybox_type == 3) {
+                if (average_height < 1800)
+                    LoadMaterial(texture_materials[ROCK]);
+                else LoadMaterial(texture_materials[SNOW]);
+
+            }
             //            glColor4f(1.0f, 1.0f, 1.0f, dirt_weight);
             glColor4f(dirt_weight, dirt_weight, dirt_weight, 1);
 
@@ -2167,6 +2190,15 @@ void initSkyBox(int skybox_type)
         skybox[SKY_LEFT] = loadTexBMP("bmp/lostatseaday_left.bmp");
         skybox[SKY_BACK] = loadTexBMP("bmp/lostatseaday_front.bmp");
         skybox[SKY_UP] = loadTexBMP("bmp/lostatseaday_top.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+    }
+    else if (skybox_type == 3)
+    {
+        skybox[SKY_FRONT] = loadTexBMP("bmp/alpine_back.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("bmp/alpine_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("bmp/alpine_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("bmp/alpine_front.bmp");
+        skybox[SKY_UP] = loadTexBMP("bmp/alpine_top.bmp");
         skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
     }
 }
