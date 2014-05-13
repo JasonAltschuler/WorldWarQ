@@ -327,6 +327,12 @@ void LoadCamera(R3Camera *camera)
     // free view (default view if no toggle)
     if (camera_view == 1)
     {
+        R3Vector aircraft_world = scene->Aircraft(0)->Modeling_To_World(R3Vector(0,0,0));
+
+        camera->eye.SetX(aircraft_world.X());
+        camera->eye.SetY(aircraft_world.Y());
+        camera->eye.SetZ(aircraft_world.Z() + 50);
+
         R3Vector t = -(camera->towards);
         R3Vector& u = camera->up;
         R3Vector& r = camera->right;
@@ -398,7 +404,6 @@ void LoadCamera(R3Camera *camera)
         displacement_vec.Transform(player_aircraft->T);
         R3Vector camera_position = player_aircraft->Modeling_To_World(R3Vector(0, 0, 0)); // centroid of aircraft
         camera_position += displacement_vec;
-
 
         R3Vector t (-1, 0, 0);
         t.Transform(player_aircraft->T);
@@ -1764,6 +1769,8 @@ void GLUTKeyboardUp(unsigned char key, int x, int y)
 // Modified by Kyle on 5/4/14: I set W to be pitch_down and S to be pitch_up, because this is how flight simulators are typically controlled.
 void GLUTKeyboard(unsigned char key, int x, int y)
 {
+
+    R3Vector aircraft_world;
     // Invert y coordinate
     y = GLUTwindow_height - y;
 
@@ -1851,6 +1858,13 @@ void GLUTKeyboard(unsigned char key, int x, int y)
 
     case '1':
         camera_view = 1;
+        // reset camera
+//        aircraft_world = scene->Aircraft(0)->Modeling_To_World(R3Vector(0,0,0));
+//
+//        camera.eye.SetX(aircraft_world.X());
+//        camera.eye.SetY(aircraft_world.Y());
+//        camera.eye.SetZ(aircraft_world.Z() + 50);
+
         break;
 
     case '2':
@@ -1868,7 +1882,6 @@ void GLUTKeyboard(unsigned char key, int x, int y)
     case '5':
         camera_view = 5;
         break;
-
 
         //  case 'Q':
         //  case 'q':

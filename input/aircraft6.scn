@@ -6,7 +6,7 @@ material  1 0 0  1 0 0    1 0 0   1 0 0  1 0 0  10 1 0
 
 # Player-controlled aircraft
 aircraft
-  0
+  -1
   aircraft1219_edited.off
   75 5000 400
   1 0 0

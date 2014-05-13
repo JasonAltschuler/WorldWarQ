@@ -1,7 +1,7 @@
 # the enemy aircraft is behind in front of the player-controlled aircraft.
 # good for debugging AI decisions / movement
 
-material  1 1 1  1 1 1    1 0 0   1 0 0  1 0 0  10 1 0
+material  1 0 0  1 0 0    1 0 0   1 0 0  1 0 0  10 1 0
 
 
 # Player-controlled aircraft

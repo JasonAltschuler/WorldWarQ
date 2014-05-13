@@ -878,12 +878,12 @@ void RenderAircrafts(R3Scene *scene, double current_time, double delta_time)
     // Load material
     R3Rgb kd_backup(aircraft->material->kd);
     if (aircraft->material) {
-        // if hit, flash white
+        // if hit, flash red
         if (aircraft->is_hit) {
 //           cout << "print" << endl;
            aircraft->material->ks.SetRed(1);
-           aircraft->material->ks.SetBlue(1);
-           aircraft->material->ks.SetGreen(1);
+           aircraft->material->ks.SetBlue(0);
+           aircraft->material->ks.SetGreen(0);
         }
         LoadMaterial(aircraft->material);
     }
