@@ -4,7 +4,7 @@
 # Player-controlled aircraft
 aircraft
   -1
-  aircraft1219_edited.off
+  ../off/bomber.off
   80 5010 400
   1 0 0
   1 0.3 1 8 10 10
@@ -12,7 +12,7 @@ aircraft
 # AI aircraft
 aircraft
   -1
-  aircraft1219_edited.off
+  ../off/bomber.off
   50 5000 400
   1 0 0
   1 0.3 1 8 10 3
@@ -20,4 +20,4 @@ aircraft
 
 mesh
 -1
-128_tri3.off
+../128_tri3.off
