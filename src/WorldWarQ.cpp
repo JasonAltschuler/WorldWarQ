@@ -2158,6 +2158,8 @@ ReadScene(const char *filename)
         return NULL;
     }
 
+    BackgroundMusic_Init();
+
     // Read file
     if (!scene->Read(filename)) {
         fprintf(stderr, "Unable to read scene from %s\n", filename);

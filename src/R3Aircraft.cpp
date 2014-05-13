@@ -76,6 +76,30 @@ RandomNumber(void)
 
 
 ////////////////////////////////////////////////////////////
+// INITIALIZE BACKGROUND MUSIC
+////////////////////////////////////////////////////////////
+
+
+void BackgroundMusic_Init(void)
+{
+#ifdef __APPLE__
+  // background music for the game -- only set up once!
+  static bool background_sounds_init = false;
+
+  // initialize thrust sounds if not done so already (only done once!)
+  if (!background_sounds_init)
+  {
+
+    cout << "Got here" << endl;
+    background_sounds_init = true;
+    engine->play2D("../music/music.ogg", true);
+  }
+#endif
+}
+
+
+
+////////////////////////////////////////////////////////////
 // Constructor
 ////////////////////////////////////////////////////////////
 
@@ -113,6 +137,7 @@ AssertValid(void)
   assert(thrust_magnitude >= 0);
   assert(max_thrust >= 0);
 }
+
 
 
 ////////////////////////////////////////////////////////////
@@ -179,7 +204,7 @@ FireBullet(R3Scene *scene)
   engine->setListenerPosition(irrklang::vec3df(pos_player_aircraft.X(), pos_player_aircraft.Y(), pos_player_aircraft.Z()),
         irrklang::vec3df(dir_player_aircraft.X(), dir_player_aircraft.Y(), dir_player_aircraft.Z()));
 
-  irrklang::ISound* bullet_sound = engine->play3D("../wav/shot.wav", irrklang::vec3df(bullet_origin_world.X(),
+  irrklang::ISound* bullet_sound = engine->play3D("../music/shot.wav", irrklang::vec3df(bullet_origin_world.X(),
       bullet_origin_world.Y(), bullet_origin_world.Z()), false, false, true);
 
   if (bullet_sound)
@@ -453,7 +478,7 @@ Explode(R3Scene *scene, bool is_collision_scene)
   engine->setListenerPosition(irrklang::vec3df(pos_player_aircraft.X(), pos_player_aircraft.Y(), pos_player_aircraft.Z()),
       irrklang::vec3df(dir_player_aircraft.X(), dir_player_aircraft.Y(), dir_player_aircraft.Z()));
 
-  irrklang::ISound* music = engine->play3D("../wav/explosion.wav", irrklang::vec3df(center.X(),
+  irrklang::ISound* music = engine->play3D("../music/explosion.wav", irrklang::vec3df(center.X(),
       center.Y(), center.Z()), false, false, true);
 
   if (music)
@@ -827,7 +852,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
       pos_other_aircraft = other_aircraft->Modeling_To_World(pos_other_aircraft);
 
       bool should_loop = true;
-      irrklang::ISound* thrust_sound = engine->play3D("../wav/thrust.wav", irrklang::vec3df(pos_other_aircraft.X(),
+      irrklang::ISound* thrust_sound = engine->play3D("../music/thrust.wav", irrklang::vec3df(pos_other_aircraft.X(),
           pos_other_aircraft.Y(), pos_other_aircraft.Z()), should_loop, false, true);
 
       if (!thrust_sound)

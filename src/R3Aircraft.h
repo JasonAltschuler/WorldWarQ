@@ -8,6 +8,9 @@ struct R3Scene;
 struct R3Material;
 class R3ParticleSource;
 
+// Set up background music
+void BackgroundMusic_Init(void);
+
 struct R3Aircraft {
   R3Aircraft(void);
 
@@ -66,7 +69,6 @@ struct R3Aircraft {
 // Update and render aircrafts
 void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int integration_type);
 void RenderAircrafts(R3Scene *scene, double current_time, double delta_time);
-
 
 inline R3Vector R3Aircraft::
 Modeling_To_World(R3Vector vector_modeling_coordinates)
