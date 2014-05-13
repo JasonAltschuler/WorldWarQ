@@ -1,19 +1,17 @@
-NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SECOND CATEGORY!
-
-
 /// =================== TODO ================ ///
 
 
-Jason:
-Make more scenes for playing
-Work on writeup / presentation
-
+Kyle:
+Make 2-5 min video of gameplay. Put at top of writeup.
+Make interesting scenes
 
 Daway:
-Make gifs
-Start presentation
-Work on writeup
+Add tags to scene (5 minutes)
 
+
+Everyone:
+Work on presentation
+SUBMIT
 
 
 

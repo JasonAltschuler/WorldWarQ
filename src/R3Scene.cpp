@@ -702,7 +702,6 @@ Read(const char *filename, R3Node *node)
       node->parent = group_nodes[depth];
     }
 
-    // TODO: add to writeup. Changed.
     /* aircraft
      *    mat_id
      *    meshname
