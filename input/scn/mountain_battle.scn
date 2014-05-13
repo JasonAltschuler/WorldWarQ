@@ -1,0 +1,53 @@
+# Mountain Battle
+
+#  0 is grass with mountains
+#  1 is desert
+#  2 is sea
+#  3 is mountains
+#  4 is space
+#  69 is purple land
+
+map_type
+3
+
+#  aircraft
+#     mat_id
+#     meshname
+#     pos_x, pos_y, pos_z
+#     vel_x, vel_, vel_z
+#     mass, drag, thrust_magnitude, max_thrust, firing_rate, hitpoints
+
+# red
+material  .4 .2 .2 .4 .2 .2 0 0 0  0 0 0  .01 .01 .01  10 1 0
+# blue
+material  .2 .3 .2 .2 .3 .2 0 0 0  0 0 0  .01 .01 .01  10 1 0
+# brown
+material  .4 .3 .2 .4 .3 .2 0 0 0  0 0 0  .01 .01 .01  10 1 0
+
+aircraft
+  2
+  ../off/biplane.off
+  200 5000 400
+  1 0 0
+  1.5 0.2 1 5 5 8
+
+
+# Dragon
+aircraft
+  1
+  ../off/dragon.off
+  500 5000 400
+  1 0 0
+  1.5 0.2 1 3 20 8
+
+# Dragon
+aircraft
+  0
+  ../off/dragon.off
+  400 5000 500
+  1 0 0
+  1.5 0.2 1 3 20 8
+
+mesh
+-1
+../64_new.off

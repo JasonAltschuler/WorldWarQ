@@ -1,0 +1,63 @@
+# Desert Storm
+# biplane vs 3 biplanes
+
+#  0 is grass with mountains
+#  1 is desert
+#  2 is sea
+#  3 is mountains
+#  4 is space
+#  69 is purple land
+
+map_type
+1
+
+#  aircraft
+#     mat_id
+#     meshname
+#     pos_x, pos_y, pos_z
+#     vel_x, vel_, vel_z
+#     mass, drag, thrust_magnitude, max_thrust, firing_rate, hitpoints
+
+# red
+material  .4 .2 .2 .4 .2 .2 0 0 0  0 0 0  .01 .01 .01  10 1 0
+# blue
+material  .2 .2 .4 .2 .2 .4 0 0 0  0 0 0  .01 .01 .01  10 1 0
+# brown
+material  .4 .3 .2 .4 .3 .2 0 0 0  0 0 0  .01 .01 .01  10 1 0
+
+# Biplane
+aircraft
+  1
+  ../off/biplane.off
+  50 5000 300
+  1 0 0
+  1.5 0.2 1 5 5 8
+
+# Biplane
+aircraft
+  0
+  ../off/biplane.off
+  50 5100 300
+  1 0 0
+  1.5 0.2 1 5 5 8
+
+# Biplane
+aircraft
+  0
+  ../off/biplane.off
+  50 4900 300
+  1 0 0
+  1.5 0.2 1 5 5 8
+
+# Biplane
+aircraft
+  0
+  ../off/biplane.off
+  150 5000 300
+  1 0 0
+  1.5 0.2 1 5 5 8
+
+
+mesh
+-1
+../128_tri3.off

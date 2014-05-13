@@ -1,4 +1,6 @@
-# F-22 Raptor
+# Glacier
+
+material  .4 .5 .4 .4 .5 .4 .4 .5 .4   0 0 0  .0 .1 .0  10 1 0
 
 #  0 is grass with mountains
 #  1 is desert
@@ -8,7 +10,7 @@
 #  69 is purple land
 
 map_type
-1
+2
 
 # Player-controlled aircraft
 #      aircraft
@@ -24,10 +26,30 @@ material  .5 .5 .5 .5 .5 .5 0 0 0  0 0 0  .01 .01 .01  10 1 0
 aircraft
   0
   ../off/raptor.off
-  50 5000 1000
+  150 2000 1000
+  1 0 0
+  1.5 0.2 1 15 20 10
+  
+  
+# Raptor
+material  .5 .5 .5 .5 .5 .5 0 0 0  0 0 0  .01 .01 .01  10 1 0
+aircraft
+  1
+  ../off/raptor.off
+  250 2400 1000
+  1 0 0
+  1.5 0.2 1 15 20 10
+  
+  
+# Raptor
+material  .5 .5 .5 .5 .5 .5 0 0 0  0 0 0  .01 .01 .01  10 1 0
+aircraft
+  2
+  ../off/raptor.off
+  50 2000 700
   1 0 0
   1.5 0.2 1 15 20 10
 
 mesh
 -1
-../128_tri3.off
+../64_new.off

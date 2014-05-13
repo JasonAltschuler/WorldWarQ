@@ -1,7 +1,5 @@
 # Mountain
 
-material  .4 .5 .4 .4 .5 .4 .4 .5 .4   0 0 0  .0 .1 .0  10 1 0
-
 #  0 is grass with mountains
 #  1 is desert
 #  2 is sea
@@ -10,7 +8,7 @@ material  .4 .5 .4 .4 .5 .4 .4 .5 .4   0 0 0  .0 .1 .0  10 1 0
 #  69 is purple land
 
 map_type
-3
+1
 
 # Player-controlled aircraft
 #      aircraft
@@ -21,16 +19,15 @@ map_type
 #     *    mass, drag, thrust_magnitude, max_thrust, firing_rate, hitpoints
 #     */
 
+# P-38 Lightning
+material  .2 .3 .2 .2 .3 .2 0 0 0  0 0 0  .01 .01 .01  10 1 0
 aircraft
   0
-  ../off/dragon.off
+  ../off/glider.off
   50 5000 1000
   1 0 0
-  1 0.3 1 8 50 10
-  
-# AI aircra
-
+  .8 0.2 1 7 10 8
 
 mesh
 -1
-128_sharp_tri.off
+../128_tri3.off
