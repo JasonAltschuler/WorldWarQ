@@ -25,9 +25,9 @@ Daway Chou-Ren, dchouren<BR>
 <TABLE>
 <TBODY>
 <TR>
-    <TD vAlign=top align=middle>
-    <video id="demos/gameplay_demo.mp4" src="demos/gameplay_demo.mp4" controls width=1000 height=750></video> <br>
-    <A href="demos/gameplay_demo.mp4">gameplay_demo.mp4</A>
+<TD vAlign=top align=middle>
+        <video id="demos/WorldWarQ_gameplay_demo.mp4" src="demos/WorldWarQ_gameplay_demo.mp4" controls width=850 height=600></video><br>
+    <A href="demos/WorldWarQ_gameplay_demo.mp4">WorldWarQ_gameplay_demo.mp4</A>
     </TD>
 </TR>
 <TR>
@@ -587,11 +587,11 @@ Implementation: see R3Aircraft.cpp
 In cos426_final_project/src/ <u>make clean</u> and <u>make all</u>. This will create
 an executable src/WorldWarQ. In the src/ folder, simply run: <u>./WorldWarQ ../input/scn/some_scene.scn</u> <br><br>
 A few battle scenes we recommend are:
-<li> battleofbritian.scn <br>
+<li> battle_of_britain.scn <br>
 <li> hijack.scn <br>
 <li> mountain_battle.scn <br>
 <li> star_wars.scn <br>
-<li> sea.scn
+<li> desert_storm.scn
 
 <br><br>
 Some other fun scenes with different aircrafts are:
@@ -649,7 +649,9 @@ in the aircraft's modeling coordinate system, the aircraft is pointed in +x dire
 in y direction, and z direction up. 
 <br><br>
 Mass and drag are used for calculating forces on the aircraft to make movement more realistic. 
-Thrust_magnitude and max_thrust are the initial and maximum values for thrust. Firing_rate
+Note that increased mass of aircraft decreases the rate at which the aircraft can pitch and roll. This
+models moment of inertia, and provides a more realistic simulation. Thrust_magnitude and max_thrust are
+the initial and maximum values for thrust. Firing_rate
 is the number of bullets per second the aircraft can fire. Hitpoints is an integer
 representing the number of bullets it takes to destroy it.
   
