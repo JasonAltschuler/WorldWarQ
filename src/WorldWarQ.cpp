@@ -27,7 +27,6 @@
 // GLOBAL CONSTANTS
 ////////////////////////////////////////////////////////////
 
-// XXX: Note when I created the videos, I commented out line 20 and uncommented line 21
 static const double VIDEO_FRAME_DELAY = 1./25.; // 25 FPS
 //static const double VIDEO_FRAME_DELAY = 1./100.; // 100 FPS
 static const double METERS_PER_UNIT = 7;
@@ -964,8 +963,6 @@ void DrawParticlesAndAircrafts(R3Scene *scene)
     // time passed since starting
     double delta_time = current_time - previous_time;
 
-    // XXX: Note that when I created the videos, I commented out lines 563-570 and uncommented line 571
-
     if (save_video) { // in video mode, the time that passes only depends on the frame rate ...
         delta_time = VIDEO_FRAME_DELAY;
         // ... but we need to keep track how much time we gained and lost so that we can arbitrarily switch back and forth ...
@@ -1816,7 +1813,6 @@ void GLUTKeyboard(unsigned char key, int x, int y)
         show_particle_sources_and_sinks = !show_particle_sources_and_sinks;
         break;
 
-        // TODO: Add documentation for all commands!!!
     case 'W':
     case 'w':
         pitch_down = 1;

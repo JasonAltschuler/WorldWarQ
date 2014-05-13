@@ -125,6 +125,9 @@ We have implemented the following features:
 <H3><A name="requiredfeatures"> User Input </A></H3>
 <!------------------------------------------------------------------------> 
 
+TODO: upload
+1. basic controls
+
 <TABLE>
 <TBODY>
 <TR>
@@ -132,14 +135,37 @@ We have implemented the following features:
        <A href="output/user_input_1.gif"><IMG  width=256 src="output/user_input_1.gif"></A><BR>       
        <A href="input/aircraft1.scn">aircraft1.scn</A>
     </TD>
-    <TD vAlign=top align=middle>
-       <A href="output/user_input_2.gif"><IMG width=256  src="output/user_input_2.gif"></A><BR>       
-       <A href="input/aircraft1.scn">aircraft1.scn</A>
-    </TD> 
 </TR>
 <TR>
     <TD vAlign=top align=left colspan="3">
-  Description
+  The following keyboards are implemented:
+  
+  <br> <br> Airplane actions: all of these keys can be held down for constant action rather than
+  simple pressing/toggling
+    <li><b> 'W' or 'w' (*): </b> pitch down <br>
+    <li><b> 'S' or 's' (*): </b> pitch up <br>
+    <li><b> 'A' or 'a' (*): </b> roll left <br>
+    <li><b> 'D' or 'd' (*): </b> roll right <br>
+    <li><b> 'J' or 'j' (*): </b> thrust forward <br>
+    <li><b> 'K' or 'k' (*): </b> brake backward <br>
+    <li><b> [space] (*): </b> fire bullet <br><br>
+    
+  <br> Camera views (see "camera views" sections for more info)
+    <li><b> '1': </b> camera view 1: bird's eye view <br>
+    <li><b> '2': </b> camera view 2: first person view 1 <br>
+    <li><b> '3': </b> camera view 3: first person view 2 <br>
+    <li><b> '4': </b> camera view 4: third person view <br>
+    <li><b> '5': </b> camera view 5: rear view <br>
+    
+  <br> Miscellaneous
+    <li><b> 'H' or 'h': </b> hard mode (for gods). More realistic plane movement (drifting, etc.). 
+    See "simulated dynamics" section below for more info <br>
+    <li><b> [escape]: </b> quit game (for the weak of heart) <br>
+    
+    
+
+    <br> <br> Implementation: see the methods "GLUTKeyboardUp(...)" and "GLUTKeyboard(...)"
+
     </TD>
   </TR>
 </TABLE>
@@ -156,23 +182,45 @@ We have implemented the following features:
 <TBODY>
 <TR>
     <TD vAlign=top align=middle>
-       <A href="output/computer_control_1.gif"><IMG  width=256 src="output/computer_control_1.gif"></A><BR>       
-       <A href="input/aircraft1.scn">aircraft1.scn</A>
+        <video id="demos/AI_1.mp4" src="demos/AI_1.mp4" controls width=850 height=600></video>
     </TD>
     <TD vAlign=top align=middle>
-       <A href="output/computer_control_2.gif"><IMG width=256  src="output/computer_control_2.gif"></A><BR>       
-       <A href="input/aircraft1.scn">aircraft1.scn</A>
-    </TD> 
+        <video id="demos/AI_2.mp4" src="demos/AI_2.mp4" controls width=850 height=600></video>
+    </TD>
 </TR>
 <TR>
     <TD vAlign=top align=left colspan="3">
-  Description
+    All but one aircraft are controlled by AI. The current implementation has all AI airplanes
+    versus the player-controlled aircraft. So every frame, each AI plane does "basically" ("basically"
+    see note below on boundary cases) the following. Denote by 'enemy' the player's aircraft,
+    and 'AI' the AI plane:
+    
+    <li><b> Convert to spherical coordinates: </b> enemy in enemy's modeling coordinates -->
+    enemy in world coordinates --> enemy in AI's world coordinates (cartesian) --> enemy in AI's world
+    modeling coordinates (cartesian) --> enemy in AI's coordinates (spherical) <br>
+    <li><b> Fire bullet at enemy: </b> if theta within epsilon of 0 and phi within epsilon of PI/2 <br>
+    <li><b> Roll left or right to aim at enemy: </b> do nothing if abs(theta) < epsilon. Else, roll right
+    if theta < 0, left if theta > 0. (See note below for boundary cases.) <br>
+    <li><b> Pitch up or down to aim at enemy: </b> do nothing if phi is within epsilon of PI/2. Else, pitch up
+    if phi < PI/2, pitch down if phi > PI/2. (See note below for boundary cases.) <br>
+    <li><b> Speed up or slow down based on enemy distance </b> If velocity below some threshold, thrust forward. 
+    If above some other threshold, brake backwards <br>
+    
+    <br>
+    Note: there are a few boundary cases. One of them is when AI is moving perpendicular to enemy's trajectory.
+    With the above primitive implementation, the AI would not turn and shoot, but instead keep moving perpendicular
+    to enemy (and accelerate in that wrong direction if sufficiently far from enemy). To get around this,
+    we implemented a few extra boundary-case "rules" for the AI (see code).
+    
+    
+    <br> <br>
+    Implementation details: see the method "AI_decision(...)" in R3Aircraft.cpp
+  
     </TD>
   </TR>
 </TBODY>
 </TABLE>
 
-Comments about the implementation, peculiarities, etc.
 
 <BR><BR>
 </ul>
@@ -191,6 +239,11 @@ Comments about the implementation, peculiarities, etc.
 <H3><A name="requiredfeatures"> Texture Mapping </A></H3>
 <!------------------------------------------------------------------------> 
 
+TODO: Put the following gifs in:
+1. texture_dirt
+2. texture_desert
+3. texture_ice
+
 <TABLE cellSpacing=0 cellPadding=10 border=0>
 <TBODY>
   <TR>
@@ -201,7 +254,7 @@ Comments about the implementation, peculiarities, etc.
   </TR>
   <TR>
     <TD vAlign=top align=left colspan="3">
-  Texture mapping was attempted by modifying the LoadMaterial call in particleview.cpp. Four textures were used to texture our terrain triangle mesh: snow, dirt, grass, and rock. For "cliffs" in the terrain (steep mesh faces), a rock texture was applied. Otherwise, snow, dirt, and grass were used based on the average vertex height of the mesh face. Texture materials were initialized in Draw().
+  Texture mapping was attempted by modifying the LoadMaterial call in WorldWarQ.cpp. Four textures were used to texture our terrain triangle mesh: snow, dirt, grass, and rock. For "cliffs" in the terrain (steep mesh faces), a rock texture was applied. Otherwise, snow, dirt, and grass were used based on the average vertex height of the mesh face. Texture materials were initialized in Draw().
     </TD>
   </TR>
   </TABLE>
@@ -212,27 +265,35 @@ Comments about the implementation, peculiarities, etc.
 <H3><A name="requiredfeatures"> Multiple Views </A></H3>
 <!------------------------------------------------------------------------> 
 
-TODO: create video of plane turning and moving around in each view. 
-
 <TABLE>
 <TBODY>
   <TR>
     <TD vAlign=top align=middle>
-       <A href="output/front_view.jpg"><IMG width=256 src="output/front_view.jpg"></A><BR>       
-       <A href="input/aircraft1.scn">aircraft1.scn</A>
+        <video id="demos/view_1.mp4" src="demos/view_1.mp4" controls width=850 height=600></video>
+    </TD>
+    <TD vAlign=top align=middle>
+        <video id="demos/view_2.mp4" src="demos/view_2.mp4" controls width=850 height=600></video>
+    </TD>
+    <TD vAlign=top align=middle>
+        <video id="demos/view_3.mp4" src="demos/view_3.mp4" controls width=850 height=600></video>
+    </TD>
+    <TD vAlign=top align=middle>
+        <video id="demos/view_4.mp4" src="demos/view_4.mp4" controls width=850 height=600></video>
+    </TD>
+    <TD vAlign=top align=middle>
+        <video id="demos/view_5.mp4" src="demos/view_5.mp4" controls width=850 height=600></video>
     </TD>
   </TR>
   <TR>
     <TD vAlign=top align=left colspan="3">
     We implemented 5 different views, toggleable by the keys: 1, 2, 3, 4, and 5. <br> <br>
     
-    <li><b> '1': Bird's eye view: </b> this is the basic fixed camera view. (Camera position needs adjusting per scene).
+    <li><b> '1': Bird's eye view: </b> from above looking down on the aircraft. Can rotate with mouse.
     <li><b> '2': 1st person view: </b> from above and behind the aircraft. Different from '3' in that can see the 
     aircaft below you. Has crosshairs; good for aiming.
     <li><b> '3': 1st person view: </b> from nose of aircraft. Has crosshairs; good for aiming. <br>
-    <li><b> '4': 3rd person view: </b> from above and behind the aircraft. Adjusts well when aircraft
-    speeds up / slows down or rotates up/down/left/right. <br>
-    <li><b> '5': Rear view: </b> looking behind, from above and in front of aircraft.
+    <li><b> '4': 3rd person view: </b> from above and behind the aircraft, but is not at a fixed angle. Adjusts well when aircraft speeds up / slows down or maneuvers left/right/up/down. <br>
+    <li><b> '5': Rear view: </b> looking behind, from above and in front of aircraft. Useful when enemies are behind you.
     
     <br><br>
     Implementation: see the method "LoadCamera(... )" in WorldWarQ.cpp and the
@@ -248,7 +309,11 @@ TODO: create video of plane turning and moving around in each view.
 <H3><A name="requiredfeatures"> On-Screen Control Panel </A></H3>
 <!------------------------------------------------------------------------> 
 
-TODO: create video of heads-up display
+
+TODO: Put the following gifs in:
+1. heads_up_display
+
+
 <TABLE>
 <TBODY>
   <TR>
@@ -261,9 +326,14 @@ TODO: create video of heads-up display
     <TD vAlign=top align=left colspan="3">
     We implemented the following features for our heads-up display: <br> <br>
     
-    <li><b> Minimap: </b> on top right of screen. <br>
-    <li><b> Static crosshairs: </b> in viewpoints 2 and 3 where bullets fire. <br>
-    <li><b> Current velocity, thrust level, and altitude: </b> on top left of the screen. <br>
+    <li><b> Minimap: </b> on top right of screen. Displays relative location of all aircraft on map. 
+        Also displays direction of each aircraft with a triangle. Player is blue, enemies are red.
+        Enemies out of the minimap range will be clipped to minimap edges. 
+        To implement this, for each enemy aircraft, we calculated displacement in world coordinates from player aircraft.
+        Transform this displacement into player aircraft modeling coordinates. Finally, remove least important dimension. Finding direction of enemy planes is similar, but involves additional transformations.
+    <br>
+    <li><b> Static crosshairs: </b> in viewpoints 2 and 3. Useful for aiming. <br>
+    <li><b> Current velocity, thrust percentage, and altitude: </b> on top left of the screen. <br>
     <li><b> Number of kills and deaths: </b> on bottom left of screen <br>
     <li><b> "Respawning in ___ seconds": </b> counts down after you die <br>
     
@@ -278,6 +348,11 @@ TODO: create video of heads-up display
 <!------------------------------------------------------------------------> 
 <H3><A name="requiredfeatures"> Procedural Modeling </A></H3>
 <!------------------------------------------------------------------------> 
+TODO: MAKE A GIF WHERE GROUND ISN'T TEXTURE MODELED
+1. procedural_map_1: 128_tri2.off
+2. procedural_map_2: 128_sharp.off
+3. procedural_map_3: 128_tri3.off
+
 
 <TABLE>
 <TBODY>
@@ -293,8 +368,7 @@ TODO: create video of heads-up display
   </TR>
   <TR>
     <TD vAlign=top align=left colspan="3">
-  We used procedural modelling to generate our terrain. We implemented a version of the diamond-square algorithm. First we used a python script to generate a flat NxN triangle mesh, where N is validated to be a power of 2. From there random heights are generated for the four corners. These four corners are used to interpolate a height value for the center of the mesh, onto which a random value is added. Then the midpoint heights between the four corners are calculated by averaging the two closest corner heights. No random value is added to these midpoint heights.
-  The algorithm then proceeds recursively through the four quadrants created by the corners, midpoints, and center until every vertex in the mesh has a height.
+  We used procedural modeling to generate our terrain. We implemented a version of the diamond-square algorithm. First we used a Python script to generate a flat NxN triangle mesh, where N is a power of 2. From there random heights are generated for the four corners. These four corners are used to interpolate a height value for the center of the mesh, onto which a random value is added. Then the midpoint heights between the four corners are calculated by averaging the two closest corner heights. The algorithm then proceeds recursively through the four quadrants created by the corners, midpoints, and center until every vertex in the mesh has a height. This process generates a terrain with random heights.
     </TD>
   </TR>
 </TABLE>
@@ -309,12 +383,18 @@ TODO: create video of heads-up display
 <TBODY>
   <TR>
     <TD vAlign=top align=middle>
-       <A href="output/collision_1.gif"><IMG width=256 src="output/collision_1.gif"></A><BR>       
-       <A href="input/aircraft1.scn">aircraft1.scn</A>
+        <video id="demos/bullet-aircraft" src="demos/AI_1.mp4" controls width=850 height=600></video>
     </TD>
     <TD vAlign=top align=middle>
-       <A href="output/collision_2.gif"><IMG width=256 src="output/collision_@.gif"></A><BR>       
-       <A href="input/aircraft1.scn">aircraft1.scn</A>
+        <video id="demos/aircraft-aircraft_collisions.mp4" src="demos/aircraft-aircraft_collisions.mp4" controls width=850 height=600></video>
+    </TD>
+    <TD vAlign=top align=middle>
+       <A href="demos/aircraft-ground.gif"><IMG width=360 src="demos/aircraft-ground.gif"></A><BR>       
+       <A href="aircraft-ground.gif">aircraft-ground.gif</A>
+    </TD>
+     <TD vAlign=top align=middle>
+       <A href="demos/aircraft-aircraft.gif"><IMG width=360 src="demos/aircraft-aircraft.gif"></A><BR>       
+       <A href="aircraft-aircraft.gif">aircraft-aircraft.gif</A>
     </TD>
 </TR>
 <TR>
@@ -325,14 +405,15 @@ TODO: create video of heads-up display
     
     <li><b> Bullet hits aircraft: </b> aircraft's hitpoints decrease. If hitpoints == 0, explode and respawn. 
     Flash the aircraft red if hit. <br>
-    <li><b> Aircraft hits aircraft: </b> both aircrafts explode and rspawn. <br>
-    <li><b> Aircraft hits scene graph (ground): </b> aircraft explodes and respawns. <br><br>
+    <li><b> Aircraft hits aircraft: </b> both aircrafts explode and respawn. <br>
+    <li><b> Aircraft hits ground: </b> aircraft explodes and respawns. <br><br>
     
     Note: the only node in the scene graph is the ground mesh. Everything else is maintained
     separately. <br>
-    Note: we don't implement bullet hits scene to speed the game up. This is an "acceptable hack"
-    because once the bullet hits the scene, it goes through it and is no longer visible to the player. 
-    Also, the bullets have lifetimes of 10 seconds, so will be deleted soon.
+    Note: we don't implement bullet-ground collisions, because with large ground meshes this is expensive. 
+    This is an "acceptable hack"
+    because once the bullet hits the ground, it goes through it and is no longer visible to the player. 
+    Also, bullets have lifetimes of 10 seconds.
     
     <br><br>
     Implementation: see particle.cpp and R3Aircraft.cpp. The collision view is ~2/3 taken from 
@@ -348,6 +429,13 @@ TODO: create video of heads-up display
 <!------------------------------------------------------------------------> 
 <H3><A name="requiredfeatures"> Simulated Dynamics </A></H3>
 <!------------------------------------------------------------------------> 
+
+TODO: Put the following gifs in:
+1. basic_airplane_movement
+2. easy_mode TODO: kyle
+3. hard_mode TODO: kyle
+4. bullets_and_explosions (needs editing at beginning)
+
 
 <TABLE>
 <TBODY>
@@ -365,13 +453,18 @@ TODO: create video of heads-up display
     <TD vAlign=top align=left colspan="3">
     
    The following objects use simulated dynamics: <br> <br>
-    
-    <li><b> "Hard mode" for aircrafts: </b> ------- TODO KYLE. <br>
-    <li><b> "Easy mode" for aircrafts: </b> pitch up/down and left/right. <br>
+
+    We simulate flight by applying a thrust force in the direction the aircraft is facing, and a drag force in the opposite direction. At any constant thrust, the aircraft will eventually reach terminal velocity. The aircraft is controlled by rolling left and right, and pitching up and down.
+    There are two modes of simulating aircraft flight dynamics: 
+    <li><b> "Easy mode": </b> ensures aircraft's velocity is in the same direction as the aircraft points. This gives the player more control. <br>   
+    <li><b> "Hard mode": </b> This implementation is more realistic, and does not ensure velocity is in the direction the aircraft points. This means the aircraft can "drift" if it makes a sharp turn, making control more difficult. <br>
     <li><b> Explosion particles: </b> update with integration techniques from Assignment 4.
     Updates velocity and acceleration with gravity. <br>
     <li><b> Bullet particles: </b> update with integration techniques from Assignment 4.
-    Assume no forces on them for ease of aiming / gameplay. <br>
+    Assume no forces on them for efficiency and ease of aiming / gameplay. <br>
+    
+    <br>
+    Note: no inter-particle forces are used because masses are negligible.
     
     <br><br>
     Implementation: see particle.cpp and R3Aircraft.cpp
@@ -383,6 +476,58 @@ TODO: create video of heads-up display
 
 <HR><BR>
 <HR><BR>
+
+
+<!------------------------------------------------------------------------> 
+<H3><A name="requiredfeatures"> Advanced image-based techniques </A></H3>
+<!------------------------------------------------------------------------> 
+
+TODO: Put the following gifs in:
+1. basic_airplane_movement
+2. easy_mode TODO: kyle
+3. hard_mode TODO: kyle
+4. bullets_and_explosions (needs editing at beginning)
+
+
+<TABLE>
+<TBODY>
+  <TR>
+    <TD vAlign=top align=middle>
+       <A href="output/dynamics_1.gif"><IMG width=256 src="output/dynamics_1.gif"></A><BR>             
+       <A href="input/aircraft1.scn">aircraft1.scn</A><BR>
+    </TD>
+  <TD vAlign=top align=middle>
+       <A href="output/dynamics_2.gif"><IMG width=256 src="output/dynamics_2.gif"></A><BR>             
+       <A href="input/aircraft1.scn">aircraft1.scn</A><BR>
+    </TD>
+  </TR>
+  <TR>
+    <TD vAlign=top align=left colspan="3">
+    
+  TODO: WRITE SOMETHING for new ones
+    
+    </TD>
+  </TR>
+</TBODY>
+</TABLE>
+
+<HR><BR>
+<HR><BR>
+
+<!------------------------------------------------------------------------> 
+<H3><A name="requiredfeatures"> Sound </A></H3>
+<!------------------------------------------------------------------------> 
+
+We used the irrklang sound library to implement sounds. We only implemented it
+for Apple computers due to OS compatibility issues (of course, World War Q still runs
+on other systems; it just that sound won't play). The following sounds are used:
+<br> <br>
+
+    <li><b> "asdasdf": </b> ensures aircraft's velocity is in the same direction as the aircraft points. This gives the player more control. <br>   
+    <li><b> "Easy mode": </b> ensures aircraft's velocity is in the same direction as the aircraft points. This gives the player more control. <br>   
+   
+   
+
 
 <!------------------------------------------------------------------------> 
 <!------------------------------------------------------------------------> 
