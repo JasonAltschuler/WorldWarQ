@@ -226,13 +226,13 @@ TODO: create video of plane turning and moving around in each view.
     <TD vAlign=top align=left colspan="3">
     We implemented 5 different views, toggleable by the keys: 1, 2, 3, 4, and 5. <br> <br>
     
-    <li><b> '1': Bird's eye view. </b> This is the basic fixed camera view. (Camera position needs adjusting per scene).
-    <li><b> '2': 1st person view </b> From above and behind the aircraft. Different from '3' in that can see the 
+    <li><b> '1': Bird's eye view: </b> this is the basic fixed camera view. (Camera position needs adjusting per scene).
+    <li><b> '2': 1st person view: </b> from above and behind the aircraft. Different from '3' in that can see the 
     aircaft below you. Has crosshairs; good for aiming.
-    <li><b> '3': 1st person view </b> From nose of aircraft. Has crosshairs; good for aiming. <br>
-    <li><b> '4': 3rd person view </b>. From above and behind the aircraft. Adjusts well when aircraft
+    <li><b> '3': 1st person view: </b> from nose of aircraft. Has crosshairs; good for aiming. <br>
+    <li><b> '4': 3rd person view: </b> from above and behind the aircraft. Adjusts well when aircraft
     speeds up / slows down or rotates up/down/left/right. <br>
-    <li><b> '5': Rear view </b> Looking behind, from above and in front of aircraft.
+    <li><b> '5': Rear view: </b> looking behind, from above and in front of aircraft.
     
     <br><br>
     Implementation: see the method "LoadCamera(... )" in WorldWarQ.cpp and the
@@ -261,25 +261,14 @@ TODO: create video of heads-up display
     <TD vAlign=top align=left colspan="3">
     We implemented the following features for our heads-up display: <br> <br>
     
-    Top left of the screen lists current velocity, thrust level, and altitude. <br>
-    Bottom left of the screen lists number of kills and deaths. <br>
-    Thrust velocityaltitude Kills deaths minimap crosshairs respawning in __ seconds
-    
-    '1': Bird's eye view. This is the basic fixed camera view. (Camera position needs adjusting per scene).
-    <br>
-    '2': 1st person view (from above and behind the aircraft). Different from '3' in that can see the 
-    aircaft below you. Has crosshairs; good for aiming.
-    <br>
-    '3': 1st person view (from nose of aircraft). Has crosshairs; good for aiming.
-    <br>
-    '4': 3rd person view (from above and behind the aircraft). Adjusts well when aircraft
-    speeds up / slows down or rotates up/down/left/right. 
-    <br>
-    '5': Rear view (looking behind, from above and in front of aircraft). 
+    <li><b> Minimap: </b> on top right of screen. <br>
+    <li><b> Static crosshairs: </b> in viewpoints 2 and 3 where bullets fire. <br>
+    <li><b> Current velocity, thrust level, and altitude: </b> on top left of the screen. <br>
+    <li><b> Number of kills and deaths: </b> on bottom left of screen <br>
+    <li><b> "Respawning in ___ seconds": </b> counts down after you die <br>
     
     <br><br>
-    Implementation: see the method "LoadCamera(... )" in WorldWarQ.cpp and the
-    variable: "static int camera_view"
+    Implementation: see WorldWarQ.cpp
     </TD>
   </TR>
   </TABLE>
@@ -356,7 +345,23 @@ TODO: create video of heads-up display
   </TR>
   <TR>
     <TD vAlign=top align=left colspan="3">
-  Description
+    
+   The following objects use simulated dynamics: <br> <br>
+    
+    <li><b> "Hard mode" for aircrafts: </b> ------- TODO KYLE. <br>
+    <li><b> "Easy mode" for aircrafts: </b> pitch up/down and left/right. <br>
+    <li><b> Explosion particles: </b> update with integration techniques from Assignment 4. <br>
+    <li><b> Bullet particles: </b> update with integration techniques from Assignment 4.
+    Assume no forces on them for ease of aiming / gameplay. <br>
+    
+    <br><br>
+    Implementation: see WorldWarQ.cpp
+
+
+
+Realistic mode for flight of airplane
+Particles from explosions have gravity; integration techniques as in Assignment 4
+Bullet similars
     </TD>
   </TR>
 </TBODY>
