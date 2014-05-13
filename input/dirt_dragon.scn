@@ -1,7 +1,7 @@
 # the enemy aircraft is right in front of the player-controlled aircraft.
 # good for debugging bullet-plane intersections and respawning.
 
-material  .4 .5 .4 .4 .5 .4 .4 .5 .4   0 0 0  .0 .1 .0  10 1 0
+material  .5 .4 .3 .5 .5 .3 .5 .5 .3   0 0 0  .1 .1 .0  10 1 0
 
 #  0 is grass with mountains
 #  1 is desert
@@ -9,7 +9,7 @@ material  .4 .5 .4 .4 .5 .4 .4 .5 .4   0 0 0  .0 .1 .0  10 1 0
 #  (TODO) 3 is mountains
 
 map_type
-0
+1
 
 # Player-controlled aircraft
 #      aircraft
@@ -23,8 +23,8 @@ map_type
 
 aircraft
   0
-  off/dragon.off
-  50 5000 400
+  off/biplane.off
+  1000 2000 100
   1 0 0
   1 0.3 1 8 50 10
   
@@ -32,11 +32,10 @@ aircraft
 aircraft
 -1
 aircraft1219_edited.off
-500 5000 400
+30 100 50
 1 0 0
 1 0.3 1 8 10 3
 
-
 mesh
 -1
-128_tri3.off
+64_new.off

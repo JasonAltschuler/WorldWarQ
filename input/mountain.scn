@@ -27,13 +27,7 @@ aircraft
   1 0 0
   1 0.3 1 8 50 10
   
-# AI aircraft
-aircraft
--1
-aircraft1219_edited.off
-500 5000 1000
-1 0 0
-1 0.3 1 8 10 3
+# AI aircra
 
 
 mesh
