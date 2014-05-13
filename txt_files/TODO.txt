@@ -3,20 +3,11 @@ NOTE: PLEASE DON'T DELETE TASKS WHEN YOU COMPLETE THEM. JUST MOVE THEM TO THE SE
 
 /// =================== TODO ================ ///
 
-GOOD NAME FOR GAME!!!
-  change particleview.cpp to that name
-
 
 Jason:
-Input music
 Make more scenes for playing
 Work on writeup / presentation
 
-
-Kyle:
-Heads-up display: DEATH :( and KILL!! and HIT!
-Fix camera view
-Find music
 
 Daway:
 Make gifs
@@ -26,12 +17,8 @@ Work on writeup
 
 
 
-
-
 /// =================== TODO IF EXTRA TIME ================ ///
 
-
-leading crosshair for targeting
 
 Make flying more realistic
 
@@ -48,6 +35,10 @@ capture video for realistic and non realistic thrust/turn (easy vs. hard mode). 
 /// =================== completed tasks below ================ ///
 
 // Done on Monday, the 12th
+Fix camera view
+Head-sup display: death, kill, hit
+Background music for gameplay
+Changed name for game
 Improved AI
 Multiple skyboxes / textures
 Clip stuff on minimap
