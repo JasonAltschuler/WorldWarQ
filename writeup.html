@@ -319,7 +319,25 @@ TODO: create video of heads-up display
 </TR>
 <TR>
     <TD vAlign=top align=left colspan="3">
-  Description
+
+    
+   Collisions are used in the following settings: <br> <br>
+    
+    <li><b> Bullet hits aircraft: </b> aircraft's hitpoints decrease. If hitpoints == 0, explode and respawn. 
+    Flash the aircraft red if hit. <br>
+    <li><b> Aircraft hits aircraft: </b> both aircrafts explode and rspawn. <br>
+    <li><b> Aircraft hits scene graph (ground): </b> aircraft explodes and respawns. <br><br>
+    
+    Note: the only node in the scene graph is the ground mesh. Everything else is maintained
+    separately. <br>
+    Note: we don't implement bullet hits scene to speed the game up. This is an "acceptable hack"
+    because once the bullet hits the scene, it goes through it and is no longer visible to the player. 
+    Also, the bullets have lifetimes of 10 seconds, so will be deleted soon.
+    
+    <br><br>
+    Implementation: see particle.cpp and R3Aircraft.cpp. The collision view is ~2/3 taken from 
+    Assignments 3 and 4 code.
+
     </TD>
   </TR>
 </TABLE>
@@ -350,18 +368,14 @@ TODO: create video of heads-up display
     
     <li><b> "Hard mode" for aircrafts: </b> ------- TODO KYLE. <br>
     <li><b> "Easy mode" for aircrafts: </b> pitch up/down and left/right. <br>
-    <li><b> Explosion particles: </b> update with integration techniques from Assignment 4. <br>
+    <li><b> Explosion particles: </b> update with integration techniques from Assignment 4.
+    Updates velocity and acceleration with gravity. <br>
     <li><b> Bullet particles: </b> update with integration techniques from Assignment 4.
     Assume no forces on them for ease of aiming / gameplay. <br>
     
     <br><br>
-    Implementation: see WorldWarQ.cpp
-
-
-
-Realistic mode for flight of airplane
-Particles from explosions have gravity; integration techniques as in Assignment 4
-Bullet similars
+    Implementation: see particle.cpp and R3Aircraft.cpp
+    
     </TD>
   </TR>
 </TBODY>
