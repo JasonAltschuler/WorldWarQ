@@ -19,11 +19,11 @@ map_type
 #     mass, drag, thrust_magnitude, max_thrust, firing_rate, hitpoints
 
 #747
-material  .9 .9 .9 .9 .9 .9 0 0 0  0 0 0  .01 .01 .01  10 1 0
+material  .9 .9 .9 .9 .9 .9 0 0 0  0 0 0  .3 .3 .3  10 1 0
 aircraft
   0
   ../off/boeing.off
-  50 5000 1000
+  450 5000 300
   5 0 0
   10 0.3 4 20 5 100
 
@@ -32,7 +32,7 @@ material  .5 .5 .5 .5 .5 .5 0 0 0  0 0 0  .01 .01 .01  10 1 0
 aircraft
   1
   ../off/raptor.off
-  60 4900 1000
+  460 4900 300
   1 0 0
   1.5 0.2 1 15 20 10
 
@@ -41,7 +41,7 @@ material  .5 .5 .5 .5 .5 .5 0 0 0  0 0 0  .01 .01 .01  10 1 0
 aircraft
   2
   ../off/raptor.off
-  50 5100 1000
+  450 5100 300
   1 0 0
   1.5 0.2 1 15 20 10
 

@@ -555,7 +555,7 @@ AI_decision(R3Scene *scene, R3Aircraft *enemy, double delta_time)
   // TILT UP OR DOWN TO AIM
   // Note: "else if" because planes can't simultaneously roll and tilt at the same time; this also
   // makes turning left / right more smooth
-  else if (abs(phi_rotated - PI/2.0) > AI_RADIUS_MOVING_RANGE)
+  if (abs(phi_rotated - PI/2.0) > AI_RADIUS_MOVING_RANGE)
   {
 
     if (phi_rotated < PI/2.0)
