@@ -1,3 +1,5 @@
+# No longer works with our code. Was for initial debugging.
+
 camera 0 0 4.42011  0 0 -1  0 1 0  0.25  0.0147337 147.337
 
 # Player-controlled aircraft
@@ -8,7 +10,7 @@ aircraft
   1 0 0
   1 0.3 1 8 10 6
 
-box
-  -1
-  -2 -2 -2 
-  0 3 -1.95
+#box
+#  -1
+#  -2 -2 -2 
+#  0 3 -1.95

@@ -47,6 +47,8 @@ struct R3Aircraft {
   void PitchDown(double delta_time);
   void RollLeft(double delta_time);
   void RollRight(double delta_time);
+  void YawLeft(double delta_time);
+  void YawRight(double delta_time);
   void ThrustForward(double delta_time);
   void BrakeBackward(double delta_time);
 

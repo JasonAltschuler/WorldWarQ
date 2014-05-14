@@ -95,6 +95,8 @@ int pitch_up = 0;
 int pitch_down = 0;
 int roll_left = 0;
 int roll_right = 0;
+int yaw_left = 0;
+int yaw_right = 0;
 int thrust_forward = 0;
 int brake_backward = 0;
 int firing_bullets = 0;
@@ -1799,6 +1801,16 @@ void GLUTKeyboardUp(unsigned char key, int x, int y)
         roll_right = 0;
         break;
 
+    case 'Q':
+    case 'q':
+        yaw_left = 0;
+        break;
+
+    case 'E':
+    case 'e':
+        yaw_right = 0;
+        break;
+
     case ' ':
         firing_bullets = 0;
         break;
@@ -1836,10 +1848,10 @@ void GLUTKeyboard(unsigned char key, int x, int y)
         show_camera = !show_camera;
         break;
 
-    case 'E':
-    case 'e':
-        show_edges = !show_edges;
-        break;
+//    case 'E':
+//    case 'e':
+//        show_edges = !show_edges;
+//        break;
 
     case 'F':
     case 'f':
@@ -1884,6 +1896,16 @@ void GLUTKeyboard(unsigned char key, int x, int y)
     case 'D':
     case 'd':
         roll_right = 1;
+        break;
+
+    case 'Q':
+    case 'q':
+        yaw_left = 1;
+        break;
+
+    case 'E':
+    case 'e':
+        yaw_right = 1;
         break;
 
     case 'J':
@@ -2206,7 +2228,7 @@ void initSkyBox(int skybox_type)
         skybox[SKY_UP] = loadTexBMP("bmp/jajspace2_top.bmp");
         skybox[SKY_DOWN] = loadTexBMP("bmp/jajspace2_top.bmp");
     }
-    else if (skybox_type = 69)
+    else if (skybox_type == 69)
     {
         skybox[SKY_FRONT] = loadTexBMP("bmp/bluefreeze_back.bmp");
         skybox[SKY_RIGHT] = loadTexBMP("bmp/bluefreeze_right.bmp");

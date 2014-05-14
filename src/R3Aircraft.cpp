@@ -267,6 +267,39 @@ PitchDown(double delta_time)
 }
 
 void R3Aircraft::
+YawLeft(double delta_time)
+{
+  const double COS_THETA = cos(2 * THETA/mass/10 * delta_time);
+  const double SIN_THETA = sin(2 * THETA/mass/10 * delta_time);
+
+  R3Matrix mat(COS_THETA, -SIN_THETA, 0, 0,
+               SIN_THETA,  COS_THETA, 0, 0,
+               0, 0, 1, 0,
+               0, 0, 0, 1);
+  T *= mat;
+  if (hard_mode == 1) // makes aircraft velocity more realastic. see writeup for more details
+    velocity.Transform(mat.Transpose());
+  AssertValid();
+}
+
+void R3Aircraft::
+YawRight(double delta_time)
+{
+  const double COS_THETA = cos(2 * THETA/mass/10 * delta_time);
+  const double SIN_THETA = sin(2 * THETA/mass/10 * delta_time);
+
+  R3Matrix mat(COS_THETA, SIN_THETA, 0, 0,
+               -SIN_THETA,  COS_THETA, 0, 0,
+               0, 0, 1, 0,
+               0, 0, 0, 1);
+  T *= mat;
+  if (hard_mode == 1) // makes aircraft velocity more realastic. see writeup for more details
+    velocity.Transform(mat.Transpose());
+  AssertValid();
+}
+
+
+void R3Aircraft::
 RollLeft(double delta_time)
 {
   const double COS_THETA = cos(2 * THETA/mass * delta_time);
@@ -648,6 +681,10 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
         aircraft->RollLeft(delta_time);
       if (roll_right)
         aircraft->RollRight(delta_time);
+      if (yaw_left)
+          aircraft->YawLeft(delta_time);
+      if (yaw_right)
+          aircraft->YawRight(delta_time);
       if (thrust_forward)
         aircraft->ThrustForward(delta_time);
       if (brake_backward)

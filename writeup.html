@@ -14,15 +14,44 @@ Kyle Dhillon, kdhillon<BR>
 Daway Chou-Ren, dchouren<BR>
 </H2>                     
 </CENTER>
+<BR>
+<HR>  
+<!------------------------------------------------------------------------> 
+<!------------------------------------------------------------------------> 
+<H2>Sample gameplay</H2>
+<!------------------------------------------------------------------------> 
+<!------------------------------------------------------------------------> 
+<HR>
+<TABLE>
+<TBODY>
+<TR>
+<TD vAlign=top align=middle>
+        <video id="demos/WorldWarQ_gameplay_demo.mp4" src="demos/WorldWarQ_gameplay_demo.mp4" controls width=850 height=600></video><br>
+    <A href="demos/WorldWarQ_gameplay_demo.mp4">WorldWarQ_gameplay_demo.mp4</A>
+    </TD>
+</TR>
+<TR>
+    <TD vAlign=top align=left colspan="3">
+    <br>Compiled from various clips of gameplay.
+    </TD>
+  </TR>
+</TBODY>
+</TABLE>
+
+
+<BR><BR>
+</ul>
+</ul>
+<BR>
+<HR>
+
+
+<!------------------------------------------------------------------------> 
+<!------------------------------------------------------------------------> 
+<H2>List of Implemented Features </H2>
+<!------------------------------------------------------------------------> 
+<!------------------------------------------------------------------------> 
 <HR><BR>
-
-
-
-<!------------------------------------------------------------------------> 
-<!------------------------------------------------------------------------> 
-<H2>List of Implemented Features</H2>
-<!------------------------------------------------------------------------> 
-<!------------------------------------------------------------------------> 
 
 We have implemented the following features:
 
@@ -351,6 +380,10 @@ See videos below.
   <br> From there random heights are generated for the four corners. These four corners are used to interpolate a height value for the center of the mesh, onto which a random value is added. Then the midpoint heights
   <br> between the four corners are calculated by averaging the two closest corner heights. The algorithm then proceeds recursively through the four quadrants created by the corners, midpoints, and center until every vertex in the
   <br> mesh has a height. This process generates a terrain with random heights.
+  
+  <br> <br>
+  Implementation: input/makegrid.py. Sample usage: "python makegrid.py 128 output_file_name". Here 128
+  can be replaced with any power of 2. It represents the number of vertices for the grid on each axis.
     </TD>
   </TR>
 </TABLE>
@@ -458,7 +491,7 @@ See videos below.
 </TBODY>
 </TABLE>
 
-<HR><BR>
+
 <HR><BR>
 
 
@@ -510,7 +543,6 @@ Implementation: see WorldWarQ.cpp
 </TABLE>
 
 <HR><BR>
-<HR><BR>
 
 <!------------------------------------------------------------------------> 
 <H3><A name="requiredfeatures"> Sound </A></H3>
@@ -538,21 +570,94 @@ Note: can't demonstrate sound here. Play the game!
 <br><br>
 Implementation: see R3Aircraft.cpp
 
+<BR><BR>
+
+</ul>
+</ul>
+<BR>  
+<HR>
 
 <!------------------------------------------------------------------------> 
 <!------------------------------------------------------------------------> 
-<H2>Miscellaneous comments</H2>
+<H2>Running the game </H2>
 <!------------------------------------------------------------------------> 
 <!------------------------------------------------------------------------> 
-
-
-TODO: Scene file format for "aircraft" TODO: someone put a description of all parameters in scene file
-
-
-
 <HR><BR>
 
-We can also put any mesh in lieu of the aircraft. #ThereBeDragons
+In cos426_final_project/src/ <u>make clean</u> and <u>make all</u>. This will create
+an executable src/WorldWarQ. In the src/ folder, simply run: <u>./WorldWarQ ../input/scn/some_scene.scn</u> <br><br>
+A few battle scenes we recommend are:
+<li> battle_of_britain.scn <br>
+<li> hijack.scn <br>
+<li> mountain_battle.scn <br>
+<li> star_wars.scn <br>
+<li> desert_storm.scn
+
+<br><br>
+Some other fun scenes with different aircrafts are:
+<li> 747.scn <br>
+<li> biplane.scn <br>
+<li> bomber.scn <br>
+<li> lightning.scn <br>
+<li> raptor.scn <br>
+<li> dragon.scn <br>
+
+
+<BR><BR>
+<HR>
+
+<!------------------------------------------------------------------------> 
+<!------------------------------------------------------------------------> 
+<H2> Scene file format </H2>
+<!------------------------------------------------------------------------> 
+<!------------------------------------------------------------------------> 
+<HR><BR>
+At the top of the file specify the <b> map type </b>:
+
+<br><br>
+map_type<br>
+map_id
+<br><br>
+
+We have supported the following map_ids: <br>
+
+    Background music (2D sound): </b>  loops when ended. https://www.youtube.com/watch?v=MX39R-2Yq4I "The Epic September - Third Reich vs Poland epic music video"
+
+  <li><b> 0 </b> is grass with mountains <br>
+  <li><b> 1 </b> is desert <br>
+  <li><b> 2 </b> is sea <br>
+  <li><b> 3 </b> is mountains <br>
+  <li><b> 4 </b> is space <br>
+  
+  <br>
+  <hr><br>
+
+You can also specify different <b> aircrafts </b>: <br><br>
+aircraft<br>
+  &nbsp; &nbsp; mat_id <br>
+  &nbsp; &nbsp; meshname <br>
+  &nbsp; &nbsp; pos_x, pos_y, pos_z <br>
+  &nbsp; &nbsp; vel_x, vel_, vel_z <br>
+  &nbsp; &nbsp; mass, drag, thrust_magnitude, max_thrust, firing_rate, hitpoints
+  
+<br> <br>
+This command defines an aircraft (mesh type: meshname) with material mat_id. It starts
+off with position (pos_x, pos_y, pos_z) in <u> world </u> coordinates, and velocity (v_x, v_y, v_z)
+in the aircraft's <u> modeling </u> coordinates. All meshes we have provided are scaled similarly
+(around 3 units long in x, 4 units long in y, and 1 unit long in z) and are rotated such that
+in the aircraft's modeling coordinate system, the aircraft is pointed in +x direction, with wingspan
+in y direction, and z direction up. 
+<br><br>
+Mass and drag are used for calculating forces on the aircraft to make movement more realistic. 
+Note that increased mass of aircraft decreases the rate at which the aircraft can pitch and roll. This
+models moment of inertia, and provides a more realistic simulation. Thrust_magnitude and max_thrust are
+the initial and maximum values for thrust. Firing_rate
+is the number of bullets per second the aircraft can fire. Hitpoints is an integer
+representing the number of bullets it takes to destroy it.
+  
+<BR><BR>
+
+In fact... we can also put any mesh in lieu of the aircraft. #ThereBeDragons
   <TABLE>
 <TBODY>
   <TR>
@@ -571,9 +676,16 @@ We can also put any mesh in lieu of the aircraft. #ThereBeDragons
 </TABLE>
 
 
+</ul>
+</ul>
+<BR>  
+<HR>
+<!------------------------------------------------------------------------> 
+<!------------------------------------------------------------------------> 
+<H2> Sources cited </H2>
+<!------------------------------------------------------------------------> 
+<!------------------------------------------------------------------------> 
 <HR><BR>
-
-Sources cited: <br>
 1. We used Jason's particleview (Assignment 4) as a codebase. <br>
 2. We used irrklang for sound (see citations above and in code) <br>
 3. We used http://www.opengl.org/discussion_boards/showthread.php/155790-Hud-drawing for Heads-up display <br>

@@ -1,20 +1,20 @@
 # bomber
 aircraft
   -1
-  aircraft1219_edited.off
+  ../off/bomber.off
   50 5000 400
   1 0 0
-  1 0.3 1 8 10
+  1 0.3 1 8 10 1
   
   
   #
   aircraft
   -1
-  aircraft1219_edited.off
+  ../off/bomber.off
   300 5000 400
   1 0 0
-  1 0.3 1 8 10
+  1 0.3 1 8 10 1
 
 mesh
 -1
-128_tri3.off
+../128_tri3.off
