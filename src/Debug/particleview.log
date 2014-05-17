@@ -1,0 +1,19 @@
+﻿Build started 5/14/2014 11:41:15 PM.
+     1>Project "A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\particleview.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         A:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I. /I.. /IR3 /IR2 /Ijpeg /Ifglut /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4996 /wd4267 /analyze- /errorReport:prompt R3Scene.cpp particle.cpp particleview.cpp
+         particleview.cpp
+     1>c1xx : fatal error C1083: Cannot open source file: 'particleview.cpp': No such file or directory
+         particle.cpp
+     1>a:\users\kyle\dropbox\s14\cos426\final\repo2\cos426_final_project\src\particle.cpp(88): warning C4018: '<' : signed/unsigned mismatch
+     1>a:\users\kyle\dropbox\s14\cos426\final\repo2\cos426_final_project\src\particle.cpp(205): warning C4018: '<' : signed/unsigned mismatch
+     1>a:\users\kyle\dropbox\s14\cos426\final\repo2\cos426_final_project\src\particle.cpp(230): warning C4018: '<' : signed/unsigned mismatch
+     1>a:\users\kyle\dropbox\s14\cos426\final\repo2\cos426_final_project\src\particle.cpp(274): warning C4018: '<' : signed/unsigned mismatch
+         R3Scene.cpp
+     1>a:\users\kyle\dropbox\s14\cos426\final\repo2\cos426_final_project\src\r3scene.cpp(788): warning C4018: '<' : signed/unsigned mismatch
+         Generating Code...
+     1>Done Building Project "A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\particleview.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:03.82

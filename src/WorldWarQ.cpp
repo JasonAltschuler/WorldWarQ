@@ -32,11 +32,11 @@ static double
 RandomNumber(void)
 {
 #if defined(_WIN32)
-  int r1 = rand();
-  double r2 = ((double) rand()) / ((double) (RAND_MAX + 1));
-  return (r1 + r2) / ((double) (RAND_MAX + 1));
+    int r1 = rand();
+    double r2 = ((double) rand()) / ((double) (RAND_MAX + 1));
+    return (r1 + r2) / ((double) (RAND_MAX + 1));
 #else
-  return drand48();
+    return drand48();
 #endif
 }
 
@@ -46,7 +46,7 @@ RandomNumber(void)
 
 static const double VIDEO_FRAME_DELAY = 1./25.; // 25 FPS
 //static const double VIDEO_FRAME_DELAY = 1./100.; // 100 FPS
-static const double METERS_PER_UNIT = 7;
+static const double METERS_PER_UNIT = 3;
 static const float DEG2RAD = 3.14159/180;
 
 static int skybox[6];
@@ -379,12 +379,11 @@ void LoadCamera(R3Camera *camera)
         right += camera_position;
 
         /// ----
-
-//        glPointSize(5);
-//        glBegin(GL_POINTS);
-//        glColor3d(1, 0, 0);
-//        glVertex3d(camera_position[0], camera_position[1], camera_position[2]);
-//        glEnd();
+        //        glPointSize(5);
+        //        glBegin(GL_POINTS);
+        //        glColor3d(1, 0, 0);
+        //        glVertex3d(camera_position[0], camera_position[1], camera_position[2]);
+        //        glEnd();
 
         current_camera_position.SetX(camera_position[0]);
         current_camera_position.SetY(camera_position[1]);
@@ -1001,7 +1000,6 @@ void DrawParticlesAndAircrafts(R3Scene *scene)
 
     // Update particles
     UpdateParticles(scene, current_time - time_lost_taking_videos, delta_time, integration_type);
-    UpdateAircrafts(scene, current_time - time_lost_taking_videos, delta_time, integration_type);
 
     //  // Generate new particles
     GenerateParticles(scene, current_time - time_lost_taking_videos, delta_time);
@@ -1009,6 +1007,9 @@ void DrawParticlesAndAircrafts(R3Scene *scene)
     // Render particles
     if (show_particles) RenderParticles(scene, current_time - time_lost_taking_videos, delta_time);
     RenderAircrafts(scene, current_time - time_lost_taking_videos, delta_time);
+
+    UpdateAircrafts(scene, current_time - time_lost_taking_videos, delta_time, integration_type);
+
 
     // Remember previous time
     previous_time = current_time;
@@ -1159,6 +1160,40 @@ void GLUTResize(int w, int h)
     glutPostRedisplay();
 }
 
+static R2Vector WorldToScreen(
+        R3Vector pos)
+{
+    double x, y, z;
+
+//    double screenWidth = GLUTwindow_width;
+//    double screenHeight = GLUTwindow_height;
+
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    double model[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX, model);
+//    R3Matrix viewMatrix(model);
+
+    double projection[16];
+    glGetDoublev(GL_PROJECTION_MATRIX, projection);
+//    R3Matrix projectionMatrix(projection);
+
+    gluProject(pos.X(), pos.Y(), pos.Z(), model, projection, viewport, &x, &y, &z);
+//    cout << gluErrorString(glGetError()) << endl;
+
+//    pos.Transform(viewMatrix);
+//    pos.Transform(projectionMatrix);
+//    pos.SetX(pos.X() / pos.Z());
+//    pos.SetY(pos.Y() / pos.Z());
+//    pos.SetX((pos.X() + 1) * screenWidth / 2);
+//    pos.SetY((pos.Y() + 1) * screenHeight / 2);
+
+//    cout << x << " " << y << " " << z << endl;
+
+    return R2Vector(x, y);
+}
+
 void GLUTRedraw(void)
 {
     static bool is_texture_materials_initialized = false;
@@ -1296,15 +1331,6 @@ void GLUTRedraw(void)
     // Draw particles
     DrawParticlesAndAircrafts(scene);
 
-    //  // Draw particle sources
-    //  DrawParticleSources(scene);
-    //
-    //  // Draw particle sinks
-    //  DrawParticleSinks(scene);
-    //
-    //  // Draw particle springs
-    //  DrawParticleSprings(scene);
-
     drawSkybox(100);
 
     // Draw scene surfaces
@@ -1322,8 +1348,58 @@ void GLUTRedraw(void)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    // draw skybox
+    // draw HUD
+    drawHUD();
 
+    // Save image
+    if (save_image) {
+        char image_name[256];
+        static int image_number = 1;
+        for (;;) {
+            sprintf(image_name, "image%d.jpg", image_number++);
+            FILE *fp = fopen(image_name, "r");
+            if (!fp) break;
+            else fclose(fp);
+        }
+        GLUTSaveImage(image_name);
+        printf("Saved %s\n", image_name);
+        save_image = 0;
+    }
+
+    // Save video
+    if (save_video) {
+        char frame_name[512];
+        static int next_frame = 0;
+        static int num_frames_recorded = 0;
+        for (;;) {
+            sprintf(frame_name, "%sframe%04d.jpg", video_prefix, next_frame++);
+            FILE *fp = fopen(frame_name, "r");
+            if (!fp) break;
+            else fclose(fp);
+        }
+        GLUTSaveImage(frame_name);
+        if (next_frame % 100 == 1) {
+            printf("Saved %s\n", frame_name);
+        }
+        if (num_frames_to_record == ++num_frames_recorded) {
+            save_video = 0;
+            printf("Recorded %d frames, stopping as instructed.\n", num_frames_recorded);
+            quit = 1;
+        }
+    }
+
+    // Quit here so that can save image before exit
+    if (quit) {
+        if (output_image_name) GLUTSaveImage(output_image_name);
+        GLUTStop();
+    }
+
+    glutSwapBuffers();
+}
+
+
+void drawHUD()
+{
     // draw 2d HUD (heads up display)
     // added by Kyle
 
@@ -1365,6 +1441,22 @@ void GLUTRedraw(void)
         glEnd();
     }
 
+    // draw leading crosshairs of enemies
+    for (int i = 1; i < scene->NAircrafts(); i++) {
+        R3Vector pos3d = scene->Aircraft(i)->Modeling_To_World(R3Vector(0,0,0));
+        R2Vector pos2d = WorldToScreen(pos3d);
+//        cout << (int) pos2d.X() << "\t" << (int) pos2d.Y() << endl;
+
+        glPointSize(5);
+        glColor3f(1, 0, 0);
+        glBegin(GL_POINTS);
+        glVertex2f(pos2d.X(), pos2d.Y());
+        glEnd();
+    }
+
+
+
+    // Draw Minimap
     int map_width = 200;
     int map_height = map_width;
 
@@ -1374,7 +1466,7 @@ void GLUTRedraw(void)
     int top = 0;
     int bottom = map_height;
 
-    // draw point at center of radar
+    // draw point at center of minimap
     glColor4f(0, 0, 1, 1);
     glPointSize(5);
     glBegin(GL_POLYGON);
@@ -1408,9 +1500,11 @@ void GLUTRedraw(void)
         // subtract vectors to put AI into player's modeling coordinates
         R3Vector to_enemy_modeling = AI_center_world - player_center_world;
 
-
         // rotated AI based on player's rotation
         to_enemy_modeling.Transform(player_aircraft->T.Transpose());
+
+
+
 
         // eliminate z vector in this rotated coordinate system
         to_enemy_modeling.SetZ(0);
@@ -1476,7 +1570,7 @@ void GLUTRedraw(void)
     // draw altitude string
     glColor3f(1, 1, 1);
     R3Vector altitude_vec = scene->Aircraft(0)->Modeling_To_World(R3Vector(0, 0, 0));
-    double altitude = altitude_vec.Z();
+    double altitude = altitude_vec.Z() * METERS_PER_UNIT;
     sprintf(buffer, "Altitude: %.2f m", altitude);
     GLUTDrawText(R3Point(7, 45, 0), buffer);
 
@@ -1523,68 +1617,23 @@ void GLUTRedraw(void)
     glEnd();
 
     // draw second bar
-//    if (percentage < 1){
-        glColor3f(.4, 0, 0);
-        glBegin(GL_QUADS);
-        glVertex2f(bar_right, bar_top);
-        glVertex2f(bar_right, bar_bottom);
-        glVertex2f(bar_middle, bar_bottom);
-        glVertex2f(bar_middle, bar_top);
-        glEnd();
-//    }
+    //    if (percentage < 1){
+    glColor3f(.4, 0, 0);
+    glBegin(GL_QUADS);
+    glVertex2f(bar_right, bar_top);
+    glVertex2f(bar_right, bar_bottom);
+    glVertex2f(bar_middle, bar_bottom);
+    glVertex2f(bar_middle, bar_top);
+    glEnd();
+    //    }
 
     // Making sure we can render 3d again
     glMatrixMode(GL_PROJECTION);
     //  glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_LIGHTING);
+}
 
-
-    // Save image
-    if (save_image) {
-        char image_name[256];
-        static int image_number = 1;
-        for (;;) {
-            sprintf(image_name, "image%d.jpg", image_number++);
-            FILE *fp = fopen(image_name, "r");
-            if (!fp) break;
-            else fclose(fp);
-        }
-        GLUTSaveImage(image_name);
-        printf("Saved %s\n", image_name);
-        save_image = 0;
-    }
-
-    // Save video
-    if (save_video) {
-        char frame_name[512];
-        static int next_frame = 0;
-        static int num_frames_recorded = 0;
-        for (;;) {
-            sprintf(frame_name, "%sframe%04d.jpg", video_prefix, next_frame++);
-            FILE *fp = fopen(frame_name, "r");
-            if (!fp) break;
-            else fclose(fp);
-        }
-        GLUTSaveImage(frame_name);
-        if (next_frame % 100 == 1) {
-            printf("Saved %s\n", frame_name);
-        }
-        if (num_frames_to_record == ++num_frames_recorded) {
-            save_video = 0;
-            printf("Recorded %d frames, stopping as instructed.\n", num_frames_recorded);
-            quit = 1;
-        }
-    }
-
-    // Quit here so that can save image before exit
-    if (quit) {
-        if (output_image_name) GLUTSaveImage(output_image_name);
-        GLUTStop();
-    }
-
-    glutSwapBuffers();
-}    
 
 void drawSkybox(double D)
 {
@@ -1848,10 +1897,10 @@ void GLUTKeyboard(unsigned char key, int x, int y)
         show_camera = !show_camera;
         break;
 
-//    case 'E':
-//    case 'e':
-//        show_edges = !show_edges;
-//        break;
+        //    case 'E':
+        //    case 'e':
+        //        show_edges = !show_edges;
+        //        break;
 
     case 'F':
     case 'f':
@@ -1930,11 +1979,11 @@ void GLUTKeyboard(unsigned char key, int x, int y)
     case '1':
         camera_view = 1;
         // reset camera
-//        aircraft_world = scene->Aircraft(0)->Modeling_To_World(R3Vector(0,0,0));
-//
-//        camera.eye.SetX(aircraft_world.X());
-//        camera.eye.SetY(aircraft_world.Y());
-//        camera.eye.SetZ(aircraft_world.Z() + 50);
+        //        aircraft_world = scene->Aircraft(0)->Modeling_To_World(R3Vector(0,0,0));
+        //
+        //        camera.eye.SetX(aircraft_world.X());
+        //        camera.eye.SetY(aircraft_world.Y());
+        //        camera.eye.SetZ(aircraft_world.Z() + 50);
 
         break;
 

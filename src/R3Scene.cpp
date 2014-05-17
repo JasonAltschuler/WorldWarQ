@@ -712,6 +712,8 @@ Read(const char *filename, R3Node *node)
     else if (!strcmp(cmd, "aircraft")) {
       // Read data
 
+//        cout << "aircraft" << endl;
+
       R3Vector position;
       R3Vector velocity;
       double mass = -1;
@@ -784,7 +786,12 @@ Read(const char *filename, R3Node *node)
       aircraft->respawn_thrust_magnitude = aircraft->thrust_magnitude;
       aircraft->respawn_hitpoints = aircraft->hitpoints;
 
+//      cout << aircraft->sources.size() << endl;
+
+
       assert(aircraft->sources.size() == 2);
+
+
       for (int i = 0; i < aircraft->sources.size(); i++)
       {
         R3Circle *circle = new R3Circle(R3Point(0, 0, 0), AIRCRAFT_SOURCE_RADIUS, R3Vector(-1, 0, 0));

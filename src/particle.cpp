@@ -70,7 +70,7 @@ void RenderParticles(R3Scene *scene, double current_time, double delta_time)
 
   // TRAILS!
   // remember the positions of the particles for the last K time steps
-  const int K_TRAIL_SIZE = 10; // hardcoded, but can be changed easily
+  const int K_TRAIL_SIZE = 5; // hardcoded, but can be changed easily
 
   for (int i = 0; i < scene->NParticles(); i++)
   {

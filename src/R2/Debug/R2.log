@@ -1,0 +1,26 @@
+﻿Build started 5/14/2014 11:40:52 PM.
+     1>Project "A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\R2\R2.vcxproj" on node 3 (Build target(s)).
+     1>ClCompile:
+         A:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Ijpeg /ZI /nologo /W1 /WX- /Od /Oy- /D USE_JPEG /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt R2Distance.cpp R2Line.cpp R2Point.cpp R2Segment.cpp R2Vector.cpp R2Pixel.cpp R2Image.cpp
+         R2Image.cpp
+         R2Pixel.cpp
+         R2Vector.cpp
+         R2Segment.cpp
+         R2Point.cpp
+         R2Line.cpp
+         R2Distance.cpp
+         Generating Code...
+       Lib:
+         A:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\Lib.exe /OUT:"A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\Debug\R2.lib" /NOLOGO Debug\R2Distance.obj
+         Debug\R2Line.obj
+         Debug\R2Point.obj
+         Debug\R2Segment.obj
+         Debug\R2Vector.obj
+         Debug\R2Pixel.obj
+         Debug\R2Image.obj
+         R2.vcxproj -> A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\Debug\R2.lib
+     1>Done Building Project "A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\R2\R2.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:09.36

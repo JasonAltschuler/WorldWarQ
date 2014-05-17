@@ -1,5 +1,11 @@
 /// =================== TODO ================ ///
 
+Additional stuff for fun:
+make leading crosshairs for planes
+make black particles when injured
+flash crosshairs when enemies are hit
+attempt realistic physics (lift, gravity)
+
 
 Kyle:
 Make 2-5 min video of gameplay. Put at top of writeup.

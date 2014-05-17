@@ -8,6 +8,11 @@
 #  4 is space
 #  69 is purple land
 
+dir_light
+  2 2 2
+  0.3 0.3 -1
+
+
 map_type
 0
 
@@ -25,7 +30,7 @@ aircraft
   ../off/glider.off
   550 5000 200
   1 0 0
-  .8 0.2 1 7 10 8
+  .2 0.2 1 2 10 8
 
 # P-38 Lightning
 material  .2 .3 .2 .2 .3 .2 0 0 0  0 0 0  .01 .01 .01  10 1 0

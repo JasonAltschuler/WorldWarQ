@@ -19,6 +19,8 @@ struct R3Aircraft {
   R3Mesh *mesh;
   R3Material *material;
 
+//  int team; // 0 is neutral (every man for himself)
+
   double mass;
   double drag;
   double thrust_magnitude;
@@ -43,6 +45,7 @@ struct R3Aircraft {
 
   // basic plane movements
   void FireBullet(R3Scene *scene);
+  void HardModeUpdate(R3Matrix mat);
   void PitchUp(double delta_time);
   void PitchDown(double delta_time);
   void RollLeft(double delta_time);

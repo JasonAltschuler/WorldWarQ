@@ -35,6 +35,7 @@ void LoadMatrix(R3Matrix *matrix);
 void LoadMaterial(R3Material *material);
 void LoadLights(R3Scene *scene);
 void drawSkybox(double D);
+void drawHUD();
 void initSkyBox();
 
 #endif /* WORLD_WAR_Q_H_ */

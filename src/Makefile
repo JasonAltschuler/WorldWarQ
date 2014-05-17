@@ -1,4 +1,4 @@
-#
+
 # Makefile for assignment #4
 #
 
@@ -29,9 +29,9 @@ endif
 
 # SELECT APPROPRIATE IRRKLANG LIBRARIES FOR DIFFERENT PLATFORMS                       
 ifeq ($(OS),Windows_NT)                                                  
-    IRRLIB =
+    IRRLIB = ./irrKlang.dll
     IRRLIBPATH =
-    RMIRR =
+    RMIRR = 
 else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)

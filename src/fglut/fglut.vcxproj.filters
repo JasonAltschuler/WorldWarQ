@@ -112,7 +112,7 @@
     <ClInclude Include="mac_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="windows_config.h">
+    <ClInclude Include="cygwin_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
