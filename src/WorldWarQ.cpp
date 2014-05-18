@@ -1417,10 +1417,22 @@ void drawHUD()
 
 
     // draw crosshair
+    // first determine if player has hit enemy
+    bool player_hit = false;
+    for (int i = 1; i < scene->NAircrafts(); i++) {
+        R3Aircraft * aircraft = scene->Aircraft(i);
+        if (aircraft->hit_by_player) {
+            aircraft->hit_by_player = false;
+            player_hit = true;
+            cout << "player hit" << endl;
+        }
+    }
+
     // code from https://www.opengl.org/discussion_boards/showthread.php/167955-drawing-a-smooth-circle
     if ((camera_view == 2 || camera_view == 3) && scene->Aircraft(0)->freeze_time < 0) {
         glBegin(GL_LINE_LOOP);
-        glColor3f(1, 1, 1);
+        if (player_hit) glColor3f(1, 0, 0);
+        else glColor3f(1, 1, 1);
         int circle_x = GLUTwindow_width/2;
         int circle_y = GLUTwindow_height/2 + 7;
 
@@ -1435,24 +1447,25 @@ void drawHUD()
         }
         glEnd();
         glPointSize(2);
-        glColor3f(1, 1, 1);
+        if (player_hit) glColor3f(1, 0, 0);
+        else glColor3f(1, 1, 1);
         glBegin(GL_POINTS);
         glVertex2f(circle_x, circle_y);
         glEnd();
     }
 
     // draw leading crosshairs of enemies
-    for (int i = 1; i < scene->NAircrafts(); i++) {
-        R3Vector pos3d = scene->Aircraft(i)->Modeling_To_World(R3Vector(0,0,0));
-        R2Vector pos2d = WorldToScreen(pos3d);
-//        cout << (int) pos2d.X() << "\t" << (int) pos2d.Y() << endl;
-
-        glPointSize(5);
-        glColor3f(1, 0, 0);
-        glBegin(GL_POINTS);
-        glVertex2f(pos2d.X(), pos2d.Y());
-        glEnd();
-    }
+//    for (int i = 1; i < scene->NAircrafts(); i++) {
+//        R3Vector pos3d = scene->Aircraft(i)->Modeling_To_World(R3Vector(0,0,0));
+//        R2Vector pos2d = WorldToScreen(pos3d);
+////        cout << (int) pos2d.X() << "\t" << (int) pos2d.Y() << endl;
+//
+//        glPointSize(5);
+//        glColor3f(1, 0, 0);
+//        glBegin(GL_POINTS);
+//        glVertex2f(pos2d.X(), pos2d.Y());
+//        glEnd();
+//    }
 
 
 

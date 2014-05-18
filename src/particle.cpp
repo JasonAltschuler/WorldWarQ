@@ -413,6 +413,9 @@ void UpdateParticles(R3Scene *scene, double current_time, double delta_time, int
         particle->velocity = R3zero_vector;
         particle->lifetime = 3;
         closest_intersection.aircraft->HitAircraft(scene);
+        // if fired by player
+        if (particle->aircraft_fired_from == scene->Aircraft(0))
+            closest_intersection.aircraft->hit_by_player = true;
       }
     }
 

@@ -31,6 +31,7 @@ struct R3Aircraft {
   double freeze_time; // if <= 0 --> not frozen
   double time_since_last_fired;
   bool is_hit;
+  bool hit_by_player;
   // remember original fields for when aircraft is destroyed and respawns
   R3Vector respawn_velocity;
   R3Matrix respawn_T;
