@@ -1,5 +1,4 @@
-# Desert Storm
-# biplane vs 3 biplanes
+# Mountain Battle
 
 #  0 is grass with mountains
 #  1 is desert
@@ -9,7 +8,7 @@
 #  69 is purple land
 
 map_type
-1
+3
 
 #  aircraft
 #     mat_id
@@ -21,51 +20,34 @@ map_type
 # red
 material  .4 .2 .2 .4 .2 .2 0 0 0  0 0 0  .01 .01 .01  10 1 0
 # blue
-material  .2 .2 .4 .2 .2 .4 0 0 0  0 0 0  .01 .01 .01  10 1 0
+material  .2 .3 .2 .2 .3 .2 0 0 0  0 0 0  .01 .01 .01  10 1 0
 # brown
 material  .4 .3 .2 .4 .3 .2 0 0 0  0 0 0  .01 .01 .01  10 1 0
 
-# Biplane
 aircraft
-  1
+  2
   ../off/biplane.off
-  50 5000 300
+  200 5000 2000
   1 0 0
   1.5 0.2 1 5 5 80
 
-# Biplane
+
+# Dragon
+aircraft
+  1
+  ../off/dragon.off
+  500 5000 2000
+  1 0 0
+  1.5 0.2 1 3 20 8
+
+# Dragon
 aircraft
   0
-  ../off/biplane.off
-  50 5100 300
+  ../off/dragon.off
+  400 5000 500
   1 0 0
-  1.5 0.2 1 5 5 8
-
-# Biplane
-aircraft
-  0
-  ../off/biplane.off
-  150 5010 300
-  1 0 0
-  1.5 0.2 1 5 5 8
-
-# Biplane
-aircraft
-  0
-  ../off/biplane.off
-  50 4900 300
-  1 0 0
-  1.5 0.2 1 5 5 8
-
-# Biplane
-aircraft
-  0
-  ../off/biplane.off
-  150 5000 300
-  1 0 0
-  1.5 0.2 1 5 5 8
-
+  1.5 0.2 1 3 20 8
 
 mesh
 -1
-../128_tri3.off
+../64_new.off

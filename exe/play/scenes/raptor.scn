@@ -1,0 +1,33 @@
+# F-22 Raptor
+
+#  0 is grass with mountains
+#  1 is desert
+#  2 is sea
+#  3 is mountains
+#  4 is space
+#  69 is purple land
+
+map_type
+1
+
+# Player-controlled aircraft
+#      aircraft
+#     *    mat_id
+#     *    meshname
+#     *    pos_x, pos_y, pos_z
+#     *    vel_x, vel_, vel_z
+#     *    mass, drag, thrust_magnitude, max_thrust, firing_rate, hitpoints
+#     */
+
+# Raptor
+material  .5 .5 .5 .5 .5 .5 0 0 0  0 0 0  .01 .01 .01  10 1 0
+aircraft
+  0
+  ../off/raptor.off
+  50 5000 1000
+  1 0 0
+  1.5 0.2 1 15 20 10
+
+mesh
+-1
+../128_tri3.off

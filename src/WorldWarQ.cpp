@@ -106,8 +106,8 @@ int hard_mode = 0; // default to easy
 // GLUT variables 
 
 static int GLUTwindow = 0;
-static int GLUTwindow_height = 1000;
-static int GLUTwindow_width = 1000;
+static int GLUTwindow_height = 650;
+static int GLUTwindow_width = 900;
 static int GLUTmouse[2] = { 0, 0 };
 static int GLUTbutton[3] = { 0, 0, 0 };
 static int GLUTmodifiers = 0;
@@ -1366,27 +1366,27 @@ void GLUTRedraw(void)
         save_image = 0;
     }
 
-    // Save video
-    if (save_video) {
-        char frame_name[512];
-        static int next_frame = 0;
-        static int num_frames_recorded = 0;
-        for (;;) {
-            sprintf(frame_name, "%sframe%04d.jpg", video_prefix, next_frame++);
-            FILE *fp = fopen(frame_name, "r");
-            if (!fp) break;
-            else fclose(fp);
-        }
-        GLUTSaveImage(frame_name);
-        if (next_frame % 100 == 1) {
-            printf("Saved %s\n", frame_name);
-        }
-        if (num_frames_to_record == ++num_frames_recorded) {
-            save_video = 0;
-            printf("Recorded %d frames, stopping as instructed.\n", num_frames_recorded);
-            quit = 1;
-        }
-    }
+//    // Save video
+//    if (save_video) {
+//        char frame_name[512];
+//        static int next_frame = 0;
+//        static int num_frames_recorded = 0;
+//        for (;;) {
+//            sprintf(frame_name, "%sframe%04d.jpg", video_prefix, next_frame++);
+//            FILE *fp = fopen(frame_name, "r");
+//            if (!fp) break;
+//            else fclose(fp);
+//        }
+//        GLUTSaveImage(frame_name);
+//        if (next_frame % 100 == 1) {
+//            printf("Saved %s\n", frame_name);
+//        }
+//        if (num_frames_to_record == ++num_frames_recorded) {
+//            save_video = 0;
+//            printf("Recorded %d frames, stopping as instructed.\n", num_frames_recorded);
+//            quit = 1;
+//        }
+//    }
 
     // Quit here so that can save image before exit
     if (quit) {
@@ -2241,63 +2241,63 @@ void initSkyBox(int skybox_type)
 
     if (skybox_type == 10)
     {
-        skybox[SKY_FRONT] = loadTexBMP("bmp/txStormydays_front.bmp");
-        skybox[SKY_RIGHT] = loadTexBMP("bmp/txStormydays_right.bmp");
-        skybox[SKY_LEFT] = loadTexBMP("bmp/txStormydays_left.bmp");
-        skybox[SKY_BACK] = loadTexBMP("bmp/txStormydays_back.bmp");
-        skybox[SKY_UP] = loadTexBMP("bmp/txStormydays_up.bmp");
-        skybox[SKY_DOWN] = loadTexBMP("bmp/txStormydays_down.bmp");
+        skybox[SKY_FRONT] = loadTexBMP("../bmp/txStormydays_front.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("../bmp/txStormydays_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("../bmp/txStormydays_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("../bmp/txStormydays_back.bmp");
+        skybox[SKY_UP] = loadTexBMP("../bmp/txStormydays_up.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("../bmp/txStormydays_down.bmp");
     } else if (skybox_type == 0)
     {
-        skybox[SKY_FRONT] = loadTexBMP("bmp/front.bmp");
-        skybox[SKY_RIGHT] = loadTexBMP("bmp/right.bmp");
-        skybox[SKY_LEFT] = loadTexBMP("bmp/left.bmp");
-        skybox[SKY_BACK] = loadTexBMP("bmp/back.bmp");
-        skybox[SKY_UP] = loadTexBMP("bmp/up.bmp");
-        skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+        skybox[SKY_FRONT] = loadTexBMP("../bmp/front.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("../bmp/right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("../bmp/left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("../bmp/back.bmp");
+        skybox[SKY_UP] = loadTexBMP("../bmp/up.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("../bmp/down.bmp");
     } else if (skybox_type == 1)
     {
-        skybox[SKY_FRONT] = loadTexBMP("bmp/desert_back.bmp");
-        skybox[SKY_RIGHT] = loadTexBMP("bmp/desert_right.bmp");
-        skybox[SKY_LEFT] = loadTexBMP("bmp/desert_left.bmp");
-        skybox[SKY_BACK] = loadTexBMP("bmp/desert_front.bmp");
-        skybox[SKY_UP] = loadTexBMP("bmp/desert_top.bmp");
-        skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+        skybox[SKY_FRONT] = loadTexBMP("../bmp/desert_back.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("../bmp/desert_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("../bmp/desert_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("../bmp/desert_front.bmp");
+        skybox[SKY_UP] = loadTexBMP("../bmp/desert_top.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("../bmp/down.bmp");
     } else if (skybox_type == 2)
     {
-        skybox[SKY_FRONT] = loadTexBMP("bmp/lostatseaday_back.bmp");
-        skybox[SKY_RIGHT] = loadTexBMP("bmp/lostatseaday_right.bmp");
-        skybox[SKY_LEFT] = loadTexBMP("bmp/lostatseaday_left.bmp");
-        skybox[SKY_BACK] = loadTexBMP("bmp/lostatseaday_front.bmp");
-        skybox[SKY_UP] = loadTexBMP("bmp/lostatseaday_top.bmp");
-        skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+        skybox[SKY_FRONT] = loadTexBMP("../bmp/lostatseaday_back.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("../bmp/lostatseaday_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("../bmp/lostatseaday_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("../bmp/lostatseaday_front.bmp");
+        skybox[SKY_UP] = loadTexBMP("../bmp/lostatseaday_top.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("../bmp/down.bmp");
     }
     else if (skybox_type == 3)
     {
-        skybox[SKY_FRONT] = loadTexBMP("bmp/alpine_back.bmp");
-        skybox[SKY_RIGHT] = loadTexBMP("bmp/alpine_right.bmp");
-        skybox[SKY_LEFT] = loadTexBMP("bmp/alpine_left.bmp");
-        skybox[SKY_BACK] = loadTexBMP("bmp/alpine_front.bmp");
-        skybox[SKY_UP] = loadTexBMP("bmp/alpine_top.bmp");
-        skybox[SKY_DOWN] = loadTexBMP("bmp/down.bmp");
+        skybox[SKY_FRONT] = loadTexBMP("../bmp/alpine_back.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("../bmp/alpine_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("../bmp/alpine_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("../bmp/alpine_front.bmp");
+        skybox[SKY_UP] = loadTexBMP("../bmp/alpine_top.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("../bmp/down.bmp");
     }
     else if (skybox_type == 4)
     {
-        skybox[SKY_FRONT] = loadTexBMP("bmp/jajspace2_back.bmp");
-        skybox[SKY_RIGHT] = loadTexBMP("bmp/jajspace2_right.bmp");
-        skybox[SKY_LEFT] = loadTexBMP("bmp/jajspace2_left.bmp");
-        skybox[SKY_BACK] = loadTexBMP("bmp/jajspace2_front.bmp");
-        skybox[SKY_UP] = loadTexBMP("bmp/jajspace2_top.bmp");
-        skybox[SKY_DOWN] = loadTexBMP("bmp/jajspace2_top.bmp");
+        skybox[SKY_FRONT] = loadTexBMP("../bmp/jajspace2_back.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("../bmp/jajspace2_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("../bmp/jajspace2_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("../bmp/jajspace2_front.bmp");
+        skybox[SKY_UP] = loadTexBMP("../bmp/jajspace2_top.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("../bmp/jajspace2_top.bmp");
     }
     else if (skybox_type == 69)
     {
-        skybox[SKY_FRONT] = loadTexBMP("bmp/bluefreeze_back.bmp");
-        skybox[SKY_RIGHT] = loadTexBMP("bmp/bluefreeze_right.bmp");
-        skybox[SKY_LEFT] = loadTexBMP("bmp/bluefreeze_left.bmp");
-        skybox[SKY_BACK] = loadTexBMP("bmp/bluefreeze_front.bmp");
-        skybox[SKY_UP] = loadTexBMP("bmp/bluefreeze_top.bmp");
-        skybox[SKY_DOWN] = loadTexBMP("bmp/bluefreeze_top.bmp");
+        skybox[SKY_FRONT] = loadTexBMP("../bmp/bluefreeze_back.bmp");
+        skybox[SKY_RIGHT] = loadTexBMP("../bmp/bluefreeze_right.bmp");
+        skybox[SKY_LEFT] = loadTexBMP("../bmp/bluefreeze_left.bmp");
+        skybox[SKY_BACK] = loadTexBMP("../bmp/bluefreeze_front.bmp");
+        skybox[SKY_UP] = loadTexBMP("../bmp/bluefreeze_top.bmp");
+        skybox[SKY_DOWN] = loadTexBMP("../bmp/bluefreeze_top.bmp");
     }
 }
 
@@ -2392,7 +2392,13 @@ ParseArgs(int argc, char **argv)
 int 
 main(int argc, char **argv)
 {
+//    char **fakeargs = new char*[2];
+//    fakeargs[0] = new char[50];
+//    fakeargs[1] =  new char[50];
+//    fakeargs[1] = "current/scene.scn";
+
     // Parse program arguments
+//    if (!ParseArgs(2, fakeargs)) exit(1);
     if (!ParseArgs(argc, argv)) exit(1);
 
     // Initialize GLUT
