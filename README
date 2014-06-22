@@ -1,0 +1,26 @@
+/**********************************************************************
+* @author Jason Altschuler and Kyle Dhillon
+*
+* Description of WorldWarQ
+**********************************************************************/
+
+  ** WHY: We created this game for our COS 426 (Computer Graphics) final project. 
+
+  ** FULL DESCRIPTION OF GAME (and implemented features with demonstration videos):
+    1. Clone repository
+    2. Open writeup.html in browser
+
+  ** DEMOS: see demos/ folder for videos of gameplay and demonstrations of features.
+  However, all these video demos are included (with description) in writeup.html (above).
+
+  ** HOW TO PLAY:
+    1. Clone repository
+    2. Compile the game:
+          cd src/ 
+          make clean
+          make all.
+    3. Play the game (from the src/ folder):
+         ./WorldWarQ <scene_name>
+
+    - Example: ./WorldWarQ ../input/scn/battle_of_britain.scn
+    - For a list of scenes, see bottom of writeup.html
