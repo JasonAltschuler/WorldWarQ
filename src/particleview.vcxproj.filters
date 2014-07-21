@@ -48,7 +48,10 @@
     <ClCompile Include="particle.cpp">
       <Filter>Main Program\Main Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="particleview.cpp">
+    <ClCompile Include="R3Aircraft.cpp">
+      <Filter>Main Program\Main Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldWarQ.cpp">
       <Filter>Main Program\Main Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -57,6 +60,12 @@
       <Filter>Main Program\Main Header Files</Filter>
     </ClInclude>
     <ClInclude Include="particle.h">
+      <Filter>Main Program\Main Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="R3Aircraft.h">
+      <Filter>Main Program\Main Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldWarQ.h">
       <Filter>Main Program\Main Header Files</Filter>
     </ClInclude>
   </ItemGroup>

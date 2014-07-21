@@ -1,63 +1,17 @@
-﻿Build started 5/14/2014 11:40:53 PM.
-     1>Project "A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\fglut\fglut.vcxproj" on node 5 (Build target(s)).
-     1>ClCompile:
-         A:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Ijpeg /ZI /nologo /W1 /WX- /Od /Oy- /D USE_JPEG /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt freeglut_callbacks.c freeglut_cursor.c freeglut_display.c freeglut_ext.c freeglut_font.c freeglut_glutfont_definitions.c freeglut_font_data.c freeglut_stroke_roman.c freeglut_stroke_mono_roman.c freeglut_gamemode.c freeglut_geometry.c freeglut_init.c freeglut_input_devices.c freeglut_spaceball.c freeglut_joystick.c freeglut_main.c freeglut_menu.c freeglut_misc.c freeglut_overlay.c freeglut_state.c freeglut_structure.c freeglut_teapot.c freeglut_videoresize.c freeglut_window.c
-         freeglut_window.c
-         fgSetupPixelFormat(): there is still some work to do here!
-         freeglut_videoresize.c
-         freeglut_teapot.c
-         freeglut_structure.c
-         freeglut_state.c
-         freeglut_overlay.c
-         freeglut_misc.c
-         freeglut_menu.c
-         freeglut_main.c
-         freeglut_joystick.c
-         freeglut_spaceball.c
-         freeglut_input_devices.c
-         freeglut_init.c
-         freeglut_geometry.c
-         freeglut_gamemode.c
-         freeglut_stroke_mono_roman.c
-         freeglut_stroke_roman.c
-         freeglut_font_data.c
-         freeglut_glutfont_definitions.c
-         freeglut_font.c
-         Generating Code...
-         Compiling...
-         freeglut_ext.c
-         freeglut_display.c
-         freeglut_cursor.c
-         freeglut_callbacks.c
-         Generating Code...
+﻿Build started 7/21/2014 10:17:57 AM.
+     1>Project "C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\fglut\fglut.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\fglut.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
        Lib:
-         A:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\Lib.exe /OUT:"A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\Debug\fglut.lib" /NOLOGO Debug\freeglut_callbacks.obj
-         Debug\freeglut_cursor.obj
-         Debug\freeglut_display.obj
-         Debug\freeglut_ext.obj
-         Debug\freeglut_font.obj
-         Debug\freeglut_glutfont_definitions.obj
-         Debug\freeglut_font_data.obj
-         Debug\freeglut_stroke_roman.obj
-         Debug\freeglut_stroke_mono_roman.obj
-         Debug\freeglut_gamemode.obj
-         Debug\freeglut_geometry.obj
-         Debug\freeglut_init.obj
-         Debug\freeglut_input_devices.obj
-         Debug\freeglut_spaceball.obj
-         Debug\freeglut_joystick.obj
-         Debug\freeglut_main.obj
-         Debug\freeglut_menu.obj
-         Debug\freeglut_misc.obj
-         Debug\freeglut_overlay.obj
-         Debug\freeglut_state.obj
-         Debug\freeglut_structure.obj
-         Debug\freeglut_teapot.obj
-         Debug\freeglut_videoresize.obj
-         Debug\freeglut_window.obj
-         fglut.vcxproj -> A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\Debug\fglut.lib
-     1>Done Building Project "A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\fglut\fglut.vcxproj" (Build target(s)).
+         All outputs are up-to-date.
+         fglut.vcxproj -> C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\Debug\fglut.lib
+       FinalizeBuildStatus:
+         Deleting file "Debug\fglut.unsuccessfulbuild".
+         Touching "Debug\fglut.lastbuildstate".
+     1>Done Building Project "C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\fglut\fglut.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:11.58
+Time Elapsed 00:00:00.05
