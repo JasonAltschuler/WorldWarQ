@@ -6,7 +6,7 @@
 #include <math.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 
 
@@ -842,8 +842,10 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
         aircraft->sources[1]->shape->circle->Reposition(source_2_position_world.Point());
         aircraft->sources[1]->shape->circle->Align(normal_world);
 
-        aircraft->sources[0]->rate = fmax(5, AIRCRAFT_EXHAUST_RATE_MAX * aircraft->thrust_magnitude / aircraft->max_thrust);
-        aircraft->sources[1]->rate = fmax(5, AIRCRAFT_EXHAUST_RATE_MAX * aircraft->thrust_magnitude / aircraft->max_thrust);
+        aircraft->sources[0]->rate = AIRCRAFT_EXHAUST_RATE_MAX * aircraft->thrust_magnitude / aircraft->max_thrust;
+		if (aircraft->sources[0]->rate < 5) aircraft->sources[0]->rate = 5;
+       
+		aircraft->sources[1]->rate = aircraft->sources[0]->rate;
 
 
         R3Vector v_normalized = aircraft->velocity;
@@ -851,7 +853,8 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
         double drag_scale = (v_normalized.Dot(R3Vector(1, 0, 0)));
 //        cout << drag_scale << endl;
 
-        drag_scale = fmax(drag_scale, 0);
+		if (drag_scale < 0) drag_scale = 0;
+       // drag_scale = std::max(drag_scale, 0);
 
         // UPDATE VELOCITY with acceleration (simple Euler integration)
         R3Vector net_force = R3Vector(aircraft->thrust_magnitude, 0, 0) - aircraft->drag * aircraft->velocity;
@@ -903,7 +906,7 @@ void UpdateAircrafts(R3Scene *scene, double current_time, double delta_time, int
         if (hard_mode)
         {
             acceleration += GRAVITY_VECTOR;
-            acceleration.SetZ(fmin(MAX_Z_ACCELERATION, acceleration.Z()));
+            acceleration.SetZ(std::min(MAX_Z_ACCELERATION, acceleration.Z()));
         }
 
         aircraft->velocity += acceleration * delta_time;

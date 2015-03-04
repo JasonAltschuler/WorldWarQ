@@ -1,19 +1,27 @@
-﻿Build started 5/14/2014 11:41:15 PM.
-     1>Project "A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\particleview.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         A:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I. /I.. /IR3 /IR2 /Ijpeg /Ifglut /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4996 /wd4267 /analyze- /errorReport:prompt R3Scene.cpp particle.cpp particleview.cpp
-         particleview.cpp
-     1>c1xx : fatal error C1083: Cannot open source file: 'particleview.cpp': No such file or directory
-         particle.cpp
-     1>a:\users\kyle\dropbox\s14\cos426\final\repo2\cos426_final_project\src\particle.cpp(88): warning C4018: '<' : signed/unsigned mismatch
-     1>a:\users\kyle\dropbox\s14\cos426\final\repo2\cos426_final_project\src\particle.cpp(205): warning C4018: '<' : signed/unsigned mismatch
-     1>a:\users\kyle\dropbox\s14\cos426\final\repo2\cos426_final_project\src\particle.cpp(230): warning C4018: '<' : signed/unsigned mismatch
-     1>a:\users\kyle\dropbox\s14\cos426\final\repo2\cos426_final_project\src\particle.cpp(274): warning C4018: '<' : signed/unsigned mismatch
-         R3Scene.cpp
-     1>a:\users\kyle\dropbox\s14\cos426\final\repo2\cos426_final_project\src\r3scene.cpp(788): warning C4018: '<' : signed/unsigned mismatch
-         Generating Code...
-     1>Done Building Project "A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\particleview.vcxproj" (Build target(s)) -- FAILED.
+﻿Build started 7/21/2014 10:35:20 AM.
+     1>Project "C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\particleview.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "Debug\WorldWarQ.unsuccessfulbuild".
+       ClCompile:
+         All outputs are up-to-date.
+       Link:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"worldwarq.exe" /INCREMENTAL:NO /NOLOGO glu32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmtd /MANIFEST /ManifestFile:"Debug\WorldWarQ.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\WorldWarQ.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\\WorldWarQ.lib" /MACHINE:X86 Debug\R3Aircraft.obj
+         Debug\R3Scene.obj
+         Debug\particle.obj
+         Debug\WorldWarQ.obj
+         C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\Debug\R3.lib
+         C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\Debug\R2.lib
+         C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\Debug\jpeg.lib
+         C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\Debug\fglut.lib
+     1>R3Aircraft.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+         particleview.vcxproj -> C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\\WorldWarQ.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"worldwarq.exe;#1" /manifest Debug\WorldWarQ.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Debug\WorldWarQ.unsuccessfulbuild".
+         Touching "Debug\WorldWarQ.lastbuildstate".
+     1>Done Building Project "C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\particleview.vcxproj" (build target(s)).
 
-Build FAILED.
+Build succeeded.
 
-Time Elapsed 00:00:03.82
+Time Elapsed 00:00:00.85

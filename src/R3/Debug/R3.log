@@ -1,40 +1,17 @@
-﻿Build started 5/14/2014 11:40:52 PM.
-     1>Project "A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\R3\R3.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         A:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Ijpeg /ZI /nologo /W1 /WX- /Od /Oy- /D USE_JPEG /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt R3Point.cpp R3Vector.cpp R3Line.cpp R3Ray.cpp R3Segment.cpp R3Plane.cpp R3Circle.cpp R3Box.cpp R3Sphere.cpp R3Cylinder.cpp R3Cone.cpp R3Mesh.cpp R3Matrix.cpp R3Distance.cpp
-         R3Distance.cpp
-         R3Matrix.cpp
-         R3Mesh.cpp
-         R3Cone.cpp
-         R3Cylinder.cpp
-         R3Sphere.cpp
-         R3Box.cpp
-         R3Circle.cpp
-         R3Plane.cpp
-         R3Segment.cpp
-         R3Ray.cpp
-         R3Line.cpp
-         R3Vector.cpp
-         R3Point.cpp
-         Generating Code...
+﻿Build started 7/21/2014 10:17:21 AM.
+     1>Project "C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\R3\R3.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\R3.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
        Lib:
-         A:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\Lib.exe /OUT:"A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\Debug\R3.lib" /NOLOGO Debug\R3Point.obj
-         Debug\R3Vector.obj
-         Debug\R3Line.obj
-         Debug\R3Ray.obj
-         Debug\R3Segment.obj
-         Debug\R3Plane.obj
-         Debug\R3Circle.obj
-         Debug\R3Box.obj
-         Debug\R3Sphere.obj
-         Debug\R3Cylinder.obj
-         Debug\R3Cone.obj
-         Debug\R3Mesh.obj
-         Debug\R3Matrix.obj
-         Debug\R3Distance.obj
-         R3.vcxproj -> A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\Debug\R3.lib
-     1>Done Building Project "A:\Users\Kyle\Dropbox\S14\COS426\final\repo2\cos426_final_project\src\R3\R3.vcxproj" (Build target(s)).
+         All outputs are up-to-date.
+         R3.vcxproj -> C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\Debug\R3.lib
+       FinalizeBuildStatus:
+         Deleting file "Debug\R3.unsuccessfulbuild".
+         Touching "Debug\R3.lastbuildstate".
+     1>Done Building Project "C:\Users\kdhillon3\Documents\GitHub\WorldWarQ\src\R3\R3.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:23.22
+Time Elapsed 00:00:00.07

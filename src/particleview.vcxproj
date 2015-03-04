@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -14,6 +14,7 @@
     <ProjectGuid>{97451871-161B-4C75-9EDE-C15518F67476}</ProjectGuid>
     <RootNamespace>particleview</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>WorldWarQ</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -25,7 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -68,7 +69,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>glu32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>particleview.exe</OutputFile>
+      <OutputFile>worldwarq.exe</OutputFile>
       <IgnoreSpecificDefaultLibraries>libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
@@ -98,13 +99,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="R3Aircraft.cpp" />
     <ClCompile Include="R3Scene.cpp" />
     <ClCompile Include="particle.cpp" />
-    <ClCompile Include="particleview.cpp" />
+    <ClCompile Include="WorldWarQ.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="R3Aircraft.h" />
     <ClInclude Include="R3Scene.h" />
     <ClInclude Include="particle.h" />
+    <ClInclude Include="WorldWarQ.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="R3\R3.vcxproj">
